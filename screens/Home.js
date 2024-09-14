@@ -18,12 +18,12 @@ import {
 const { width } = Dimensions.get("window");
 
 const firebaseConfig = {
-  apiKey: process.env.API_KEY,
-  authDomain: "onesa-2024.firebaseapp.com",
-  projectId: "onesa-2024",
-  storageBucket: "onesa-2024.appspot.com",
-  messagingSenderId: "947431996526",
-  appId: "1:947431996526:web:52170a6b558b338739ba7f",
+    apiKey: process.env.API_KEY,
+    authDomain: process.env.AUTH_DOMAIN,
+    projectId: process.env.PROJECT_ID,
+    storageBucket: process.env.STORAGE_BUCKET,
+    messagingSenderId: process.env.MESSAGING_SENDER_ID,
+    appId: process.env.APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
