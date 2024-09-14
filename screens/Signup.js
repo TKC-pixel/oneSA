@@ -125,7 +125,6 @@ const Signup = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
-      
     </SafeAreaView>
   );
 };

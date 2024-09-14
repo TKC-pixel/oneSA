@@ -7,10 +7,10 @@ import { useState, useRef } from "react";
 // import NextButton from "../components/NextButton";
 
 import OnboardingItem from "../components/OnboardingItem";
-import Paginator from '../components/Paginator'
+import Paginator from "../components/Paginator";
 import NextButton from "../components/NextButton";
-import slides from "../data/slides"
-import { useNavigation } from '@react-navigation/native';
+import slides from "../data/slides";
+import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Onboarding = () => {
@@ -22,15 +22,15 @@ const Onboarding = () => {
     setCurrentIndex(viewableItems[0].index);
   }).current;
 
-const navigation = useNavigation();
+  const navigation = useNavigation();
 
   const scrollTo = async () => {
     if (currentIndex < slides.length - 1) {
       slidesRef.current.scrollToIndex({ index: currentIndex + 1 });
     } else {
-       try {
+      try {
         await AsyncStorage.setItem("@viewedOnboarding", "true");
-        navigation.replace('SignUp'); 
+        navigation.replace("Signup");
       } catch (err) {
         console.log("Error setting onboarding flag:", err);
       }

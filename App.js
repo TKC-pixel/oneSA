@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Home from './screens/Home'
+import Home from "./screens/Home";
 import Onboarding from "./screens/Onboarding";
 import Signup from "./screens/Signup";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -10,7 +10,6 @@ import { useEffect, useState } from "react";
 import SignUp from "./components/SignUp";
 
 const Stack = createNativeStackNavigator();
-
 
 const Loading = () => {
   return (
@@ -26,7 +25,7 @@ export default function App() {
 
   const checkOnboarding = async () => {
     try {
-      const value = await AsyncStorage.getItem('@viewedOnboarding');
+      const value = await AsyncStorage.getItem("@viewedOnboarding");
       if (value !== null) {
         setViewedOnboarding(true);
       }
@@ -44,17 +43,17 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-      {viewedOnboarding ? (
-          <Stack.Screen 
-            name="SignUp" 
-            component={SignUp} 
-            options={{ headerShown: false }} 
+        {viewedOnboarding ? (
+          <Stack.Screen
+            name="SignUp"
+            component={SignUp}
+            options={{ headerShown: false }}
           />
         ) : (
-          <Stack.Screen 
-            name="Onboarding" 
-            component={Onboarding} 
-            options={{ headerShown: false }} 
+          <Stack.Screen
+            name="Onboarding"
+            component={Onboarding}
+            options={{ headerShown: false }}
           />
         )}
         <Stack.Screen
