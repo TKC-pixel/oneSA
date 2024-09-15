@@ -89,6 +89,7 @@ const styles = StyleSheet.create({
   },
   descriptionContainer: {
     flex: 0.2,
+    padding: 20,
     justifyContent: "center",
     alignItems: "center",
   },
