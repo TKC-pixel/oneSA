@@ -57,6 +57,7 @@ const NextButton = ({ percentage, scrollTo }) => {
           <Circle
             ref={progressRef}
             stroke="#B7C42E"
+            fill="#fff"
             cx={center}
             cy={center}
             r={radius}
