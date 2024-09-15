@@ -5,7 +5,7 @@ export default [
     keyword: "Transparency",
     description:
       "Welcome to OneSA – Promoting government transparency and empowering communities.",
-    image: require("../assets/images/image2.jpg"),
+    image: require("../assets/images/onboarding-1.gif"),
   },
   {
     id: "2",
@@ -13,7 +13,7 @@ export default [
     keyword: "Participation",
     description:
       "Join the conversation. Engage in debates, vote on policies, and contribute to real change.",
-    image: require("../assets/images/image3.jpg"),
+    image: require("../assets/images/onboarding-2.gif"),
   },
   {
     id: "3",
@@ -21,6 +21,6 @@ export default [
     keyword: "Accountability",
     description:
       "Track projects, report issues, and hold leaders accountable with OneSA.",
-    image: require("../assets/images/image1.jpg"),
+    image: require("../assets/images/onboarding-3.gif"),
   },
 ];

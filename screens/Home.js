@@ -14,6 +14,7 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
 } from "@firebase/auth";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get("window");
 
