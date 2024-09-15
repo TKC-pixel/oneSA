@@ -1,10 +1,8 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import LoginScreen from "../screens/Home";
-import Signup from "../screens/Signup";
 
-export default function SignUp({navigation}) {
+export default function SignUp({ navigation }) {
   const clearOnboarding = async () => {
     try {
       await AsyncStorage.removeItem("@viewedOnboarding");
@@ -16,10 +14,16 @@ export default function SignUp({navigation}) {
   return (
     <View style={styles.container}>
       <Text>Sign up or Log In</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('Home')} style={styles.button}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("Home")}
+        style={styles.button}
+      >
         <Text style={styles.buttonText}>Log In</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('Signup')} style={styles.button}>
+      <TouchableOpacity
+        onPress={() => navigation.navigate("Signup")}
+        style={styles.button}
+      >
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={clearOnboarding} style={styles.button}>
@@ -36,19 +40,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   button: {
-    backgroundColor: "#007bff", 
-    paddingVertical: 10, 
-    paddingHorizontal: 20, 
-    borderRadius: 5, 
-    elevation: 3, 
-    shadowColor: "#000", 
-    shadowOffset: { width: 0, height: 2 }, 
-    shadowOpacity: 0.2, 
-    shadowRadius: 2.5, 
+    backgroundColor: "#007bff",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2.5,
   },
   buttonText: {
-    color: "#fff", 
+    color: "#fff",
     fontSize: 16,
-    fontWeight: "bold", 
+    fontWeight: "bold",
   },
 });

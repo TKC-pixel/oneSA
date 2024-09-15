@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  SafeAreaView,
   Pressable,
 } from "react-native";
 import { initializeApp } from "firebase/app";
@@ -17,6 +16,7 @@ import {
   onAuthStateChanged,
 } from "@firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
@@ -125,7 +125,6 @@ const Signup = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
-      
     </SafeAreaView>
   );
 };

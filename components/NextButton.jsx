@@ -1,11 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import {
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Animated,
-} from "react-native";
+import { StyleSheet, TouchableOpacity, View, Animated } from "react-native";
 import Svg, { G, Circle } from "react-native-svg";
 import { AntDesign } from "@expo/vector-icons";
 
@@ -91,7 +85,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#B7C42E",
     borderRadius: 100,
     padding: 20,
-    shadowColor: "transparent", // If there is any shadow causing the black, make it transparent
+    shadowColor: "transparent",
     borderWidth: 0,
   },
 });

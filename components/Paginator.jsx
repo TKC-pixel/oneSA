@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Animated,
-  useWindowDimensions,
-} from "react-native";
+import { StyleSheet, View, Animated, useWindowDimensions } from "react-native";
 import React from "react";
 
 const Paginator = ({ data, scrollX }) => {
