@@ -1,10 +1,6 @@
 import { FlatList, StyleSheet, Text, View, Animated } from "react-native";
 import React from "react";
 import { useState, useRef } from "react";
-// import OnboardingItem from "../components/OnboardingItem";
-// import slides from "../data/slides";
-// import Paginator from "../components/Paginator";
-// import NextButton from "../components/NextButton";
 
 import OnboardingItem from "../components/OnboardingItem";
 import Paginator from "../components/Paginator";
@@ -13,7 +9,11 @@ import slides from "../data/slides";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+// import AppLoading from 'expo'
+
 const Onboarding = () => {
+
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const slidesRef = useRef(null);
   const scrollX = useRef(new Animated.Value(0)).current;
