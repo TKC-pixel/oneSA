@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#B7C42E",
     borderRadius: 100,
     padding: 20,
-    shadowColor: "transparent", // If there is any shadow causing the black, make it transparent
+    shadowColor: "transparent",
     borderWidth: 0,
   },
 });
