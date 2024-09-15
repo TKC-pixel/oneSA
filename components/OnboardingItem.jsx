@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  FlatList,
   StyleSheet,
   Text,
   View,
@@ -26,7 +25,6 @@ const OnboardingItem = ({ item }) => {
       "Raleway-Italic-VariableFont_wght": require("../assets/fonts/Raleway-Italic-VariableFont_wght.ttf"),
       "Raleway-VariableFont_wght": require("../assets/fonts/Raleway-VariableFont_wght.ttf"),
       "Raleway-ExtraBold": require("../assets/fonts/Raleway-ExtraBold.ttf"),
-
     });
   };
 
@@ -71,7 +69,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 18,
-    paddingTop: 92
+    paddingTop: 92,
   },
   loadingContainer: {
     flex: 1,
@@ -97,19 +95,19 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: "#000000",
     textAlign: "center",
-    fontFamily: "Poppins-ExtraBold", 
+    fontFamily: "Poppins-ExtraBold",
   },
   description: {
     fontWeight: "300",
     color: "black",
     textAlign: "center",
     fontSize: 20,
-    fontFamily: "Poppins-Regular", 
+    fontFamily: "Poppins-Regular",
   },
   keyword: {
     fontSize: 40,
     color: "#B7C42E",
     textAlign: "center",
-    fontFamily: "Raleway-ExtraBold", 
+    fontFamily: "Raleway-ExtraBold",
   },
 });

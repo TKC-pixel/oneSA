@@ -9,7 +9,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import SignUp from "./components/SignUp";
 
-
 const Stack = createNativeStackNavigator();
 
 const Loading = () => {
