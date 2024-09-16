@@ -1,72 +1,286 @@
-import {Text, View, SafeAreaView, ScrollView, Image, TextInput, Pressable } from 'react-native';
-import {useState} from 'react';
-export default function Welcome(){
-    const [department, setDepartment]=useState('Health and Science');
-    const [disp, setDisp] = useState('block');
-    const toggleDisplay = () => {
-        setDisp(prevDisp => (prevDisp === 'none' ? 'block' : 'none'));
-    }
-    return(
-        <SafeAreaView style={{flex:1, backgroundColor: 'white'}}>
-            <ScrollView style={{margin: "2%"}}>
-                <View style={{flexDirection: 'row', marginBottom: '5%'}}>
-                    <Image source={require('../assets/images/plainL.jpg')} style={{width:70, height:50}}/>
-                    <View style={{flexDirection: 'row',marginLeft: '45%'}}>
-                        <View style={{borderWidth: 1, borderRadius: '50%',backgroundColor: 'rgba(0, 0, 0, 0.05)'}}>
-                            <Image source={{uri: 'https://img.icons8.com/carbon-copy/100/bell--v1.png'}} style={{width:35, height:33, marginTop: '15%'}}/>
-                        </View>
-                        <View style={{borderWidth: 1, borderRadius: '50%',backgroundColor: 'rgba(0, 0, 0, 0.05)',marginLeft: '5%'}}>
-                            <Image source={{uri: 'https://img.icons8.com/ios/50/sun--v1.png'}} style={{width:35, height:25, marginTop: '25%'}}/>
-                        </View>
-                        <View style={{borderWidth: 1, borderRadius: '50%',backgroundColor: 'rgba(0, 0, 0, 0.05)',marginLeft: '5%'}}>
-                            <Image source={{uri: 'https://img.icons8.com/ios/50/user--v1.png'}} style={{width:30, height:25, marginTop: '20%'}}/>
-                        </View>
-                    </View>
-                    
-                </View>
-                <Text style={{fontSize: '19%'}}>Welcome ..User..!</Text>
-                <View style={{margin: '2%', borderRadius: '20%', padding: '3%', flexDirection: 'row'}}>
-                    <Pressable onPress={toggleDisplay}>
-                        <View style={{marginRight: '5%'}}>
-                            <Image source={{uri: 'https://img.icons8.com/ios/50/menu--v1.png'}} style={{width:20, height:30}} /> 
-                        </View>
-                    </Pressable>
-                    <View>
-                        <TextInput placeholder={department} placeholderTextColor={'black'} style={{width: 250, height: 30, marginRight: 15}}/>                    
-                    </View>
-                    <View>
-                        <Image source={{uri: 'https://img.icons8.com/ios/50/search--v1.png'}} style={{width:30, height:30}}/>
-                    </View>
-                </View>
-                <View style={{position: 'relative', display: disp, backgroundColor: 'rgba(0,0,0,0.1)', padding: '5%', borderRadius: '5%'}}>
-                    <Pressable style={{marginBottom: '5%'}} onPress={()=>{setDepartment('Agriculture, Land Reform and Rural Development'), setDisp('none')}}><Text>Agriculture, Land Reform and Rural Development</Text></Pressable>
-                    <Pressable style={{marginBottom: '5%'}} onPress={()=>{setDepartment('Basic Education'), setDisp('none')}}><Text>Basic Education</Text></Pressable>
-                    <Pressable style={{marginBottom: '5%'}} onPress={()=>{setDepartment('Communications and Digital Technologies'), setDisp('none')}}><Text>Communications and Digital Technologies</Text></Pressable>
-                    <Pressable style={{marginBottom: '5%'}} onPress={()=>{setDepartment('Defense and Military Veterans'), setDisp('none')}}><Text>Defense and Military Veterans</Text></Pressable>
-                    <Pressable style={{marginBottom: '5%'}} onPress={()=>{setDepartment('Health and Science'), setDisp('none')}}><Text>Health and Science</Text></Pressable>
-                    <Pressable style={{marginBottom: '5%'}} onPress={()=>{setDepartment('Home Affairs'), setDisp('none')}}><Text>Home Affairs</Text></Pressable>
-                    <Pressable style={{marginBottom: '5%'}} onPress={()=>{setDepartment('International Relations and Cooperation'), setDisp('none')}}><Text>International Relations and Cooperation</Text></Pressable>
-                    <Pressable style={{marginBottom: '5%'}} onPress={()=>{setDepartment('Justice and Constitutional Development'), setDisp('none')}}><Text>Justice and Constitutional Development</Text></Pressable>
-                    <Pressable onPress={()=>{setDepartment('Public Works and Infrastructure'), setDisp('none')}}><Text>Public Works and Infrastructure</Text></Pressable>
-                </View>
-                <View style={{margin: "2%"}}>
-                    <Text style={{marginBottom: '5%'}}>Depertment of {department}</Text>
-                    <View style={{shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, shadowRadius: 3, elevation: 5, height: '30%',marginBottom: '3%',  backgroundColor: 'white', padding: '5%', borderRadius: '20%'}}><Text>Projects</Text></View>
-                    <View style={{shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, shadowRadius: 3, elevation: 5, height: '30%', marginBottom: '3%',backgroundColor: 'white', padding: '5%', borderRadius: '20%'}}><Text>Budget Allocation</Text></View>
-                    <View style={{shadowColor: '#000', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.2, shadowRadius: 3, elevation: 5, height: '30%',marginBottom: '3%', backgroundColor: 'white', padding: '5%', borderRadius: '20%'}}><Text>Success Rates</Text></View>
-                </View>
-                <View style={{flexDirection: 'row', marginTop: '10%', justifyContent: 'center', marginBottom: '5%'}}>
-                    <Pressable style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', padding: '2%', borderRadius:'10%', marginRight:'10%'}}>
-                        <Text style={{color: '#B7C42E', fontSize: '20%'}}>Explore Ministers</Text>
-                    </Pressable>
-                    <Pressable style={{backgroundColor: 'rgba(0, 0, 0, 0.4)', padding: '2%', borderRadius:'10%'}}>
-                        <Text style={{color: '#B7C42E', fontSize: '20%'}}>Report Issues</Text>
-                    </Pressable>
-                </View>
-                <View>
-                    <Text>Your favourites</Text>
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+import {
+  Text,
+  View,
+  ScrollView,
+  Image,
+  StyleSheet,
+  ActivityIndicator,
+  useWindowDimensions,
+  TextInput,
+  Pressable,
+  SafeAreaView,
+} from "react-native";
+import { useState, useEffect } from "react";
+import * as Font from "expo-font";
+import NavBar from "../components/NavBar";
+import Ionicons from "@expo/vector-icons/Ionicons";
+
+const favicon = require("../assets/images/Favicon.png");
+
+export default function Welcome() {
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [department, setDepartment] = useState("Health and Science");
+  const [disp, setDisp] = useState("none");
+
+  const loadFonts = async () => {
+    await Font.loadAsync({
+      "Poppins-Regular": require("../assets/fonts/Poppins-Regular.ttf"),
+      "Poppins-BlackItalic": require("../assets/fonts/Poppins-BlackItalic.ttf"),
+      "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
+      "Poppins-BoldItalic": require("../assets/fonts/Poppins-BoldItalic.ttf"),
+      "Poppins-ExtraBold": require("../assets/fonts/Poppins-ExtraBold.ttf"),
+      "Poppins-ExtraBoldItalic": require("../assets/fonts/Poppins-ExtraBoldItalic.ttf"),
+      "Poppins-SemiBold": require("../assets/fonts/Poppins-SemiBold.ttf"),
+      "Raleway-Italic-VariableFont_wght": require("../assets/fonts/Raleway-Italic-VariableFont_wght.ttf"),
+      "Raleway-VariableFont_wght": require("../assets/fonts/Raleway-VariableFont_wght.ttf"),
+      "Raleway-ExtraBold": require("../assets/fonts/Raleway-ExtraBold.ttf"),
+    });
+  };
+
+  useEffect(() => {
+    loadFonts().then(() => setFontsLoaded(true));
+  }, []);
+
+  const { width } = useWindowDimensions();
+
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
     );
+  }
+
+  const toggleDisplay = () => {
+    setDisp((prevDisp) => (prevDisp === "none" ? "block" : "none"));
+  };
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView>
+        <NavBar />
+        <Text style={styles.welcomeText}>Welcome ..User..!</Text>
+        <View style={styles.searchContainer}>
+          <Pressable onPress={toggleDisplay}>
+            <View style={styles.menuIconContainer}>
+              <Ionicons name="menu-outline" size={30} />
+            </View>
+          </Pressable>
+          <TextInput
+            placeholder={department}
+            placeholderTextColor={"black"}
+            style={styles.textInput}
+          />
+          <Ionicons name="search" size={24} />
+        </View>
+        <View style={[styles.dropdown, { display: disp }]}>
+          <Pressable
+            style={styles.dropdownItem}
+            onPress={() => {
+              setDepartment("Agriculture, Land Reform and Rural Development"),
+                setDisp("none");
+            }}
+          >
+            <Text style={styles.dropdownText}>
+              Agriculture, Land Reform and Rural Development
+            </Text>
+          </Pressable>
+          <Pressable
+            style={styles.dropdownItem}
+            onPress={() => {
+              setDepartment("Basic Education"), setDisp("none");
+            }}
+          >
+            <Text style={styles.dropdownText}>Basic Education</Text>
+          </Pressable>
+          <Pressable
+            style={styles.dropdownItem}
+            onPress={() => {
+              setDepartment("Communications and Digital Technologies"),
+                setDisp("none");
+            }}
+          >
+            <Text style={styles.dropdownText}>
+              Communications and Digital Technologies
+            </Text>
+          </Pressable>
+          <Pressable
+            style={styles.dropdownItem}
+            onPress={() => {
+              setDepartment("Defense and Military Veterans"), setDisp("none");
+            }}
+          >
+            <Text style={styles.dropdownText}>
+              Defense and Military Veterans
+            </Text>
+          </Pressable>
+          <Pressable
+            style={styles.dropdownItem}
+            onPress={() => {
+              setDepartment("Health and Science"), setDisp("none");
+            }}
+          >
+            <Text style={styles.dropdownText}>Health and Science</Text>
+          </Pressable>
+          <Pressable
+            style={styles.dropdownItem}
+            onPress={() => {
+              setDepartment("Home Affairs"), setDisp("none");
+            }}
+          >
+            <Text style={styles.dropdownText}>Home Affairs</Text>
+          </Pressable>
+          <Pressable
+            style={styles.dropdownItem}
+            onPress={() => {
+              setDepartment("International Relations and Cooperation"),
+                setDisp("none");
+            }}
+          >
+            <Text style={styles.dropdownText}>
+              International Relations and Cooperation
+            </Text>
+          </Pressable>
+          <Pressable
+            style={styles.dropdownItem}
+            onPress={() => {
+              setDepartment("Justice and Constitutional Development"),
+                setDisp("none");
+            }}
+          >
+            <Text style={styles.dropdownText}>
+              Justice and Constitutional Development
+            </Text>
+          </Pressable>
+          <Pressable
+            style={styles.dropdownItem}
+            onPress={() => {
+              setDepartment("Public Works and Infrastructure"), setDisp("none");
+            }}
+          >
+            <Text style={styles.dropdownText}>
+              Public Works and Infrastructure
+            </Text>
+          </Pressable>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.departmentTitle}>Department of {department}</Text>
+          <View style={styles.card}>
+            <Text style={styles.cardText}>Projects</Text>
+          </View>
+          <View style={styles.card}>
+            <Text style={styles.cardText}>Budget Allocation</Text>
+          </View>
+          <View style={styles.card}>
+            <Text style={styles.cardText}>Success Rates</Text>
+          </View>
+        </View>
+        <View style={styles.buttonContainer}>
+          <Pressable style={styles.button}>
+            <Text style={styles.buttonText}>Explore Ministers</Text>
+          </Pressable>
+          <Pressable style={styles.button}>
+            <Text style={styles.buttonText}>Report Issues</Text>
+          </Pressable>
+        </View>
+        <View>
+          <Text style={styles.favouritesTitle}>Your favourites</Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
 }
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "white",
+    paddingHorizontal: 18,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+  },
+  welcomeText: {
+    fontSize: 24,
+    fontFamily: "Poppins-Bold",
+    marginVertical: 16,
+  },
+  searchContainer: {
+    margin: 8,
+    borderRadius: 20,
+    padding: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f1f1f1",
+  },
+  menuIconContainer: {
+    marginRight: 10,
+  },
+  icon: {
+    width: 30,
+    height: 30,
+  },
+  textInput: {
+    width: 250,
+    height: 30,
+    marginRight: 15,
+    fontFamily: "Poppins-Regular",
+  },
+  dropdown: {
+    backgroundColor: "rgba(0,0,0,0.1)",
+    padding: 16,
+    borderRadius: 10,
+  },
+  dropdownItem: {
+    marginBottom: 10,
+  },
+  dropdownText: {
+    fontFamily: "Poppins-Regular",
+  },
+  infoContainer: {
+    margin: 8,
+  },
+  departmentTitle: {
+    fontFamily: "Poppins-Bold",
+    marginBottom: 20,
+  },
+  card: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 5,
+    height: 120,
+    marginBottom: 12,
+    backgroundColor: "white",
+    padding: 16,
+    borderRadius: 20,
+  },
+  cardText: {
+    fontFamily: "Poppins-Regular",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    marginTop: 20,
+    justifyContent: "center",
+    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    padding: 8,
+    borderRadius: 10,
+    marginHorizontal: 10,
+  },
+  buttonText: {
+    color: "#B7C42E",
+    fontSize: 20,
+    fontFamily: "Poppins-Bold",
+  },
+  favouritesTitle: {
+    fontFamily: "Poppins-Bold",
+    marginTop: 20,
+  },
+});

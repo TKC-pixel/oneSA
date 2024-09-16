@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { CheckBox } from '@rneui/themed';
 import {
   View,
   Text,
@@ -9,17 +8,17 @@ import {
   Dimensions,
   Pressable,
   Image,
-
 } from "react-native";
+import { CheckBox } from "@rneui/themed";
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
   onAuthStateChanged,
 } from "@firebase/auth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width } = Dimensions.get("window");
 
@@ -34,7 +33,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const Signup = ({ navigation }) => {
+
+const Signup = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -42,16 +42,17 @@ const Signup = ({ navigation }) => {
   const [surname, setSurname] = useState("");
   const [cPassword, setCPassword] = useState("");
   const [user, setUser] = useState(null);
-  const [isLogin, setIsLogin] = useState(true);
   const [checked, setChecked] = useState(false);
+  const navigation = useNavigation();
+
   const toggleCheckbox = () => setChecked(!checked);
-  
+
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       setUser(user);
     });
     return () => unsub();
-  }, [auth]);
+  }, []);
 
   const handleAuthentication = async () => {
     if (
@@ -64,7 +65,9 @@ const Signup = ({ navigation }) => {
     ) {
       try {
         await createUserWithEmailAndPassword(auth, email, password);
+        await AsyncStorage.setItem("user", JSON.stringify({ email }));
         alert("Registration successful");
+        navigation.navigate("Home");
       } catch (error) {
         alert("Registration failed! Try again.");
       }
@@ -72,56 +75,60 @@ const Signup = ({ navigation }) => {
       alert("Please fill all fields and make sure passwords match.");
     }
   };
+
   return (
-    <SafeAreaView style={{backgroundColor: 'white', flex: 1}}>
-        <Image source={require('../assets/images/logo.jpg')} style={styles.logo}/>
-        <View style={{alignItems: 'center', marginBottom: '5%', marginTop: '5%'}}>
-          <Text style={{fontWeight: 'bold', fontSize: '25%'}}>Welcome to OneSA</Text>
-          <Text style={{width: '80%', fontSize: '20%', textAlign: 'center'}}>Sign up or log in now to make your voice heard and drive real change.</Text>
-        </View>
-      <View style={{textAlign: 'centre',alignItems: 'center'}}>
+    <SafeAreaView style={styles.container}>
+      <Image
+        source={require("../assets/images/logo.jpg")}
+        style={styles.logo}
+      />
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Welcome to OneSA</Text>
+        <Text style={styles.headerSubtitle}>
+          Sign up or log in now to make your voice heard and drive real change.
+        </Text>
+      </View>
+      <View style={styles.formContainer}>
         <Text style={styles.title}>Sign up</Text>
-        <View style={{ justifyContent: "space-between" }}>
-          <TextInput
-            placeholder="Enter name"
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-          />
-          <TextInput
-            placeholder="Enter surname"
-            style={styles.input}
-            value={surname}
-            onChangeText={setSurname}
-          />
-          <TextInput
-            placeholder="Enter phone"
-            style={styles.input}
-            value={phone}
-            onChangeText={setPhone}
-          />
-          <TextInput
-            placeholder="Enter email"
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-          />
-          <TextInput
-            placeholder="Create password"
-            secureTextEntry={true}
-            style={styles.input}
-            value={password}
-            onChangeText={setPassword}
-          />
-          <TextInput
-            placeholder="Confirm password"
-            secureTextEntry={true}
-            style={styles.input}
-            value={cPassword}
-            onChangeText={setCPassword}
-          />
-        </View>
-        <View style={{flexDirection: 'row'}}>
+        <TextInput
+          placeholder="Enter name"
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+        />
+        <TextInput
+          placeholder="Enter surname"
+          style={styles.input}
+          value={surname}
+          onChangeText={setSurname}
+        />
+        <TextInput
+          placeholder="Enter phone"
+          style={styles.input}
+          value={phone}
+          onChangeText={setPhone}
+        />
+        <TextInput
+          placeholder="Enter email"
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          placeholder="Create password"
+          secureTextEntry={true}
+          style={styles.input}
+          value={password}
+          onChangeText={setPassword}
+        />
+        <TextInput
+          placeholder="Confirm password"
+          secureTextEntry={true}
+          style={styles.input}
+          value={cPassword}
+          onChangeText={setCPassword}
+        />
+        <View style={styles.checkboxContainer}>
           <CheckBox
             checked={checked}
             onPress={toggleCheckbox}
@@ -130,21 +137,21 @@ const Signup = ({ navigation }) => {
             uncheckedIcon="checkbox-blank-outline"
             checkedColor="#B7C42E"
           />
-          <Text style={{width: '60%',marginTop: '3%'}}>I agree to the Terms & Conditions and Privacy Policy.</Text>
+          <Text style={styles.checkboxText}>
+            I agree to the Terms & Conditions and Privacy Policy.
+          </Text>
         </View>
-        <View style={styles.buttonContainer}>
-          <Pressable style={styles.loginButton} onPress={() => {if (checked === true) {handleAuthentication();}else{alert("Please fill in all fields and accept T&Cs")}}}>
-            <Text style={styles.loginText}>Sign Up</Text>
-          </Pressable>
-          <TouchableOpacity
-            style={styles.signupButton}
-            onPress={() => navigation.navigate("Home")}
-          >
-            <Text style={styles.signupText}>
-              Already have an account? Sign in
-            </Text>
-          </TouchableOpacity>
-        </View>
+        <Pressable style={styles.loginButton} onPress={handleAuthentication}>
+          <Text style={styles.loginText}>Sign Up</Text>
+        </Pressable>
+        <TouchableOpacity
+          style={styles.signupButton}
+          onPress={() => navigation.navigate("Home")}
+        >
+          <Text style={styles.signupText}>
+            Already have an account? Sign in
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -153,10 +160,30 @@ const Signup = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     backgroundColor: "white",
     paddingHorizontal: 20,
+  },
+  logo: {
+    height: "20%",
+    width: "100%",
+    alignSelf: "center",
+  },
+  header: {
+    alignItems: "center",
+    marginBottom: "5%",
+    marginTop: "5%",
+  },
+  headerTitle: {
+    fontWeight: "bold",
+    fontSize: 25,
+  },
+  headerSubtitle: {
+    width: "80%",
+    fontSize: 20,
+    textAlign: "center",
+  },
+  formContainer: {
+    alignItems: "center",
   },
   title: {
     fontSize: 24,
@@ -171,6 +198,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 15,
+  },
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  checkboxText: {
+    width: "60%",
+    marginTop: 3,
   },
   loginButton: {
     width: width - 40,
@@ -191,11 +227,6 @@ const styles = StyleSheet.create({
   signupText: {
     color: "#B7C42E",
     fontSize: 16,
-  },
-  logo:{
-    height: '20%',
-    width: '100%',
-    alignSelf: 'center'
   },
 });
 
