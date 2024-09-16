@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { CheckBox } from '@rneui/themed';
 import {
   View,
   Text,
@@ -7,6 +8,8 @@ import {
   StyleSheet,
   Dimensions,
   Pressable,
+  Image,
+
 } from "react-native";
 import { initializeApp } from "firebase/app";
 import {
@@ -40,7 +43,9 @@ const Signup = ({ navigation }) => {
   const [cPassword, setCPassword] = useState("");
   const [user, setUser] = useState(null);
   const [isLogin, setIsLogin] = useState(true);
-
+  const [checked, setChecked] = useState(false);
+  const toggleCheckbox = () => setChecked(!checked);
+  
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       setUser(user);
@@ -68,10 +73,15 @@ const Signup = ({ navigation }) => {
     }
   };
   return (
-    <SafeAreaView>
-      <View>
+    <SafeAreaView style={{backgroundColor: 'white', flex: 1}}>
+        <Image source={require('../assets/images/logo.jpg')} style={styles.logo}/>
+        <View style={{alignItems: 'center', marginBottom: '5%', marginTop: '5%'}}>
+          <Text style={{fontWeight: 'bold', fontSize: '25%'}}>Welcome to OneSA</Text>
+          <Text style={{width: '80%', fontSize: '20%', textAlign: 'center'}}>Sign up or log in now to make your voice heard and drive real change.</Text>
+        </View>
+      <View style={{textAlign: 'centre',alignItems: 'center'}}>
         <Text style={styles.title}>Sign up</Text>
-        <View style={{ justifyContent: "space-between", marginBottom: "20%" }}>
+        <View style={{ justifyContent: "space-between" }}>
           <TextInput
             placeholder="Enter name"
             style={styles.input}
@@ -111,8 +121,19 @@ const Signup = ({ navigation }) => {
             onChangeText={setCPassword}
           />
         </View>
+        <View style={{flexDirection: 'row'}}>
+          <CheckBox
+            checked={checked}
+            onPress={toggleCheckbox}
+            iconType="material-community"
+            checkedIcon="checkbox-marked"
+            uncheckedIcon="checkbox-blank-outline"
+            checkedColor="#B7C42E"
+          />
+          <Text style={{width: '60%',marginTop: '3%'}}>I agree to the Terms & Conditions and Privacy Policy.</Text>
+        </View>
         <View style={styles.buttonContainer}>
-          <Pressable style={styles.loginButton} onPress={handleAuthentication}>
+          <Pressable style={styles.loginButton} onPress={() => {if (checked === true) {handleAuthentication();}else{alert("Please fill in all fields and accept T&Cs")}}}>
             <Text style={styles.loginText}>Sign Up</Text>
           </Pressable>
           <TouchableOpacity
@@ -170,6 +191,11 @@ const styles = StyleSheet.create({
   signupText: {
     color: "#B7C42E",
     fontSize: 16,
+  },
+  logo:{
+    height: '20%',
+    width: '100%',
+    alignSelf: 'center'
   },
 });
 

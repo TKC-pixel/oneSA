@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  Image,
+  Pressable,
 } from "react-native";
 import { initializeApp } from "firebase/app";
 import {
@@ -15,6 +17,7 @@ import {
   onAuthStateChanged,
 } from "@firebase/auth";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
@@ -47,61 +50,71 @@ const LoginScreen = ({ navigation }) => {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
         alert("Login successful");
-        navigation.navigate("Restaurants");
+        navigation.navigate("Welcome");
       }
     } catch (error) {
       alert("Authentication failed");
     }
   };
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        autoCorrect={false}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        autoCapitalize="none"
-        autoCorrect={false}
-      />
-      <TouchableOpacity
-        style={styles.loginButton}
-        onPress={handleAuthentication}
-      >
-        <Text style={styles.loginText}>Login</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.signupButton}
-        onPress={() => navigation.navigate("Signup")}
-      >
-        <Text style={styles.signupText}>Don't have an account? Sign up</Text>
-      </TouchableOpacity>
-    </View>
+    <SafeAreaView style={{backgroundColor: 'white', flex: 1}}>
+        <Image source={require('../assets/images/logo.jpg')} style={styles.logo}/>
+        <View style={{alignItems: 'center', marginBottom: '5%', marginTop: '5%'}}>
+          <Text style={{fontWeight: 'bold', fontSize: '25%'}}>Welcome to OneSA</Text>
+          <Text style={{width: '80%', fontSize: '20%', textAlign: 'center'}}>Sign up or log in now to make your voice heard and drive real change.</Text>
+        </View>
+        <View style={styles.container}> 
+          <Text style={styles.title}>Login</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <Pressable>
+            <Text style={styles.forgotPassword}>Forgot Password?</Text>
+          </Pressable>
+          <TouchableOpacity
+            style={styles.loginButton}
+            onPress={handleAuthentication}
+          >
+            <Text style={styles.loginText}>Login</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.signupButton}
+            onPress={() => navigation.navigate("Signup")}
+          >
+            <Text style={styles.signupText}>Don't have an account? Sign up</Text>
+          </TouchableOpacity>
+        </View>
+  </SafeAreaView>
+    
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    padding: '5%',
+    alignItems: 'center',
     backgroundColor: "white",
-    paddingHorizontal: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 40,
+    textAlign: "center",
   },
   input: {
     width: width - 40,
@@ -110,7 +123,7 @@ const styles = StyleSheet.create({
     borderColor: "#ccc",
     borderWidth: 1,
     borderRadius: 5,
-    marginBottom: 15,
+    marginBottom: 35,
   },
   loginButton: {
     width: width - 40,
@@ -118,7 +131,8 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 20,
+    marginTop: 20
   },
   loginText: {
     color: "white",
@@ -132,6 +146,16 @@ const styles = StyleSheet.create({
     color: "#B7C42E",
     fontSize: 16,
   },
+  logo:{
+    height: '20%',
+    width: '100%',
+    alignSelf: 'center'
+  },
+  forgotPassword:{
+    marginRight: '60%',
+    marginBottom: '5%',
+    textDecorationLine: 'underline',
+  }
 });
 
 export default LoginScreen;
