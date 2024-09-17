@@ -9,6 +9,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import SignUp from "./components/SignUp";
 import Welcome from "./screens/Welcome";
+import Forgot from './screens/Forgot';
 
 const Stack = createNativeStackNavigator();
 
@@ -71,6 +72,11 @@ export default function App() {
           name="Welcome"
           options={{ headerShown: false }}
           component={Welcome}
+        />
+        <Stack.Screen
+          name="Forgot"
+          options={{ headerShown: false }}
+          component={Forgot}
         />
       </Stack.Navigator>
     </NavigationContainer>

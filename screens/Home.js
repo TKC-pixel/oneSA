@@ -108,7 +108,7 @@ const LoginScreen = ({ navigation }) => {
           autoCapitalize="none"
           autoCorrect={false}
         />
-        <Pressable>
+        <Pressable onPress={()=> navigation.navigate('Forgot')}>
           <Text style={styles.forgotPassword}>Forgot Password?</Text>
         </Pressable>
         <TouchableOpacity
