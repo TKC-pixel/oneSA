@@ -16,6 +16,7 @@ import {
   onAuthStateChanged,
 } from "@firebase/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 
 const { width } = Dimensions.get("window");
 
@@ -35,6 +36,14 @@ const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const [seePassword, setSeePassword] = useState(false);
+  const [secureText, setSecureText] = useState(true);
+  const togglePassword = () => setSeePassword(!seePassword);
+  const passwordVisibility = () => {
+    togglePassword();
+    setSecureText(!secureText);
+  };
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
@@ -99,16 +108,24 @@ const LoginScreen = ({ navigation }) => {
           autoCapitalize="none"
           autoCorrect={false}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
-        <Pressable onPress={()=> navigation.navigate('Forgot')}>
+        <View style={styles.PasswordEntryBox}>
+          <TextInput
+            style={styles.passwordInput}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={secureText}
+            autoCapitalize="none"
+            autoComplete={false}
+            autoCorrect={false}
+          />
+          <Ionicons
+            size={20}
+            name={seePassword ? "eye-off-outline" : "eye-outline"}
+            onPress={passwordVisibility}
+          />
+        </View>
+        <Pressable onPress={() => navigation.navigate("Forgot")}>
           <Text style={styles.forgotPassword}>Forgot Password?</Text>
         </Pressable>
         <TouchableOpacity
@@ -183,6 +200,24 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
     marginBottom: 10,
+  },
+  PasswordEntryBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 15,
+  },
+  eyeIcon: {
+    marginLeft: 10,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingRight: 15,
   },
 });
 
