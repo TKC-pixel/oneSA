@@ -9,6 +9,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import SignUp from "./components/SignUp";
 import Welcome from "./screens/Welcome";
+import ReportScreen from "./screens/ReportScreen";
+import ReportInfo from "./screens/ReportInfo";
 
 const Stack = createNativeStackNavigator();
 
@@ -71,6 +73,16 @@ export default function App() {
           name="Welcome"
           options={{ headerShown: false }}
           component={Welcome}
+        />
+        <Stack.Screen
+          name="Report"
+          options={{ headerShown: false }}
+          component={ReportScreen}
+        />
+        <Stack.Screen
+          name="ReportInfo"
+          options={{ headerShown: false }}
+          component={ReportInfo}
         />
       </Stack.Navigator>
     </NavigationContainer>

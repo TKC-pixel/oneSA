@@ -17,7 +17,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 const favicon = require("../assets/images/Favicon.png");
 
-export default function Welcome() {
+export default function Welcome({navigation}) {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [department, setDepartment] = useState("Health and Science");
   const [disp, setDisp] = useState("none");
@@ -179,7 +179,7 @@ export default function Welcome() {
           <Pressable style={styles.button}>
             <Text style={styles.buttonText}>Explore Ministers</Text>
           </Pressable>
-          <Pressable style={styles.button}>
+          <Pressable style={styles.button} onPress={() => navigation.navigate("Report")}>
             <Text style={styles.buttonText}>Report Issues</Text>
           </Pressable>
         </View>
