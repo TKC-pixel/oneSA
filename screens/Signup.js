@@ -8,6 +8,7 @@ import {
   Dimensions,
   Pressable,
   Image,
+  ScrollView,
 } from "react-native";
 import { CheckBox } from "@rneui/themed";
 import { initializeApp } from "firebase/app";
@@ -16,7 +17,6 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
 } from "@firebase/auth";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
@@ -86,17 +86,7 @@ const Signup = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Image
-        source={require("../assets/images/logo.jpg")}
-        style={styles.logo}
-      />
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Welcome to OneSA</Text>
-        <Text style={styles.headerSubtitle}>
-          Sign up or log in now to make your voice heard and drive real change.
-        </Text>
-      </View>
+    <View style={styles.container}>
       <View style={styles.formContainer}>
         <Text style={styles.title}>Sign up</Text>
         <TextInput
@@ -176,7 +166,7 @@ const Signup = () => {
           </Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

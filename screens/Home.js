@@ -18,6 +18,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import Constants from 'expo-constants';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width } = Dimensions.get("window");
 
@@ -43,6 +44,14 @@ const LoginScreen = ({ navigation }) => {
   const passwordVisibility = () => {
     togglePassword();
     setSecureText(!secureText);
+  };
+
+  const clearOnboarding = async () => {
+    try {
+      await AsyncStorage.removeItem("@viewedOnboarding");
+    } catch (error) {
+      console.log("Error @Onboarding: ", error);
+    }
   };
 
   useEffect(() => {
@@ -82,16 +91,6 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <Image
-        source={require("../assets/images/logo.jpg")}
-        style={styles.logo}
-      />
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Welcome to OneSA</Text>
-        <Text style={styles.headerSubtitle}>
-          Sign up or log in now to make your voice heard and drive real change.
-        </Text>
-      </View>
       <View style={styles.container}>
         <Text style={styles.title}>Login</Text>
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
@@ -149,6 +148,9 @@ const LoginScreen = ({ navigation }) => {
           </Pressable>
         </View>
       </View>
+      <TouchableOpacity onPress={clearOnboarding}>
+      <Text style={styles.buttonText}>Clear Onboarding</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
