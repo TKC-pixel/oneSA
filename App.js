@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -11,7 +10,7 @@ import SignUp from "./components/SignUp";
 import Welcome from "./screens/Welcome";
 import ReportScreen from "./screens/ReportScreen";
 import ReportInfo from "./screens/ReportInfo";
-import Forgot from './screens/Forgot';
+import Forgot from "./screens/Forgot";
 
 const Stack = createNativeStackNavigator();
 

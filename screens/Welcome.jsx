@@ -7,14 +7,17 @@ import {
   ActivityIndicator,
   useWindowDimensions,
   TextInput,
+  BackHandler,
+  Alert,
   Pressable,
   SafeAreaView,
 } from "react-native";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import * as Font from "expo-font";
 import NavBar from "../components/NavBar";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { auth } from "./Home";
+import { useFocusEffect } from "@react-navigation/native";
 
 const favicon = require("../assets/images/Favicon.png");
 
@@ -23,6 +26,30 @@ export default function Welcome({navigation}) {
   const [department, setDepartment] = useState("Health and Science");
   const [disp, setDisp] = useState("none");
   const user = auth.currentUser
+
+  const handleBackPress = () => {
+    Alert.alert("Exit", "Are you sure you want to exit?", [
+      {
+        text: "Cancel",
+        onPress: () => null,
+        style: "cancel",
+      },
+      {
+        text: "Exit",
+        onPress: () => BackHandler.exitApp(),
+      },
+    ]);
+    return true;
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      BackHandler.addEventListener("hardwareBackPress", handleBackPress);
+      return()=>{
+        BackHandler.removeEventListener("hardwareBackPress", handleBackPress);
+      }
+    })
+  )
 
   console.log(user)
 
