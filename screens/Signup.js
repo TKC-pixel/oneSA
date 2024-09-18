@@ -19,6 +19,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Ionicons } from "@expo/vector-icons";
 
 const { width } = Dimensions.get("window");
 
@@ -44,8 +45,11 @@ const Signup = () => {
   const [user, setUser] = useState(null);
   const [checked, setChecked] = useState(false);
   const navigation = useNavigation();
+  const [seePassword, setSeePassword] = useState(false);
+  const [secureText, setSecureText] = useState(true);
 
   const toggleCheckbox = () => setChecked(!checked);
+  const togglePassword = () => setSeePassword(!seePassword);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
@@ -53,6 +57,11 @@ const Signup = () => {
     });
     return () => unsub();
   }, []);
+
+  const passwordVisibility = () => {
+    togglePassword();
+    setSecureText(!secureText);
+  };
 
   const handleAuthentication = async () => {
     if (
@@ -114,20 +123,34 @@ const Signup = () => {
           value={email}
           onChangeText={setEmail}
         />
-        <TextInput
-          placeholder="Create password"
-          secureTextEntry={true}
-          style={styles.input}
-          value={password}
-          onChangeText={setPassword}
-        />
-        <TextInput
-          placeholder="Confirm password"
-          secureTextEntry={true}
-          style={styles.input}
-          value={cPassword}
-          onChangeText={setCPassword}
-        />
+        <View style={styles.PasswordEntryBox}>
+          <TextInput
+            placeholder="Create password"
+            secureTextEntry={secureText}
+            style={styles.passwordInput}
+            value={password}
+            onChangeText={setPassword}
+          />
+          <Ionicons
+            size={20}
+            name={seePassword ? "eye-off-outline" : "eye-outline"}
+            onPress={passwordVisibility}
+          />
+        </View>
+        <View style={styles.PasswordEntryBox}>
+          <TextInput
+            placeholder="Confirm password"
+            secureTextEntry={secureText}
+            style={styles.passwordInput}
+            value={cPassword}
+            onChangeText={setCPassword}
+          />
+          <Ionicons
+            size={20}
+            name={seePassword ? "eye-off-outline" : "eye-outline"}
+            onPress={passwordVisibility}
+          />
+        </View>
         <View style={styles.checkboxContainer}>
           <CheckBox
             checked={checked}
@@ -227,6 +250,24 @@ const styles = StyleSheet.create({
   signupText: {
     color: "#B7C42E",
     fontSize: 16,
+  },
+  PasswordEntryBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 15,
+  },
+  eyeIcon: {
+    marginLeft: 10,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingRight: 15,
   },
 });
 

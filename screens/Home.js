@@ -29,7 +29,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+export const auth = getAuth(app);
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
