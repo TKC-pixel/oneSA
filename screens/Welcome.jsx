@@ -14,6 +14,7 @@ import { useState, useEffect } from "react";
 import * as Font from "expo-font";
 import NavBar from "../components/NavBar";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { auth } from "./Home";
 
 const favicon = require("../assets/images/Favicon.png");
 
@@ -21,6 +22,9 @@ export default function Welcome() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [department, setDepartment] = useState("Health and Science");
   const [disp, setDisp] = useState("none");
+  const user = auth.currentUser
+
+  console.log(user)
 
   const loadFonts = async () => {
     await Font.loadAsync({
@@ -59,7 +63,7 @@ export default function Welcome() {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView>
         <NavBar />
-        <Text style={styles.welcomeText}>Welcome ..User..!</Text>
+        <Text style={styles.welcomeText}>Welcome {user.phoneNumber}</Text>
         <View style={styles.searchContainer}>
           <Pressable onPress={toggleDisplay}>
             <View style={styles.menuIconContainer}>
