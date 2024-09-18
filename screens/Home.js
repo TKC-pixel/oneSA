@@ -140,6 +140,23 @@ const LoginScreen = ({ navigation }) => {
         >
           <Text style={styles.signupText}>Don't have an account? Sign up</Text>
         </TouchableOpacity>
+        <View style={{marginTop: '5%'}}>
+          <Pressable style={{marginBottom: '5%'}}>
+            <Text style={styles.signupText}>
+              Continue with Apple
+            </Text>
+          </Pressable>
+          <Pressable style={{marginBottom: '5%'}}>
+            <Text style={styles.signupText}>
+              Continue with Google
+            </Text>
+          </Pressable>
+          <Pressable>
+            <Text style={styles.signupText}>
+              Continue with Phone
+            </Text>
+          </Pressable>
+        </View>
       </View>
     </SafeAreaView>
   );
