@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
         backgroundColor: '#fff',
+        paddingHorizontal: 18
     },
     heading: {
         marginLeft: 10,
