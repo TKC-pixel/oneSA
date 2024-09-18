@@ -17,6 +17,7 @@ import {
 } from "@firebase/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import Constants from 'expo-constants';
 
 const { width } = Dimensions.get("window");
 
@@ -28,7 +29,6 @@ const firebaseConfig = {
   messagingSenderId: process.env.MESSAGING_SENDER_ID,
   appId: process.env.APP_ID,
 };
-
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 
@@ -81,18 +81,14 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={{ backgroundColor: "white", flex: 1 }}>
+    <SafeAreaView style={styles.safeArea}>
       <Image
         source={require("../assets/images/logo.jpg")}
         style={styles.logo}
       />
-      <View
-        style={{ alignItems: "center", marginBottom: "5%", marginTop: "5%" }}
-      >
-        <Text style={{ fontWeight: "bold", fontSize: 25 }}>
-          Welcome to OneSA
-        </Text>
-        <Text style={{ width: "80%", fontSize: 20, textAlign: "center" }}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Welcome to OneSA</Text>
+        <Text style={styles.headerSubtitle}>
           Sign up or log in now to make your voice heard and drive real change.
         </Text>
       </View>
@@ -116,13 +112,14 @@ const LoginScreen = ({ navigation }) => {
             onChangeText={setPassword}
             secureTextEntry={secureText}
             autoCapitalize="none"
-            autoComplete={false}
+            autoComplete="off"
             autoCorrect={false}
           />
           <Ionicons
             size={20}
             name={seePassword ? "eye-off-outline" : "eye-outline"}
             onPress={passwordVisibility}
+            style={styles.eyeIcon}
           />
         </View>
         <Pressable onPress={() => navigation.navigate("Forgot")}>
@@ -140,21 +137,15 @@ const LoginScreen = ({ navigation }) => {
         >
           <Text style={styles.signupText}>Don't have an account? Sign up</Text>
         </TouchableOpacity>
-        <View style={{marginTop: '5%'}}>
-          <Pressable style={{marginBottom: '5%'}}>
-            <Text style={styles.signupText}>
-              Continue with Apple
-            </Text>
+        <View style={styles.socialButtonsContainer}>
+          <Pressable style={styles.socialButton}>
+            <Text style={styles.socialButtonText}>Continue with Apple</Text>
           </Pressable>
-          <Pressable style={{marginBottom: '5%'}}>
-            <Text style={styles.signupText}>
-              Continue with Google
-            </Text>
+          <Pressable style={styles.socialButton}>
+            <Text style={styles.socialButtonText}>Continue with Google</Text>
           </Pressable>
-          <Pressable>
-            <Text style={styles.signupText}>
-              Continue with Phone
-            </Text>
+          <Pressable style={styles.socialButton}>
+            <Text style={styles.socialButtonText}>Continue with Phone</Text>
           </Pressable>
         </View>
       </View>
@@ -163,8 +154,31 @@ const LoginScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: "white",
+    flex: 1,
+  },
+  logo: {
+    height: 120,
+    width: "100%",
+    alignSelf: "center",
+  },
+  header: {
+    alignItems: "center",
+    marginBottom: 20, 
+    marginTop: 20, 
+  },
+  headerTitle: {
+    fontWeight: "bold",
+    fontSize: 25,
+  },
+  headerSubtitle: {
+    width: width - 40,
+    fontSize: 20,
+    textAlign: "center",
+  },
   container: {
-    padding: "5%",
+    padding: 20,
     alignItems: "center",
     backgroundColor: "white",
   },
@@ -204,14 +218,9 @@ const styles = StyleSheet.create({
     color: "#B7C42E",
     fontSize: 16,
   },
-  logo: {
-    height: "20%",
-    width: "100%",
-    alignSelf: "center",
-  },
   forgotPassword: {
-    marginRight: "60%",
-    marginBottom: "5%",
+    marginRight: width - 220, 
+    marginBottom: 20,
     textDecorationLine: "underline",
   },
   errorText: {
@@ -221,7 +230,7 @@ const styles = StyleSheet.create({
   PasswordEntryBox: {
     flexDirection: "row",
     alignItems: "center",
-    width: "100%",
+    width: width - 40, 
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderColor: "#ccc",
@@ -229,12 +238,22 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 15,
   },
-  eyeIcon: {
-    marginLeft: 10,
-  },
   passwordInput: {
     flex: 1,
     paddingRight: 15,
+  },
+  eyeIcon: {
+    marginLeft: 10,
+  },
+  socialButtonsContainer: {
+    marginTop: 20, // Adjusted from 5%
+  },
+  socialButton: {
+    marginBottom: 15, // Adjusted from 5%
+  },
+  socialButtonText: {
+    color: "#B7C42E",
+    fontSize: 16,
   },
 });
 
