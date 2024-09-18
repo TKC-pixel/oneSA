@@ -11,6 +11,7 @@ import SignUp from "./components/SignUp";
 import Welcome from "./screens/Welcome";
 import ReportScreen from "./screens/ReportScreen";
 import ReportInfo from "./screens/ReportInfo";
+import Forgot from './screens/Forgot';
 
 const Stack = createNativeStackNavigator();
 
@@ -83,6 +84,11 @@ export default function App() {
           name="ReportInfo"
           options={{ headerShown: false }}
           component={ReportInfo}
+        />
+        <Stack.Screen
+          name="Forgot"
+          options={{ headerShown: false }}
+          component={Forgot}
         />
       </Stack.Navigator>
     </NavigationContainer>

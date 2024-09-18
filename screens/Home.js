@@ -16,6 +16,7 @@ import {
   onAuthStateChanged,
 } from "@firebase/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
 
 const { width } = Dimensions.get("window");
 
@@ -29,12 +30,20 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+export const auth = getAuth(app);
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  const [seePassword, setSeePassword] = useState(false);
+  const [secureText, setSecureText] = useState(true);
+  const togglePassword = () => setSeePassword(!seePassword);
+  const passwordVisibility = () => {
+    togglePassword();
+    setSecureText(!secureText);
+  };
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
@@ -99,16 +108,24 @@ const LoginScreen = ({ navigation }) => {
           autoCapitalize="none"
           autoCorrect={false}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
-        <Pressable>
+        <View style={styles.PasswordEntryBox}>
+          <TextInput
+            style={styles.passwordInput}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={secureText}
+            autoCapitalize="none"
+            autoComplete={false}
+            autoCorrect={false}
+          />
+          <Ionicons
+            size={20}
+            name={seePassword ? "eye-off-outline" : "eye-outline"}
+            onPress={passwordVisibility}
+          />
+        </View>
+        <Pressable onPress={() => navigation.navigate("Forgot")}>
           <Text style={styles.forgotPassword}>Forgot Password?</Text>
         </Pressable>
         <TouchableOpacity
@@ -123,6 +140,23 @@ const LoginScreen = ({ navigation }) => {
         >
           <Text style={styles.signupText}>Don't have an account? Sign up</Text>
         </TouchableOpacity>
+        <View style={{marginTop: '5%'}}>
+          <Pressable style={{marginBottom: '5%'}}>
+            <Text style={styles.signupText}>
+              Continue with Apple
+            </Text>
+          </Pressable>
+          <Pressable style={{marginBottom: '5%'}}>
+            <Text style={styles.signupText}>
+              Continue with Google
+            </Text>
+          </Pressable>
+          <Pressable>
+            <Text style={styles.signupText}>
+              Continue with Phone
+            </Text>
+          </Pressable>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -183,6 +217,24 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
     marginBottom: 10,
+  },
+  PasswordEntryBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 15,
+  },
+  eyeIcon: {
+    marginLeft: 10,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingRight: 15,
   },
 });
 

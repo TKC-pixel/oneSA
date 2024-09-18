@@ -26,7 +26,7 @@ export default function SignUp({ navigation }) {
       >
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={clearOnboarding} style={styles.button}>
+      <TouchableOpacity onPress={() => navigation.navigate("Onboarding")} style={styles.button}>
         <Text style={styles.buttonText}>Clear Onboarding</Text>
       </TouchableOpacity>
     </View>
