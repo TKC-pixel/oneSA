@@ -9,6 +9,7 @@ import {
   TextInput,
   BackHandler,
   Alert,
+  TouchableOpacity,
   Pressable,
   SafeAreaView,
 } from "react-native";
@@ -21,11 +22,11 @@ import { useFocusEffect } from "@react-navigation/native";
 
 const favicon = require("../assets/images/Favicon.png");
 
-export default function Welcome({navigation}) {
+export default function Welcome({ navigation }) {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [department, setDepartment] = useState("Health and Science");
   const [disp, setDisp] = useState("none");
-  const user = auth.currentUser
+  const user = auth.currentUser;
 
   const handleBackPress = () => {
     Alert.alert("Exit", "Are you sure you want to exit?", [
@@ -45,13 +46,13 @@ export default function Welcome({navigation}) {
   useFocusEffect(
     React.useCallback(() => {
       BackHandler.addEventListener("hardwareBackPress", handleBackPress);
-      return()=>{
+      return () => {
         BackHandler.removeEventListener("hardwareBackPress", handleBackPress);
-      }
+      };
     })
-  )
+  );
 
-  console.log(user)
+  console.log(user);
 
   const loadFonts = async () => {
     await Font.loadAsync({
@@ -196,21 +197,24 @@ export default function Welcome({navigation}) {
         </View>
         <View style={styles.infoContainer}>
           <Text style={styles.departmentTitle}>Department of {department}</Text>
-          <View style={styles.card}>
+          <TouchableOpacity style={styles.card}>
             <Text style={styles.cardText}>Projects</Text>
-          </View>
-          <View style={styles.card}>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.card}>
             <Text style={styles.cardText}>Budget Allocation</Text>
-          </View>
-          <View style={styles.card}>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.card}>
             <Text style={styles.cardText}>Success Rates</Text>
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={styles.buttonContainer}>
           <Pressable style={styles.button}>
             <Text style={styles.buttonText}>Explore Ministers</Text>
           </Pressable>
-          <Pressable style={styles.button} onPress={() => navigation.navigate("Report")}>
+          <Pressable
+            style={styles.button}
+            onPress={() => navigation.navigate("Report")}
+          >
             <Text style={styles.buttonText}>Report Issues</Text>
           </Pressable>
         </View>
