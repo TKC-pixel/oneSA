@@ -7,8 +7,6 @@ import {
   StyleSheet,
   Dimensions,
   Pressable,
-  Image,
-  ScrollView,
 } from "react-native";
 import { CheckBox } from "@rneui/themed";
 import { initializeApp } from "firebase/app";
@@ -157,14 +155,14 @@ const Signup = () => {
         <Pressable style={styles.loginButton} onPress={handleAuthentication}>
           <Text style={styles.loginText}>Sign Up</Text>
         </Pressable>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.signupButton}
           onPress={() => navigation.navigate("Home")}
         >
           <Text style={styles.signupText}>
             Already have an account? Sign in
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );
