@@ -17,7 +17,7 @@ import React, { useState, useEffect } from "react";
 import * as Font from "expo-font";
 import NavBar from "../components/NavBar";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { auth } from "./Home";
+import { auth } from "../components/LoginForm";
 import { useFocusEffect } from "@react-navigation/native";
 
 const favicon = require("../assets/images/Favicon.png");

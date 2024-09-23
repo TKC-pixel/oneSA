@@ -58,6 +58,7 @@ const LoginOrSignUp = () => {
         </View>
       </View>
       <Tab.Navigator
+      style={styles.tabNavigator}
         screenOptions={{
           tabBarIndicatorStyle: { backgroundColor: "#B7C42E" }, // Color of the indicator line
         }}
@@ -75,6 +76,9 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     paddingHorizontal: 20,
   },
+  tabNavigator:{
+    marginTop: 20
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
@@ -84,22 +88,23 @@ const styles = StyleSheet.create({
     height: 77,
     width: 232,
     alignSelf: "center",
-    padding: 15,
+    marginTop: 15
   },
   header: {
     alignItems: "center",
     marginBottom: "5%",
   },
   headerTitle: {
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-Regular",
     fontSize: 25,
     marginBottom: 10,
   },
   headerSubtitle: {
     fontFamily: "Poppins-Regular",
-    width: "80%",
-    fontSize: 20,
+    width: 250,
+    fontSize: 16,
     textAlign: "center",
+    color: "#696969"
   },
   LoginOrSignUp: {
     height: 170,
