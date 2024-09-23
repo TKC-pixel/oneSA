@@ -25,7 +25,7 @@ const Onboarding = () => {
     } else {
       try {
         await AsyncStorage.setItem("@viewedOnboarding", "true");
-        navigation.replace("Signup");
+        navigation.replace("SignUp");
       } catch (err) {
         console.log("Error setting onboarding flag:", err);
       }

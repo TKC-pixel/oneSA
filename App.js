@@ -43,22 +43,25 @@ export default function App() {
     checkOnboarding();
   }, []);
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        {viewedOnboarding ? (
-          <Stack.Screen
-            name="SignUp"
-            component={SignUp}
-            options={{ headerShown: false }}
-          />
-        ) : (
-          <Stack.Screen
-            name="Onboarding"
-            component={Onboarding}
-            options={{ headerShown: false }}
-          />
-        )}
+      <Stack.Navigator
+        initialRouteName={viewedOnboarding ? "SignUp" : "Onboarding"}
+      >
+        <Stack.Screen
+          name="Onboarding"
+          component={Onboarding}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="SignUp"
+          component={SignUp}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Home"
           options={{ headerShown: false }}

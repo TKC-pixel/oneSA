@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  ActivityIndicator,
+  useWindowDimensions,
   Image,
   Pressable,
 } from "react-native";
@@ -17,8 +19,9 @@ import {
 } from "@firebase/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import Constants from 'expo-constants';
+import Constants from "expo-constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Font from "expo-font";
 
 const { width } = Dimensions.get("window");
 
@@ -34,17 +37,40 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 
 const LoginScreen = ({ navigation }) => {
+  const [fontsLoaded, setFontsLoaded] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const [seePassword, setSeePassword] = useState(false);
   const [secureText, setSecureText] = useState(true);
+
+  const { width } = useWindowDimensions(); // Move this to the top before any return statement
+
   const togglePassword = () => setSeePassword(!seePassword);
   const passwordVisibility = () => {
     togglePassword();
     setSecureText(!secureText);
   };
+
+  const loadFonts = async () => {
+    await Font.loadAsync({
+      "Poppins-Regular": require("../assets/fonts/Poppins-Regular.ttf"),
+      "Poppins-BlackItalic": require("../assets/fonts/Poppins-BlackItalic.ttf"),
+      "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
+      "Poppins-BoldItalic": require("../assets/fonts/Poppins-BoldItalic.ttf"),
+      "Poppins-ExtraBold": require("../assets/fonts/Poppins-ExtraBold.ttf"),
+      "Poppins-ExtraBoldItalic": require("../assets/fonts/Poppins-ExtraBoldItalic.ttf"),
+      "Poppins-SemiBold": require("../assets/fonts/Poppins-SemiBold.ttf"),
+      "Raleway-Italic-VariableFont_wght": require("../assets/fonts/Raleway-Italic-VariableFont_wght.ttf"),
+      "Raleway-VariableFont_wght": require("../assets/fonts/Raleway-VariableFont_wght.ttf"),
+      "Raleway-ExtraBold": require("../assets/fonts/Raleway-ExtraBold.ttf"),
+    });
+  };
+
+  useEffect(() => {
+    loadFonts().then(() => setFontsLoaded(true));
+  }, []);
 
   const clearOnboarding = async () => {
     try {
@@ -89,6 +115,14 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -130,13 +164,13 @@ const LoginScreen = ({ navigation }) => {
         >
           <Text style={styles.loginText}>Login</Text>
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.signupButton}
           onPress={() => navigation.navigate("Signup")}
         >
           <Text style={styles.signupText}>Don't have an account? Sign up</Text>
-        </TouchableOpacity>
-        <View style={styles.socialButtonsContainer}>
+        </TouchableOpacity> */}
+        {/* <View style={styles.socialButtonsContainer}>
           <Pressable style={styles.socialButton}>
             <Text style={styles.socialButtonText}>Continue with Apple</Text>
           </Pressable>
@@ -146,10 +180,10 @@ const LoginScreen = ({ navigation }) => {
           <Pressable style={styles.socialButton}>
             <Text style={styles.socialButtonText}>Continue with Phone</Text>
           </Pressable>
-        </View>
+        </View> */}
       </View>
       <TouchableOpacity onPress={clearOnboarding}>
-      <Text style={styles.buttonText}>Clear Onboarding</Text>
+        <Text style={styles.buttonText}>Clear Onboarding</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -167,8 +201,8 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: "center",
-    marginBottom: 20, 
-    marginTop: 20, 
+    marginBottom: 20,
+    marginTop: 20,
   },
   headerTitle: {
     fontWeight: "bold",
@@ -221,7 +255,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   forgotPassword: {
-    marginRight: width - 220, 
+    marginRight: width - 220,
     marginBottom: 20,
     textDecorationLine: "underline",
   },
@@ -232,7 +266,7 @@ const styles = StyleSheet.create({
   PasswordEntryBox: {
     flexDirection: "row",
     alignItems: "center",
-    width: width - 40, 
+    width: width - 40,
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderColor: "#ccc",
