@@ -11,6 +11,10 @@ import Welcome from "./screens/Welcome";
 import ReportScreen from "./screens/ReportScreen";
 import ReportInfo from "./screens/ReportInfo";
 import Forgot from "./screens/Forgot";
+import MinisterScreen from "./screens/MinisterScreen";
+import BudgetScreen from "./screens/BudgetScreen";
+import SuccessRateScreen from "./screens/SuccessRateScreen";
+import ProjectsPages from "./screens/ProjectsPages";
 
 const Stack = createNativeStackNavigator();
 
@@ -91,6 +95,26 @@ export default function App() {
           name="Forgot"
           options={{ headerShown: false }}
           component={Forgot}
+        />
+        <Stack.Screen
+          name="MinisterScreen"
+          options={{ headerShown: false }}
+          component={MinisterScreen}
+        />
+        <Stack.Screen
+          name="Projects"
+          options={{ headerShown: false }}
+          component={ProjectsPages}
+        />
+        <Stack.Screen
+          name="Budget"
+          options={{ headerShown: false }}
+          component={BudgetScreen}
+        />
+        <Stack.Screen
+          name="SuccessRate"
+          options={{ headerShown: false }}
+          component={SuccessRateScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>
