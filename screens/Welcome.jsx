@@ -197,18 +197,30 @@ export default function Welcome({ navigation }) {
         </View>
         <View style={styles.infoContainer}>
           <Text style={styles.departmentTitle}>Department of {department}</Text>
-          <TouchableOpacity style={styles.card}>
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate("Projects")}
+          >
             <Text style={styles.cardText}>Projects</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.card}>
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate("Budget")}
+          >
             <Text style={styles.cardText}>Budget Allocation</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.card}>
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate("SuccessRate")}
+          >
             <Text style={styles.cardText}>Success Rates</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.buttonContainer}>
-          <Pressable style={styles.button}>
+          <Pressable
+            style={styles.button}
+            onPress={() => navigation.navigate("MinisterScreen")}
+          >
             <Text style={styles.buttonText}>Explore Ministers</Text>
           </Pressable>
           <Pressable
