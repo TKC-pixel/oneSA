@@ -10,14 +10,24 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { CheckBox } from "@rneui/themed";
-import { auth, db } from '../FirebaseConfig';
-import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { auth, db } from "../FirebaseConfig";
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+} from "firebase/auth";
 
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
-import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import {
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 
 const { width } = Dimensions.get("window");
 
@@ -81,12 +91,31 @@ const SignUpForm = () => {
       try {
         await createUserWithEmailAndPassword(auth, email, password);
         await AsyncStorage.setItem("user", JSON.stringify({ email }));
-        await addDoc(collection(db, 'Users'), { name,  surname, email, phone }); 
-                
+        await addDoc(collection(db, "Users"), {
+          name,
+          surname,
+          bio: null,
+          profilePic: null,
+          coverPic: null,
+          email,
+          phone,
+          favorites: null,
+          isVerified: false,
+          reports: [
+            {
+              projectName: null,
+              projectImage: null,
+              projectStatus: null,
+              description: null,
+              location: null,
+              additionalComments: null,
+            },
+          ],
+        });
+
         alert("Registration successful");
         navigation.navigate("Home");
-      } 
-      catch (error) {
+      } catch (error) {
         alert("Registration failed! Try again.");
       }
     } else {
