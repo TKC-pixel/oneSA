@@ -17,7 +17,8 @@ import React, { useState, useEffect } from "react";
 import * as Font from "expo-font";
 import NavBar from "../components/NavBar";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { auth } from "../components/LoginForm";
+import { db, auth } from '../FirebaseConfig'; 
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useFocusEffect } from "@react-navigation/native";
 
 const favicon = require("../assets/images/Favicon.png");
@@ -26,7 +27,33 @@ export default function Welcome({ navigation }) {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [department, setDepartment] = useState("Health and Science");
   const [disp, setDisp] = useState("none");
-  const user = auth.currentUser;
+  const user = auth.currentUser;  
+  const [info, setInfo] = useState([]);
+  const fetchUserData = async () => {
+    try {
+      if (!user || !user.email) {
+        throw new Error("User not authenticated or email is missing.");
+      }
+
+      const q = query(collection(db, 'Users'), where('email', '==', user.email));
+      const snapshot = await getDocs(q);
+
+      const userData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      setInfo(userData);
+      
+      console.log("Fetched user data: ", userData);
+      
+    } 
+    catch (error) {
+      console.log("Error fetching user data: ", error);
+      Alert.alert("Error", "Failed to fetch user data.");
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
   const handleBackPress = () => {
     Alert.alert("Exit", "Are you sure you want to exit?", [
@@ -51,8 +78,6 @@ export default function Welcome({ navigation }) {
       };
     })
   );
-
-  console.log(user);
 
   const loadFonts = async () => {
     await Font.loadAsync({
@@ -91,7 +116,7 @@ export default function Welcome({ navigation }) {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView>
         <NavBar />
-        <Text style={styles.welcomeText}>Welcome {user.phoneNumber}</Text>
+        <Text style={styles.welcomeText}>Welcome {info && info.length > 0 ? `${info[0].name} ${info[0].surname}` : "User"}</Text>
         <View style={styles.searchContainer}>
           <Pressable onPress={toggleDisplay}>
             <View style={styles.menuIconContainer}>
@@ -106,94 +131,7 @@ export default function Welcome({ navigation }) {
           <Ionicons name="search" size={24} />
         </View>
         <View style={[styles.dropdown, { display: disp }]}>
-          <Pressable
-            style={styles.dropdownItem}
-            onPress={() => {
-              setDepartment("Agriculture, Land Reform and Rural Development"),
-                setDisp("none");
-            }}
-          >
-            <Text style={styles.dropdownText}>
-              Agriculture, Land Reform and Rural Development
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.dropdownItem}
-            onPress={() => {
-              setDepartment("Basic Education"), setDisp("none");
-            }}
-          >
-            <Text style={styles.dropdownText}>Basic Education</Text>
-          </Pressable>
-          <Pressable
-            style={styles.dropdownItem}
-            onPress={() => {
-              setDepartment("Communications and Digital Technologies"),
-                setDisp("none");
-            }}
-          >
-            <Text style={styles.dropdownText}>
-              Communications and Digital Technologies
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.dropdownItem}
-            onPress={() => {
-              setDepartment("Defense and Military Veterans"), setDisp("none");
-            }}
-          >
-            <Text style={styles.dropdownText}>
-              Defense and Military Veterans
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.dropdownItem}
-            onPress={() => {
-              setDepartment("Health and Science"), setDisp("none");
-            }}
-          >
-            <Text style={styles.dropdownText}>Health and Science</Text>
-          </Pressable>
-          <Pressable
-            style={styles.dropdownItem}
-            onPress={() => {
-              setDepartment("Home Affairs"), setDisp("none");
-            }}
-          >
-            <Text style={styles.dropdownText}>Home Affairs</Text>
-          </Pressable>
-          <Pressable
-            style={styles.dropdownItem}
-            onPress={() => {
-              setDepartment("International Relations and Cooperation"),
-                setDisp("none");
-            }}
-          >
-            <Text style={styles.dropdownText}>
-              International Relations and Cooperation
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.dropdownItem}
-            onPress={() => {
-              setDepartment("Justice and Constitutional Development"),
-                setDisp("none");
-            }}
-          >
-            <Text style={styles.dropdownText}>
-              Justice and Constitutional Development
-            </Text>
-          </Pressable>
-          <Pressable
-            style={styles.dropdownItem}
-            onPress={() => {
-              setDepartment("Public Works and Infrastructure"), setDisp("none");
-            }}
-          >
-            <Text style={styles.dropdownText}>
-              Public Works and Infrastructure
-            </Text>
-          </Pressable>
+          {/* Dropdown items here */}
         </View>
         <View style={styles.infoContainer}>
           <Text style={styles.departmentTitle}>Department of {department}</Text>
@@ -237,7 +175,6 @@ export default function Welcome({ navigation }) {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,

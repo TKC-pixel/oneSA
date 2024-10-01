@@ -11,31 +11,18 @@ import {
   Image,
   Pressable,
 } from "react-native";
-import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-} from "@firebase/auth";
+
+import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Font from "expo-font";
 import { useNavigation } from "@react-navigation/native";
+import { auth, db } from '../FirebaseConfig';
 
 const { width } = Dimensions.get("window");
 
-const firebaseConfig = {
-  apiKey: process.env.API_KEY,
-  authDomain: process.env.AUTH_DOMAIN,
-  projectId: process.env.PROJECT_ID,
-  storageBucket: process.env.STORAGE_BUCKET,
-  messagingSenderId: process.env.MESSAGING_SENDER_ID,
-  appId: process.env.APP_ID,
-};
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
 
 const LoginForm = () => {
   const navigation = useNavigation();

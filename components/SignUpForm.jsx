@@ -10,32 +10,16 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { CheckBox } from "@rneui/themed";
-import { initializeApp } from "firebase/app";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-} from "@firebase/auth";
-import { getFirestore, doc, getDoc } from "firebase/firestore"; // Firestore imports
+import { auth, db } from '../FirebaseConfig';
+import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
+import { collection, addDoc, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 
 const { width } = Dimensions.get("window");
-
-const firebaseConfig = {
-  apiKey: process.env.API_KEY,
-  authDomain: process.env.AUTH_DOMAIN,
-  projectId: process.env.PROJECT_ID,
-  storageBucket: process.env.STORAGE_BUCKET,
-  messagingSenderId: process.env.MESSAGING_SENDER_ID,
-  appId: process.env.APP_ID,
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app); // Initialize Firestore
 
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
@@ -77,6 +61,7 @@ const SignUpForm = () => {
       password &&
       cPassword &&
       phone &&
+      surname &&
       password === cPassword
     ) {
       if (isMinister) {
@@ -96,9 +81,12 @@ const SignUpForm = () => {
       try {
         await createUserWithEmailAndPassword(auth, email, password);
         await AsyncStorage.setItem("user", JSON.stringify({ email }));
+        await addDoc(collection(db, 'Users'), { name,  surname, email, phone }); 
+                
         alert("Registration successful");
         navigation.navigate("Home");
-      } catch (error) {
+      } 
+      catch (error) {
         alert("Registration failed! Try again.");
       }
     } else {
