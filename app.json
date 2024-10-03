@@ -22,6 +22,15 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow OneSA to use your location."
+        }
+      ]
+    ]
+    
   }
 }
