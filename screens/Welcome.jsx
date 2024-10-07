@@ -17,7 +17,7 @@ import React, { useState, useEffect } from "react";
 import * as Font from "expo-font";
 import NavBar from "../components/NavBar";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { db, auth } from "../FirebaseConfig";
+import { db, auth } from "../FIrebaseConfig";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Location from "expo-location";
