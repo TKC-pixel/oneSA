@@ -13,7 +13,7 @@ import {
   Platform,
 } from "react-native";
 import { CheckBox } from "@rneui/themed";
-import { auth, db } from "../FirebaseConfig";
+import { auth, db } from "../FIrebaseConfig";
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,

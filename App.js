@@ -15,6 +15,7 @@ import MinisterScreen from "./screens/MinisterScreen";
 import BudgetScreen from "./screens/BudgetScreen";
 import SuccessRateScreen from "./screens/SuccessRateScreen";
 import ProjectsPages from "./screens/ProjectsPages";
+import MinisterDetail from "./screens/MinisterDetails";
 
 const Stack = createNativeStackNavigator();
 
@@ -115,6 +116,11 @@ export default function App() {
           name="SuccessRate"
           options={{ headerShown: false }}
           component={SuccessRateScreen}
+        />
+             <Stack.Screen
+          name="MinisterDetails"
+          options={{ headerShown: false }}
+          component={MinisterDetail}
         />
       </Stack.Navigator>
     </NavigationContainer>

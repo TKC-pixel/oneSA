@@ -19,7 +19,7 @@ import Constants from "expo-constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Font from "expo-font";
 import { useNavigation } from "@react-navigation/native";
-import { db, auth } from "../FirebaseConfig";
+import { db, auth } from "../FIrebaseConfig";
 
 const { width } = Dimensions.get("window");
 

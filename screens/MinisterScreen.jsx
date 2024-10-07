@@ -2,10 +2,12 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import MinistersComponent from '../components/MinistersComponent'
 
+
 const MinisterScreen = () => {
   return (
     <View style={styles.safeArea}>
       <MinistersComponent/>
+
     </View>
   )
 }
