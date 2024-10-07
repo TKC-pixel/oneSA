@@ -26,8 +26,10 @@ const MinistersComponent = () => {
   const renderMinister = ({ item }) => (
     <TouchableOpacity style={styles.ministerCard} onPress={() => handlePress(item)}>
       <Image style={styles.ministerProfileImage} source={{ uri: item.ministerProfileImage }} />
-      <Text style={styles.ministerName}>{item.ministerName}</Text>
-      <Text style={styles.ministerDepartment}>{item.ministerDepartment.name}</Text>
+      <View>
+        <Text style={styles.ministerName}>{item.ministerName}</Text>
+        <Text style={styles.ministerDepartment}>{item.ministerDepartment.name}</Text>
+      </View>
     </TouchableOpacity>
   );
 

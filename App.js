@@ -117,7 +117,7 @@ export default function App() {
           options={{ headerShown: false }}
           component={SuccessRateScreen}
         />
-             <Stack.Screen
+        <Stack.Screen
           name="MinisterDetails"
           options={{ headerShown: false }}
           component={MinisterDetail}
