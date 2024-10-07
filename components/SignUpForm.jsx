@@ -8,6 +8,9 @@ import {
   SafeAreaView,
   Pressable,
   ActivityIndicator,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { CheckBox } from "@rneui/themed";
 import { auth, db } from "../FirebaseConfig";
@@ -28,6 +31,9 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
+
+
+const ios = Platform.OS === "ios";
 
 const { width } = Dimensions.get("window");
 
@@ -158,120 +164,137 @@ const SignUpForm = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.formContainer}>
-        <TextInput
-          placeholder="Enter name"
-          style={styles.input}
-          value={name}
-          onChangeText={setName}
-        />
-        <TextInput
-          placeholder="Enter surname"
-          style={styles.input}
-          value={surname}
-          onChangeText={setSurname}
-        />
-        <TextInput
-          placeholder="Enter phone"
-          style={styles.input}
-          value={phone}
-          keyboardType="number-pad"
-          onChangeText={setPhone}
-        />
-        {isMinister && (
-          <TextInput
-            placeholder="Enter Minister ID"
-            style={styles.input}
-            value={ministerID}
-            onChangeText={(text) => {
-              setMinisterID(text);
-              setMinisterError("");
-            }}
-          />
-        )}
-        {ministerError ? (
-          <Text style={styles.errorText}>{ministerError}</Text>
-        ) : null}
-        <TextInput
-          placeholder="Enter email"
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-        />
-        <View style={styles.PasswordEntryBox}>
-          <TextInput
-            placeholder="Create password"
-            secureTextEntry={secureText}
-            style={styles.passwordInput}
-            value={password}
-            onChangeText={setPassword}
-          />
-          <Ionicons
-            size={20}
-            name={seePassword ? "eye-off-outline" : "eye-outline"}
-            onPress={passwordVisibility}
-          />
-        </View>
-        <View style={styles.PasswordEntryBox}>
-          <TextInput
-            placeholder="Confirm password"
-            secureTextEntry={secureText}
-            style={styles.passwordInput}
-            value={cPassword}
-            onChangeText={setCPassword}
-          />
-          <Ionicons
-            size={20}
-            name={seePassword ? "eye-off-outline" : "eye-outline"}
-            onPress={passwordVisibility}
-          />
-        </View>
-        <View style={styles.checkboxContainer}>
-          <CheckBox
-            checked={checked}
-            onPress={toggleCheckbox}
-            iconType="material-community"
-            checkedIcon="checkbox-marked"
-            uncheckedIcon="checkbox-blank-outline"
-            checkedColor="#B7C42E"
-          />
-          <Text style={styles.checkboxText}>
-            I agree to the Terms & Conditions and Privacy Policy.
-          </Text>
-        </View>
-        <Pressable style={styles.loginButton} onPress={handleAuthentication}>
-          <Text style={styles.loginText}>Sign Up</Text>
-        </Pressable>
-        <View style={styles.checkboxContainer}>
-          <CheckBox
-            checked={isMinister}
-            onPress={toggleMinister}
-            iconType="material-community"
-            checkedIcon="checkbox-marked"
-            uncheckedIcon="checkbox-blank-outline"
-            checkedColor="#B7C42E"
-          />
-          <Text style={styles.checkboxText}>Are you a Minister?</Text>
-        </View>
-      </View>
-    </SafeAreaView>
+    <KeyboardAvoidingView
+      behavior={ios ? "padding" : "height"}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={170}
+    >
+      <SafeAreaView style={styles.safeContainer}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollViewContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.formContainer}>
+            <TextInput
+              placeholder="Enter name"
+              style={styles.input}
+              value={name}
+              onChangeText={setName}
+            />
+            <TextInput
+              placeholder="Enter surname"
+              style={styles.input}
+              value={surname}
+              onChangeText={setSurname}
+            />
+            <TextInput
+              placeholder="Enter phone"
+              style={styles.input}
+              value={phone}
+              keyboardType="number-pad"
+              onChangeText={setPhone}
+            />
+            {isMinister && (
+              <TextInput
+                placeholder="Enter Minister ID"
+                style={styles.input}
+                value={ministerID}
+                onChangeText={(text) => {
+                  setMinisterID(text);
+                  setMinisterError("");
+                }}
+              />
+            )}
+            {ministerError ? (
+              <Text style={styles.errorText}>{ministerError}</Text>
+            ) : null}
+            <TextInput
+              placeholder="Enter email"
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+            />
+            <View style={styles.PasswordEntryBox}>
+              <TextInput
+                placeholder="Create password"
+                secureTextEntry={secureText}
+                style={styles.passwordInput}
+                value={password}
+                onChangeText={setPassword}
+              />
+              <Ionicons
+                size={20}
+                name={seePassword ? "eye-off-outline" : "eye-outline"}
+                onPress={passwordVisibility}
+              />
+            </View>
+            <View style={styles.PasswordEntryBox}>
+              <TextInput
+                placeholder="Confirm password"
+                secureTextEntry={secureText}
+                style={styles.passwordInput}
+                value={cPassword}
+                onChangeText={setCPassword}
+              />
+              <Ionicons
+                size={20}
+                name={seePassword ? "eye-off-outline" : "eye-outline"}
+                onPress={passwordVisibility}
+              />
+            </View>
+            <View style={styles.checkboxContainer}>
+              <CheckBox
+                checked={checked}
+                onPress={toggleCheckbox}
+                iconType="material-community"
+                checkedIcon="checkbox-marked"
+                uncheckedIcon="checkbox-blank-outline"
+                checkedColor="#B7C42E"
+              />
+              <Text style={styles.checkboxText}>
+                I agree to the Terms & Conditions and Privacy Policy.
+              </Text>
+            </View>
+            <Pressable
+              style={styles.loginButton}
+              onPress={handleAuthentication}
+            >
+              <Text style={styles.loginText}>Sign Up</Text>
+            </Pressable>
+            <View style={styles.checkboxContainer}>
+              <CheckBox
+                checked={isMinister}
+                onPress={toggleMinister}
+                iconType="material-community"
+                checkedIcon="checkbox-marked"
+                uncheckedIcon="checkbox-blank-outline"
+                checkedColor="#B7C42E"
+              />
+              <Text style={styles.checkboxText}>Are you a Minister?</Text>
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
 export default SignUpForm;
 
 const styles = StyleSheet.create({
-  container: {
+  safeContainer: {
     flex: 1,
     backgroundColor: "white",
-    paddingHorizontal: 20,
-    paddingTop: 30,
   },
-  loadingContainer: {
+  scrollView: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    paddingHorizontal: 20,
+    paddingVertical: 30,
+    minHeight: "100%",
   },
   formContainer: {
     alignItems: "center",
@@ -305,7 +328,6 @@ const styles = StyleSheet.create({
   loginText: {
     color: "white",
     fontSize: 16,
-    // fontWeight: "bold",
     fontFamily: "Poppins-Bold",
   },
   PasswordEntryBox: {
