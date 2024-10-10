@@ -1,7 +1,16 @@
-import { View, Text, SafeAreaView, Image, StyleSheet, TextInput, Pressable, Alert } from 'react-native';
-import { initializeApp } from 'firebase/app';
-import { getAuth, sendPasswordResetEmail } from '@firebase/auth';
-import { useState } from 'react';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  Image,
+  StyleSheet,
+  TextInput,
+  Pressable,
+  Alert,
+} from "react-native";
+import { initializeApp } from "firebase/app";
+import { getAuth, sendPasswordResetEmail } from "@firebase/auth";
+import { useState } from "react";
 
 const firebaseConfig = {
   apiKey: process.env.API_KEY,
@@ -16,7 +25,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 export default function Forgot() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
 
   const handleEmailChange = (text) => {
     setEmail(text);
@@ -25,27 +34,33 @@ export default function Forgot() {
   const ForgotPass = () => {
     sendPasswordResetEmail(auth, email)
       .then(() => {
-        Alert.alert('Success', 'Password reset email sent successfully');
+        Alert.alert("Success", "Password reset email sent successfully");
       })
       .catch((error) => {
-        Alert.alert('Error', 'Error sending password reset email: ' + error.message);
+        Alert.alert(
+          "Error",
+          "Error sending password reset email: " + error.message
+        );
       });
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <Image source={require('../assets/images/logo.jpg')} style={styles.logo} />
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
+        <Image
+          source={require("../assets/images/logo.jpg")}
+          style={styles.logo}
+        />
         <Text style={styles.headerText}>Forgot Password</Text>
         <Image
           source={{
-            uri: 'https://as1.ftcdn.net/v2/jpg/04/92/75/18/1000_F_492751838_Ybun2zwpQC8AZv11AwZLdXJk4cUrTt5z.jpg',
+            uri: "https://as1.ftcdn.net/v2/jpg/04/92/75/18/1000_F_492751838_Ybun2zwpQC8AZv11AwZLdXJk4cUrTt5z.jpg",
           }}
           style={styles.bannerImage}
         />
         <TextInput
           placeholder="Enter your email"
-          placeholderTextColor={'#666'}
+          placeholderTextColor={"#666"}
           style={styles.input}
           onChangeText={handleEmailChange}
           value={email}
@@ -54,10 +69,10 @@ export default function Forgot() {
         <Pressable
           style={styles.loginButton}
           onPress={() => {
-            if (email.trim() !== '') {
+            if (email.trim() !== "") {
               ForgotPass();
             } else {
-              Alert.alert('Error', 'Please enter a valid email address');
+              Alert.alert("Error", "Please enter a valid email address");
             }
           }}
         >
@@ -72,37 +87,37 @@ const styles = StyleSheet.create({
   logo: {
     height: 100,
     width: 100,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   headerText: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 20,
   },
   bannerImage: {
     height: 200,
-    width: '100%',
+    width: "100%",
     marginTop: 40,
     marginBottom: 40,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     padding: 10,
     borderRadius: 5,
-    width: '80%',
+    width: "80%",
     marginBottom: 20,
   },
   loginButton: {
-    backgroundColor: '#B7C42E',
+    backgroundColor: "#B7C42E",
     paddingVertical: 15,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
-    width: '80%',
+    width: "80%",
   },
   loginButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
   },
 });

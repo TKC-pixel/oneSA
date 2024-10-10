@@ -1,4 +1,10 @@
-import { View, KeyboardAvoidingView, ScrollView, Platform, StyleSheet } from "react-native";
+import {
+  View,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
+  StyleSheet,
+} from "react-native";
 import React from "react";
 
 const ios = Platform.OS === "ios";

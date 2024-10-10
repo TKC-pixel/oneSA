@@ -1,16 +1,16 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import NavBar from './NavBar'
+import { StyleSheet, Text, View } from "react-native";
+import React from "react";
+import NavBar from "./NavBar";
 
 const SuccessRate = () => {
   return (
     <View>
-        <NavBar/>
+      <NavBar />
       <Text>SuccessRate</Text>
     </View>
-  )
-}
+  );
+};
 
-export default SuccessRate
+export default SuccessRate;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

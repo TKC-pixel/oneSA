@@ -1,24 +1,22 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import MinistersComponent from '../components/MinistersComponent'
-
+import { StyleSheet, Text, View } from "react-native";
+import React from "react";
+import MinistersComponent from "../components/MinistersComponent";
 
 const MinisterScreen = () => {
   return (
     <View style={styles.safeArea}>
-      <MinistersComponent/>
-
+      <MinistersComponent />
     </View>
-  )
-}
+  );
+};
 
-export default MinisterScreen
+export default MinisterScreen;
 
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-        backgroundColor: "white",
-        paddingHorizontal: 18,
-        position: "relative"
-      },
-})
+  safeArea: {
+    flex: 1,
+    backgroundColor: "white",
+    paddingHorizontal: 18,
+    position: "relative",
+  },
+});
