@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -26,12 +26,11 @@ import * as Font from "expo-font";
 import {
   collection,
   addDoc,
-  getDocs,
-  deleteDoc,
+  getDoc, // <-- Importing getDoc
   doc,
-  updateDoc,
+  setDoc,
 } from "firebase/firestore";
-
+import { UserContext } from "../context/UserContext";
 
 const ios = Platform.OS === "ios";
 
@@ -54,9 +53,14 @@ const SignUpForm = () => {
   const [ministerError, setMinisterError] = useState("");
   const navigation = useNavigation();
 
+  const { setUserData } = useContext(UserContext);
+
   const toggleCheckbox = () => setChecked(!checked);
   const togglePassword = () => setSeePassword(!seePassword);
-  const toggleMinister = () => setIsMinister(!isMinister);
+  const toggleMinister = () => {
+    setIsMinister(!isMinister);
+    setMinisterChecked(!ministerChecked);
+  };
 
   const passwordVisibility = () => {
     togglePassword();
@@ -70,7 +74,6 @@ const SignUpForm = () => {
   };
 
   const handleAuthentication = async () => {
-    // Validate the form inputs
     if (
       email &&
       name &&
@@ -80,24 +83,28 @@ const SignUpForm = () => {
       surname &&
       password === cPassword
     ) {
-      if (isMinister) {
+      if (ministerChecked) {
         if (!ministerID) {
           setMinisterError("Minister ID is required for minister signups.");
           return;
         }
 
-        // Check if the Minister ID exists in the Firestore database
         const ministerExists = await validateMinisterID(ministerID);
         if (!ministerExists) {
           setMinisterError("Invalid Minister ID.");
           return;
         }
+
+        setIsMinister(true);
+      } else {
+        setIsMinister(false);
       }
 
       try {
         await createUserWithEmailAndPassword(auth, email, password);
         await AsyncStorage.setItem("user", JSON.stringify({ email }));
-        await addDoc(collection(db, "Users"), {
+
+        await setDoc(doc(db, "Users", auth.currentUser.uid), {
           name,
           surname,
           bio: null,
@@ -105,6 +112,7 @@ const SignUpForm = () => {
           coverPic: null,
           email,
           phone,
+          isMinister, 
           favorites: null,
           isVerified: false,
           reports: [
@@ -195,7 +203,7 @@ const SignUpForm = () => {
               keyboardType="number-pad"
               onChangeText={setPhone}
             />
-            {isMinister && (
+            {ministerChecked && (
               <TextInput
                 placeholder="Enter Minister ID"
                 style={styles.input}
@@ -264,7 +272,7 @@ const SignUpForm = () => {
             </Pressable>
             <View style={styles.checkboxContainer}>
               <CheckBox
-                checked={isMinister}
+                checked={ministerChecked}
                 onPress={toggleMinister}
                 iconType="material-community"
                 checkedIcon="checkbox-marked"

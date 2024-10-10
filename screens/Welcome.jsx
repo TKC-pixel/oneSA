@@ -264,8 +264,7 @@ export default function Welcome({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView>
-      <NavBar  userInfo={info} />
-     
+        <NavBar userInfo={info} />
 
         <Text style={styles.welcomeText}>
           Welcome{" "}
@@ -450,5 +449,4 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Bold",
     marginTop: 20,
   },
-
 });

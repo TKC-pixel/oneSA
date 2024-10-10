@@ -21,20 +21,15 @@ import Settings from "./screens/Settings";
 import HelpCentre from "./screens/HelpCentre";
 import AppInfo from "./screens/AppInfo";
 import RateTheApp from "./screens/RateTheApp";
+import { UserProvider } from "./context/UserContext";
+import SplashScreen from "./components/SplashScreen";
 
 const Stack = createNativeStackNavigator();
-
-const Loading = () => {
-  return (
-    <View style={styles.container}>
-      <ActivityIndicator size="large" />
-    </View>
-  );
-};
 
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [viewedOnboarding, setViewedOnboarding] = useState(false);
+  const [showSplash, setShowSplash] = useState(true); 
 
   const checkOnboarding = async () => {
     try {
@@ -50,116 +45,131 @@ export default function App() {
   };
 
   useEffect(() => {
-    checkOnboarding();
+    const timer = setTimeout(() => {
+      setShowSplash(false); 
+      checkOnboarding(); 
+    }, 2000); 
+
+    return () => clearTimeout(timer); 
   }, []);
 
+  if (showSplash) {
+    return <SplashScreen />; 
+  }
+
   if (loading) {
-    return <Loading />;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName={viewedOnboarding ? "SignUp" : "Onboarding"}
-      >
-        <Stack.Screen
-          name="Onboarding"
-          component={Onboarding}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="SignUp"
-          component={SignUp}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Dashboard"
-          component={HomeTabs}
-          options={{ headerShown: false }}
-        />
+    <UserProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName={viewedOnboarding ? "SignUp" : "Onboarding"}
+        >
+          <Stack.Screen
+            name="Onboarding"
+            component={Onboarding}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SignUp"
+            component={SignUp}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Dashboard"
+            component={HomeTabs}
+            options={{ headerShown: false }}
+          />
 
-        <Stack.Screen
-          name="Home"
-          options={{ headerShown: false }}
-          component={Home}
-        />
-        <Stack.Screen
-          name="Signup"
-          options={{ headerShown: false }}
-          component={Signup}
-        />
-        <Stack.Screen
-          name="Welcome"
-          options={{ headerShown: false }}
-          component={Welcome}
-        />
-        <Stack.Screen
-          name="Report"
-          options={{ headerShown: false }}
-          component={ReportScreen}
-        />
-        <Stack.Screen
-          name="ReportInfo"
-          options={{ headerShown: false }}
-          component={ReportInfo}
-        />
-        <Stack.Screen
-          name="Forgot"
-          options={{ headerShown: false }}
-          component={Forgot}
-        />
-        <Stack.Screen
-          name="MinisterScreen"
-          options={{ headerShown: false }}
-          component={MinisterScreen}
-        />
-        <Stack.Screen
-          name="Projects"
-          options={{ headerShown: false }}
-          component={ProjectsPages}
-        />
-        <Stack.Screen
-          name="Budget"
-          options={{ headerShown: false }}
-          component={BudgetScreen}
-        />
-        <Stack.Screen
-          name="SuccessRate"
-          options={{ headerShown: false }}
-          component={SuccessRateScreen}
-        />
-        <Stack.Screen
-          name="Settings"
-          options={{ headerShown: false }}
-          component={Settings}
-        />
-        <Stack.Screen
-          name="HelpCenter"
-          options={{ headerShown: false }}
-          component={HelpCentre}
-        />
-        <Stack.Screen
-          name="MinisterDetails"
-          options={{ headerShown: false }}
-          component={MinisterDetail}
-        />
-        <Stack.Screen
-          name="AppInfo"
-          options={{ headerShown: false }}
-          component={AppInfo}
-        />
-        <Stack.Screen
-          name="RateTheApp"
-          options={{ headerShown: false }}
-          component={RateTheApp}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+          <Stack.Screen
+            name="Home"
+            options={{ headerShown: false }}
+            component={Home}
+          />
+          <Stack.Screen
+            name="Signup"
+            options={{ headerShown: false }}
+            component={Signup}
+          />
+          <Stack.Screen
+            name="Welcome"
+            options={{ headerShown: false }}
+            component={Welcome}
+          />
+          <Stack.Screen
+            name="Report"
+            options={{ headerShown: false }}
+            component={ReportScreen}
+          />
+          <Stack.Screen
+            name="ReportInfo"
+            options={{ headerShown: false }}
+            component={ReportInfo}
+          />
+          <Stack.Screen
+            name="Forgot"
+            options={{ headerShown: false }}
+            component={Forgot}
+          />
+          <Stack.Screen
+            name="MinisterScreen"
+            options={{ headerShown: false }}
+            component={MinisterScreen}
+          />
+          <Stack.Screen
+            name="Projects"
+            options={{ headerShown: false }}
+            component={ProjectsPages}
+          />
+          <Stack.Screen
+            name="Budget"
+            options={{ headerShown: false }}
+            component={BudgetScreen}
+          />
+          <Stack.Screen
+            name="SuccessRate"
+            options={{ headerShown: false }}
+            component={SuccessRateScreen}
+          />
+          <Stack.Screen
+            name="Settings"
+            options={{ headerShown: false }}
+            component={Settings}
+          />
+          <Stack.Screen
+            name="HelpCenter"
+            options={{ headerShown: false }}
+            component={HelpCentre}
+          />
+          <Stack.Screen
+            name="MinisterDetails"
+            options={{ headerShown: false }}
+            component={MinisterDetail}
+          />
+          <Stack.Screen
+            name="AppInfo"
+            options={{ headerShown: false }}
+            component={AppInfo}
+          />
+          <Stack.Screen
+            name="RateTheApp"
+            options={{ headerShown: false }}
+            component={RateTheApp}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </UserProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  loadingContainer: {
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",

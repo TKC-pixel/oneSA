@@ -49,7 +49,6 @@ const HomeTabs = () => {
         tabBarActiveBackgroundColor: "#696969",
         tabBarActiveTintColor: "#B7C42E",
         // tabBarInactiveBackgroundColor: "#0007",
-        
       })}
     >
       <Tab.Screen
@@ -79,24 +78,24 @@ const HomeTabs = () => {
 export default HomeTabs;
 
 const styles = StyleSheet.create({
-    tabBarStyle: {
-        height: 80,
-        // backgroundColor: "#fffffff",
-        position: "absolute",
-        bottom: 10,
-        left: 20,
-        right: 20,
-        borderRadius: 23,
-        borderTopWidth: 0,
-        shadowColor: "black",
-        shadowOffset: {width: 0, height: 5},
-        shadowOpacity: 0.5,
-        shadowRadius: 5,
-        elevation: 5
-    },
-    tabBarItemStyle:{
-        paddingVertical: 10,
-        margin: 10,
-        borderRadius: 23
-    }
+  tabBarStyle: {
+    height: 80,
+    // backgroundColor: "#fffffff",
+    position: "absolute",
+    bottom: 10,
+    left: 20,
+    right: 20,
+    borderRadius: 23,
+    borderTopWidth: 0,
+    shadowColor: "black",
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.5,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  tabBarItemStyle: {
+    paddingVertical: 10,
+    margin: 10,
+    borderRadius: 23,
+  },
 });

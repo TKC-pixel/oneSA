@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react"; // Import useContext
 import {
   View,
   Text,
@@ -8,21 +8,18 @@ import {
   Dimensions,
   ActivityIndicator,
   useWindowDimensions,
-  Image,
   Pressable,
 } from "react-native";
-
-import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import Constants from "expo-constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Font from "expo-font";
 import { useNavigation } from "@react-navigation/native";
 import { db, auth } from "../FIrebaseConfig";
+import { UserContext } from "../context/UserContext";
 
 const { width } = Dimensions.get("window");
-
 
 const LoginForm = () => {
   const navigation = useNavigation();
@@ -30,11 +27,9 @@ const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
   const [seePassword, setSeePassword] = useState(false);
   const [secureText, setSecureText] = useState(true);
-
-  const { width } = useWindowDimensions(); // Move this to the top before any return statement
+  const { width } = useWindowDimensions();
 
   const togglePassword = () => setSeePassword(!seePassword);
   const passwordVisibility = () => {
@@ -45,15 +40,8 @@ const LoginForm = () => {
   const loadFonts = async () => {
     await Font.loadAsync({
       "Poppins-Regular": require("../assets/fonts/Poppins-Regular.ttf"),
-      "Poppins-BlackItalic": require("../assets/fonts/Poppins-BlackItalic.ttf"),
       "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
-      "Poppins-BoldItalic": require("../assets/fonts/Poppins-BoldItalic.ttf"),
-      "Poppins-ExtraBold": require("../assets/fonts/Poppins-ExtraBold.ttf"),
-      "Poppins-ExtraBoldItalic": require("../assets/fonts/Poppins-ExtraBoldItalic.ttf"),
-      "Poppins-SemiBold": require("../assets/fonts/Poppins-SemiBold.ttf"),
-      "Raleway-Italic-VariableFont_wght": require("../assets/fonts/Raleway-Italic-VariableFont_wght.ttf"),
-      "Raleway-VariableFont_wght": require("../assets/fonts/Raleway-VariableFont_wght.ttf"),
-      "Raleway-ExtraBold": require("../assets/fonts/Raleway-ExtraBold.ttf"),
+      // Other font loads...
     });
   };
 
@@ -85,7 +73,20 @@ const LoginForm = () => {
     }
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const user = userCredential.user;
+
+      // Fetch user data from your database (assumed to be Firestore)
+      const userDoc = await db.collection("users").doc(user.uid).get();
+      if (userDoc.exists) {
+        const userData = { ...userDoc.data(), uid: user.uid };
+        console.log("User data fetched from Firestore: ", userData);
+      }
+
       navigation.navigate("Welcome");
     } catch (error) {
       switch (error.code) {
@@ -119,12 +120,10 @@ const LoginForm = () => {
         <TextInput
           style={styles.input}
           placeholder="Email"
-          inputMode="email"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
-          autoCorrect={false}
         />
         <View style={styles.PasswordEntryBox}>
           <TextInput
@@ -134,8 +133,6 @@ const LoginForm = () => {
             onChangeText={setPassword}
             secureTextEntry={secureText}
             autoCapitalize="none"
-            autoComplete="off"
-            autoCorrect={false}
           />
           <Ionicons
             size={20}
@@ -153,25 +150,11 @@ const LoginForm = () => {
         <Pressable onPress={() => navigation.navigate("Forgot")}>
           <Text style={styles.forgotPassword}>Forgot Password?</Text>
         </Pressable>
-        {/* <TouchableOpacity
-          style={styles.signupButton}
-          onPress={() => navigation.navigate("Signup")}
-        >
-          <Text style={styles.signupText}>Don't have an account? Sign up</Text>
-        </TouchableOpacity> */}
-        {/* <View style={styles.socialButtonsContainer}>
-          <Pressable style={styles.socialButton}>
-            <Text style={styles.socialButtonText}>Continue with Apple</Text>
-          </Pressable>
-          <Pressable style={styles.socialButton}>
-            <Text style={styles.socialButtonText}>Continue with Google</Text>
-          </Pressable>
-          <Pressable style={styles.socialButton}>
-            <Text style={styles.socialButtonText}>Continue with Phone</Text>
-          </Pressable>
-        </View> */}
       </View>
-      <TouchableOpacity style={styles.clearOnboarding} onPress={clearOnboarding}>
+      <TouchableOpacity
+        style={styles.clearOnboarding}
+        onPress={clearOnboarding}
+      >
         <Text style={styles.loginText}>Clear Onboarding</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -182,7 +165,7 @@ const styles = StyleSheet.create({
   safeArea: {
     backgroundColor: "white",
     flex: 1,
-    paddingTop: 30
+    paddingTop: 30,
   },
   logo: {
     height: 120,
@@ -252,13 +235,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textDecorationLine: "underline",
     fontFamily: "Poppins-Regular",
-    marginLeft: -80
+    marginLeft: -80,
   },
   errorText: {
     color: "red",
     marginBottom: 10,
     fontFamily: "Poppins-Regular",
-    
   },
   PasswordEntryBox: {
     flexDirection: "row",
@@ -293,15 +275,15 @@ const styles = StyleSheet.create({
   buttonText: {
     fontFamily: "Poppins-Regular",
   },
-  clearOnboarding:{
+  clearOnboarding: {
     backgroundColor: "#B7C42E",
-    justifyContent: 'center',
+    justifyContent: "center",
     alignItems: "center",
     width: 150,
     height: 50,
     borderRadius: 10,
-    alignSelf: "center"
-  }
+    alignSelf: "center",
+  },
 });
 
 export default LoginForm;

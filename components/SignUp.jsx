@@ -1,4 +1,11 @@
-import { View, Text, StyleSheet, Dimensions, Image, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -53,12 +60,13 @@ const LoginOrSignUp = () => {
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Welcome to OneSA</Text>
           <Text style={styles.headerSubtitle}>
-            Sign up or log in now to make your voice heard and drive real change.
+            Sign up or log in now to make your voice heard and drive real
+            change.
           </Text>
         </View>
       </View>
       <Tab.Navigator
-      style={styles.tabNavigator}
+        style={styles.tabNavigator}
         screenOptions={{
           tabBarIndicatorStyle: { backgroundColor: "#B7C42E" }, // Color of the indicator line
         }}
@@ -76,8 +84,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     paddingHorizontal: 20,
   },
-  tabNavigator:{
-    marginTop: 20
+  tabNavigator: {
+    marginTop: 20,
   },
   loadingContainer: {
     flex: 1,
@@ -88,7 +96,7 @@ const styles = StyleSheet.create({
     height: 77,
     width: 232,
     alignSelf: "center",
-    marginTop: 15
+    marginTop: 15,
   },
   header: {
     alignItems: "center",
@@ -104,7 +112,7 @@ const styles = StyleSheet.create({
     width: 250,
     fontSize: 16,
     textAlign: "center",
-    color: "#696969"
+    color: "#696969",
   },
   LoginOrSignUp: {
     height: 170,
