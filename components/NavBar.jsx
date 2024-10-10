@@ -13,10 +13,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const favicon = require("../assets/images/Favicon.png");
 import * as Font from "expo-font";
 import { useNavigation } from "@react-navigation/native";
+import { auth } from "../FIrebaseConfig";
+import { signOut } from "firebase/auth";
 
 const NavBar = ({ userInfo }) => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [notificationVisible, setNotificationVisible] = useState(false);
   const navigation = useNavigation();
 
   const loadFonts = async () => {
@@ -44,6 +47,10 @@ const NavBar = ({ userInfo }) => {
     setDropdownVisible(!dropdownVisible);
   };
 
+  const toggleNavigation = () => {
+    setNotificationVisible(!notificationVisible);
+  };
+
   const handleProfile = () => {
     toggleDropdown();
     navigation.navigate("Profile");
@@ -51,39 +58,46 @@ const NavBar = ({ userInfo }) => {
 
   const handleSettings = () => {
     toggleDropdown();
-    // Navigate to settings screen or handle settings logic
-    console.log("Navigating to Settings");
+    navigation.navigate("Settings");
   };
 
   const handleHelpCenter = () => {
     toggleDropdown();
-    // Navigate to Help Center screen or handle help center logic
-    console.log("Navigating to Help Center");
+    navigation.navigate("HelpCenter");
   };
 
   const handleAppInfo = () => {
     toggleDropdown();
-    // Show app information or navigate
-    console.log("Showing App Information");
+    navigation.navigate("AppInfo");
   };
 
   const handleRateApp = () => {
     toggleDropdown();
-    // Handle app rating logic (e.g., redirect to app store)
-    console.log("Redirecting to Rate the App");
+    navigation.navigate("RateTheApp");
   };
 
-  const handleLogout = () => {
-    toggleDropdown();
-    // Handle logout logic
-    console.log("Logging Out");
+  const handleSignOut = async () => {
+    try {
+      console.log("Attempting to sign out...");
+      await signOut(auth);
+      console.log("User signed out!");
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "SignUp" }],
+      });
+
+      setDropdownVisible(false);
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
   };
 
   return (
     <SafeAreaView style={[styles.NavTop, { position: "relative" }]}>
       <Image style={styles.favIcon} source={favicon} />
       <View style={styles.cornerIcons}>
-        <TouchableOpacity style={styles.Icon}>
+        <TouchableOpacity onPress={toggleNavigation} style={styles.Icon}>
           <Ionicons name="notifications-outline" size={32} color="black" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.Icon}>
@@ -101,33 +115,75 @@ const NavBar = ({ userInfo }) => {
 
       {dropdownVisible && (
         <View style={styles.dropdownMenu}>
-          <TouchableOpacity onPress={handleProfile} style={styles.userContainer}>
+          <TouchableOpacity
+            onPress={handleProfile}
+            style={styles.userContainer}
+          >
             <Ionicons name="person-circle" size={30} color="black" />
-            <Text style={styles.userName}>
+            <Text style={[styles.userName, { fontFamily: "Poppins-Bold" }]}>
               {userInfo && userInfo.length > 0
                 ? `${userInfo[0].name} ${userInfo[0].surname}`
                 : "User"}
             </Text>
-            <Ionicons
-              name={dropdownVisible ? "chevron-up" : "chevron-down"}
-              size={20}
-              color="black"
-            />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.dropdownItem} onPress={handleSettings}>
-            <Text style={styles.dropdownText}>Settings</Text>
+          <TouchableOpacity
+            style={styles.dropdownItem}
+            onPress={handleSettings}
+          >
+            <Ionicons name="settings-outline" />
+            <Text
+              style={[styles.dropdownText, { fontFamily: "Poppins-Regular" }]}
+            >
+              Settings
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.dropdownItem} onPress={handleHelpCenter}>
-            <Text style={styles.dropdownText}>Help Center</Text>
+          <TouchableOpacity
+            style={styles.dropdownItem}
+            onPress={handleHelpCenter}
+          >
+            <Ionicons name="help-circle-outline" />
+            <Text
+              style={[styles.dropdownText, { fontFamily: "Poppins-Regular" }]}
+            >
+              Help Center
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.dropdownItem} onPress={handleAppInfo}>
-            <Text style={styles.dropdownText}>App Information</Text>
+            <Ionicons name="information-circle-outline" />
+            <Text
+              style={[styles.dropdownText, { fontFamily: "Poppins-Regular" }]}
+            >
+              App Information
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.dropdownItem} onPress={handleRateApp}>
-            <Text style={styles.dropdownText}>Rate The App</Text>
+            <Ionicons name="star-half-outline" />
+            <Text
+              style={[styles.dropdownText, { fontFamily: "Poppins-Regular" }]}
+            >
+              Rate The App
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.dropdownItem} onPress={handleLogout}>
-            <Text style={styles.dropdownText}>Log Out</Text>
+          <TouchableOpacity style={styles.dropdownItem} onPress={handleSignOut}>
+            <Ionicons name="log-out-outline" />
+            <Text
+              style={[styles.dropdownText, { fontFamily: "Poppins-Regular" }]}
+            >
+              Log Out
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {notificationVisible && (
+        <View style={styles.dropdownMenu}>
+          <TouchableOpacity style={styles.dropdownItem}>
+            <Ionicons name="notifications-outline" />
+            <Text
+              style={[styles.dropdownText, { fontFamily: "Poppins-Regular" }]}
+            >
+              Notifications
+            </Text>
           </TouchableOpacity>
         </View>
       )}
@@ -142,7 +198,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingTop: 10,
-    zIndex: 1000
+    zIndex: 1000,
   },
   cornerIcons: {
     flexDirection: "row",
@@ -163,10 +219,12 @@ const styles = StyleSheet.create({
     borderRadius: 99,
   },
   dropdownMenu: {
+    marginTop: 30,
     position: "absolute",
     top: 70,
+    padding: 18,
     right: 10,
-    width: 300,
+    width: 220,
     backgroundColor: "#ffffff",
     borderRadius: 8,
     shadowColor: "#000",
@@ -181,10 +239,43 @@ const styles = StyleSheet.create({
   },
   dropdownItem: {
     padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    marginBottom: 5,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 3.5,
+    elevation: 2,
   },
   dropdownText: {
     fontSize: 16,
+    marginLeft: 10,
+  },
+  userContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
+    padding: 10,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    elevation: 5,
+    marginBottom: 15,
+  },
+  userName: {
+    fontSize: 16,
+    marginLeft: 10,
+    fontFamily: "Poppins-Bold",
   },
 });

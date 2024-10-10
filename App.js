@@ -17,6 +17,10 @@ import SuccessRateScreen from "./screens/SuccessRateScreen";
 import ProjectsPages from "./screens/ProjectsPages";
 import MinisterDetail from "./screens/MinisterDetails";
 import HomeTabs from "./navigators/HomeTabs";
+import Settings from "./screens/Settings";
+import HelpCentre from "./screens/HelpCentre";
+import AppInfo from "./screens/AppInfo";
+import RateTheApp from "./screens/RateTheApp";
 
 const Stack = createNativeStackNavigator();
 
@@ -68,7 +72,7 @@ export default function App() {
           component={SignUp}
           options={{ headerShown: false }}
         />
-                <Stack.Screen
+        <Stack.Screen
           name="Dashboard"
           component={HomeTabs}
           options={{ headerShown: false }}
@@ -125,9 +129,29 @@ export default function App() {
           component={SuccessRateScreen}
         />
         <Stack.Screen
+          name="Settings"
+          options={{ headerShown: false }}
+          component={Settings}
+        />
+        <Stack.Screen
+          name="HelpCenter"
+          options={{ headerShown: false }}
+          component={HelpCentre}
+        />
+        <Stack.Screen
           name="MinisterDetails"
           options={{ headerShown: false }}
           component={MinisterDetail}
+        />
+        <Stack.Screen
+          name="AppInfo"
+          options={{ headerShown: false }}
+          component={AppInfo}
+        />
+        <Stack.Screen
+          name="RateTheApp"
+          options={{ headerShown: false }}
+          component={RateTheApp}
         />
       </Stack.Navigator>
     </NavigationContainer>
