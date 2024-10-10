@@ -16,6 +16,7 @@ import BudgetScreen from "./screens/BudgetScreen";
 import SuccessRateScreen from "./screens/SuccessRateScreen";
 import ProjectsPages from "./screens/ProjectsPages";
 import MinisterDetail from "./screens/MinisterDetails";
+import HomeTabs from "./navigators/HomeTabs";
 
 const Stack = createNativeStackNavigator();
 
@@ -67,6 +68,12 @@ export default function App() {
           component={SignUp}
           options={{ headerShown: false }}
         />
+                <Stack.Screen
+          name="Dashboard"
+          component={HomeTabs}
+          options={{ headerShown: false }}
+        />
+
         <Stack.Screen
           name="Home"
           options={{ headerShown: false }}

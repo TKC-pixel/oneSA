@@ -72,7 +72,7 @@ const LoginForm = () => {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       if (user) {
-        navigation.navigate("Welcome");
+        navigation.navigate("Dashboard");
       }
     });
     return () => unsub();
