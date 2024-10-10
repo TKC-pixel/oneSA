@@ -19,5 +19,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "white",
         paddingHorizontal: 18,
+        position: "relative"
       },
 })

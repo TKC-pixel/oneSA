@@ -81,7 +81,7 @@ export default HomeTabs;
 const styles = StyleSheet.create({
     tabBarStyle: {
         height: 80,
-        backgroundColor: "#fffffff",
+        // backgroundColor: "#fffffff",
         position: "absolute",
         bottom: 10,
         left: 20,

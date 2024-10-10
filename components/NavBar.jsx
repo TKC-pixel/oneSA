@@ -1,37 +1,28 @@
 import {
   Text,
   View,
-  ScrollView,
   Image,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   ActivityIndicator,
   useWindowDimensions,
-  Pressable,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 const favicon = require("../assets/images/Favicon.png");
 import * as Font from "expo-font";
+import { useNavigation } from "@react-navigation/native";
 
-const NavBar = () => {
+const NavBar = ({ userInfo }) => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const navigation = useNavigation();
 
   const loadFonts = async () => {
     await Font.loadAsync({
       "Poppins-Regular": require("../assets/fonts/Poppins-Regular.ttf"),
-      "Poppins-BlackItalic": require("../assets/fonts/Poppins-BlackItalic.ttf"),
       "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
-      "Poppins-BoldItalic": require("../assets/fonts/Poppins-BoldItalic.ttf"),
-      "Poppins-ExtraBold": require("../assets/fonts/Poppins-ExtraBold.ttf"),
-      "Poppins-ExtraBoldItalic": require("../assets/fonts/Poppins-ExtraBoldItalic.ttf"),
-      "Poppins-Regular": require("../assets/fonts/Poppins-Regular.ttf"),
-      "Poppins-SemiBold": require("../assets/fonts/Poppins-SemiBold.ttf"),
-      "Raleway-Italic-VariableFont_wght": require("../assets/fonts/Raleway-Italic-VariableFont_wght.ttf"),
-      "Raleway-VariableFont_wght": require("../assets/fonts/Raleway-VariableFont_wght.ttf"),
-      "Raleway-ExtraBold": require("../assets/fonts/Raleway-ExtraBold.ttf"),
     });
   };
 
@@ -48,8 +39,48 @@ const NavBar = () => {
       </View>
     );
   }
+
+  const toggleDropdown = () => {
+    setDropdownVisible(!dropdownVisible);
+  };
+
+  const handleProfile = () => {
+    toggleDropdown();
+    navigation.navigate("Profile");
+  };
+
+  const handleSettings = () => {
+    toggleDropdown();
+    // Navigate to settings screen or handle settings logic
+    console.log("Navigating to Settings");
+  };
+
+  const handleHelpCenter = () => {
+    toggleDropdown();
+    // Navigate to Help Center screen or handle help center logic
+    console.log("Navigating to Help Center");
+  };
+
+  const handleAppInfo = () => {
+    toggleDropdown();
+    // Show app information or navigate
+    console.log("Showing App Information");
+  };
+
+  const handleRateApp = () => {
+    toggleDropdown();
+    // Handle app rating logic (e.g., redirect to app store)
+    console.log("Redirecting to Rate the App");
+  };
+
+  const handleLogout = () => {
+    toggleDropdown();
+    // Handle logout logic
+    console.log("Logging Out");
+  };
+
   return (
-    <SafeAreaView style={styles.NavTop}>
+    <SafeAreaView style={[styles.NavTop, { position: "relative" }]}>
       <Image style={styles.favIcon} source={favicon} />
       <View style={styles.cornerIcons}>
         <TouchableOpacity style={styles.Icon}>
@@ -58,7 +89,7 @@ const NavBar = () => {
         <TouchableOpacity style={styles.Icon}>
           <Ionicons name="sunny-outline" size={32} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={toggleDropdown}>
           <Image
             style={styles.favIcon}
             source={{
@@ -67,10 +98,42 @@ const NavBar = () => {
           />
         </TouchableOpacity>
       </View>
+
+      {dropdownVisible && (
+        <View style={styles.dropdownMenu}>
+          <TouchableOpacity onPress={handleProfile} style={styles.userContainer}>
+            <Ionicons name="person-circle" size={30} color="black" />
+            <Text style={styles.userName}>
+              {userInfo && userInfo.length > 0
+                ? `${userInfo[0].name} ${userInfo[0].surname}`
+                : "User"}
+            </Text>
+            <Ionicons
+              name={dropdownVisible ? "chevron-up" : "chevron-down"}
+              size={20}
+              color="black"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.dropdownItem} onPress={handleSettings}>
+            <Text style={styles.dropdownText}>Settings</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.dropdownItem} onPress={handleHelpCenter}>
+            <Text style={styles.dropdownText}>Help Center</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.dropdownItem} onPress={handleAppInfo}>
+            <Text style={styles.dropdownText}>App Information</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.dropdownItem} onPress={handleRateApp}>
+            <Text style={styles.dropdownText}>Rate The App</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.dropdownItem} onPress={handleLogout}>
+            <Text style={styles.dropdownText}>Log Out</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
-
 export default NavBar;
 
 const styles = StyleSheet.create({
@@ -79,6 +142,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     paddingTop: 10,
+    zIndex: 1000
   },
   cornerIcons: {
     flexDirection: "row",
@@ -97,5 +161,30 @@ const styles = StyleSheet.create({
     height: 50,
     backgroundColor: "#D9D9D9",
     borderRadius: 99,
+  },
+  dropdownMenu: {
+    position: "absolute",
+    top: 70,
+    right: 10,
+    width: 300,
+    backgroundColor: "#ffffff",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    zIndex: 1000,
+  },
+  dropdownItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  dropdownText: {
+    fontSize: 16,
   },
 });
