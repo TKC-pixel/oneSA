@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -15,10 +15,13 @@ import { db, auth, storage } from "../FIrebaseConfig";
 import * as ImagePicker from "expo-image-picker";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import uuid from "react-native-uuid";
+import * as Font from "expo-font";
+import { TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const EditProfile = () => {
   const { userData, setUserData } = useContext(UserContext);
-
+  const [fontsLoaded, setFontsLoaded] = useState(false);
   const [formData, setFormData] = useState({
     name: userData?.name || "",
     surname: userData?.surname || "",
@@ -27,10 +30,29 @@ const EditProfile = () => {
     profileImageUrl: userData?.profilePic || "",
     coverImageUrl: userData?.coverPic || "",
   });
-
   const [uploading, setUploading] = useState(false);
   const [image, setImage] = useState(null);
   const [coverImage, setCoverImage] = useState(null);
+
+  const loadFonts = async () => {
+    await Font.loadAsync({
+      "Poppins-Regular": require("../assets/fonts/Poppins-Regular.ttf"),
+      "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
+    });
+    setFontsLoaded(true);
+  };
+
+  useEffect(() => {
+    loadFonts();
+  }, []);
+
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   const uploadImageToStorage = async (uri, folder) => {
     try {
@@ -79,7 +101,6 @@ const EditProfile = () => {
   const handleSave = async () => {
     try {
       const userRef = doc(db, "Users", auth.currentUser.uid);
-
       const updatedData = {
         name: formData.name || null,
         surname: formData.surname || null,
@@ -99,69 +120,77 @@ const EditProfile = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.coverContainer}>
-        <Button
-          title="Pick Cover Image"
-          onPress={() =>
-            handleImagePick(setCoverImage, "coverImages", "coverImageUrl")
-          }
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container}>
+        <View style={styles.coverContainer}>
+          <TouchableOpacity
+            onPress={() =>
+              handleImagePick(setCoverImage, "coverImages", "coverImageUrl")
+            }
+          >
+            <Text style={styles.buttonText}>Pick Cover Image</Text>
+          </TouchableOpacity>
+          {coverImage && (
+            <Image source={{ uri: coverImage }} style={styles.coverImage} />
+          )}
+        </View>
+
+        <View style={styles.profileContainer}>
+          <TouchableOpacity
+            onPress={() =>
+              handleImagePick(setImage, "profileImages", "profileImageUrl")
+            }
+          >
+            <Text style={styles.buttonText}>Pick Profile Image</Text>
+          </TouchableOpacity>
+          {image && <Image source={{ uri: image }} style={styles.image} />}
+        </View>
+
+        {uploading && <ActivityIndicator size="large" color="#0000ff" />}
+
+        <TextInput
+          placeholder="Name"
+          value={formData.name}
+          onChangeText={(text) => handleInputChange("name", text)}
+          style={styles.input}
         />
-        {coverImage && (
-          <Image source={{ uri: coverImage }} style={styles.image} />
-        )}
-      </View>
-
-      <View style={styles.profileContainer}>
-        <Button
-          title="Pick Profile Image"
-          onPress={() =>
-            handleImagePick(setImage, "profileImages", "profileImageUrl")
-          }
+        <TextInput
+          placeholder="Surname"
+          value={formData.surname}
+          onChangeText={(text) => handleInputChange("surname", text)}
+          style={styles.input}
         />
-        {image && <Image source={{ uri: image }} style={styles.image} />}
-      </View>
-
-      {uploading && <ActivityIndicator size="large" color="#0000ff" />}
-
-      <TextInput
-        placeholder="Name"
-        value={formData.name}
-        onChangeText={(text) => handleInputChange("name", text)}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Surname"
-        value={formData.surname}
-        onChangeText={(text) => handleInputChange("surname", text)}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Phone"
-        value={formData.phone}
-        onChangeText={(text) => handleInputChange("phone", text)}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Bio"
-        value={formData.bio}
-        onChangeText={(text) => handleInputChange("bio", text)}
-        style={[styles.input, styles.textArea]}
-        multiline
-        numberOfLines={4}
-      />
-
-      <Button title="Save" onPress={handleSave} />
-    </ScrollView>
+        <TextInput
+          placeholder="Phone"
+          value={formData.phone}
+          onChangeText={(text) => handleInputChange("phone", text)}
+          style={styles.input}
+        />
+        <TextInput
+          placeholder="Bio"
+          value={formData.bio}
+          onChangeText={(text) => handleInputChange("bio", text)}
+          style={[styles.input, styles.textArea]}
+          multiline
+          numberOfLines={4}
+        />
+        <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
+          <Text style={styles.saveButtonText}>Save</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 export default EditProfile;
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#f8f9fa",
+  },
   container: {
     padding: 20,
-    backgroundColor: "#fff",
   },
   profileContainer: {
     alignItems: "center",
@@ -171,19 +200,55 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
-  image: {
-    width: 200,
+  coverImage: {
+    width: "100%",
     height: 200,
     marginTop: 10,
+    borderRadius: 10,
+    overflow: "hidden",
+    borderColor: "#ddd",
+    borderWidth: 1,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginTop: 10,
+    borderColor: "#ddd",
+    borderWidth: 1,
   },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
     padding: 10,
     marginBottom: 15,
-    borderRadius: 5,
+    borderRadius: 8,
+    fontFamily: "Poppins-Regular",
+    backgroundColor: "#fff",
+  },
+  buttonText: {
+    fontFamily: "Poppins-Bold",
+    color: "#B7C42E",
+    textDecorationLine: "underline",
+  },
+  saveButton: {
+    backgroundColor: "#B7C42E",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginVertical: 20,
+  },
+  saveButtonText: {
+    color: "#fff",
+    fontFamily: "Poppins-Bold",
   },
   textArea: {
     height: 100,
+    textAlignVertical: "top",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
