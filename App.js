@@ -26,6 +26,7 @@ import SplashScreen from "./components/SplashScreen";
 import EditProfile from "./screens/editProfile";
 import { ThemeProvider } from "./context/ThemeContext";
 import CreateReport from "./screens/CreateReport";
+import UserReportDetails from "./screens/UserReportDetails";
 
 const Stack = createNativeStackNavigator();
 
@@ -175,6 +176,11 @@ export default function App() {
             name="CreateReport"
             options={{ headerShown: false }}
             component={CreateReport}
+          />
+           <Stack.Screen
+            name="UserReportDetails"
+            options={{ headerShown: false }}
+            component={UserReportDetails}
           />
         </Stack.Navigator>
       </NavigationContainer>

@@ -1,17 +1,31 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   StyleSheet,
   Text,
+  Button,
   View,
+  Image,
   TextInput,
   TouchableOpacity,
+  FlatList,
+  TouchableHighlight,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import * as ImagePicker from "expo-image-picker";
+import { auth, db, storage } from "../FIrebaseConfig"; // Firebase setup
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+
+const Nominatim_API_URL = "https://nominatim.openstreetmap.org/search";
+
 const CreateReport = ({ navigation }) => {
   const [description, setDescription] = useState("");
   const [department, setDepartment] = useState("");
   const [status, setStatus] = useState("");
   const [additionalComments, setAdditionalComments] = useState("");
+  const [image, setImage] = useState(null);
+  const [location, setLocation] = useState("");
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
 
   const departments = [
     { label: "Department of Health", value: "health" },
@@ -25,13 +39,90 @@ const CreateReport = ({ navigation }) => {
     { label: "Complete", value: "complete" },
   ];
 
-  const handleCreateReport = () => {
-    navigation.goBack();
+  const userId = auth.currentUser.uid;
+
+  const uploadImage = async (uri) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const storageRef = ref(storage, `reports/${Date.now()}`);
+    const snapshot = await uploadBytes(storageRef, blob);
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    return downloadURL;
+  };
+
+  const handleCreateReport = async () => {
+    try {
+      let imageUrl = "";
+      if (image) {
+        imageUrl = await uploadImage(image);
+      }
+
+      const reportData = {
+        description,
+        department,
+        status,
+        additionalComments,
+        location,
+        projectImage: imageUrl,
+      };
+
+      const userDocRef = doc(db, "Users", userId);
+      await updateDoc(userDocRef, {
+        reports: arrayUnion(reportData),
+      });
+
+      navigation.goBack();
+    } catch (error) {
+      console.error("Error submitting report: ", error);
+    }
+  };
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
+
+  // Fetch location suggestions from Nominatim API
+  const fetchLocationSuggestions = async (query) => {
+    if (query.length < 3) {
+      setLocationSuggestions([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${Nominatim_API_URL}?q=${encodeURIComponent(
+          query
+        )}&format=json&addressdetails=1&limit=5`
+      );
+      const data = await response.json();
+      setLocationSuggestions(data);
+    } catch (error) {
+      console.error("Error fetching location suggestions: ", error);
+    }
+  };
+
+  const handleLocationSelect = (location) => {
+    setLocation(location.display_name);
+    setLocationSuggestions([]);
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>File a Report</Text>
+
+      <View style={styles.imageContainer}>
+        {image && <Image source={{ uri: image }} style={styles.image} />}
+        <Button title="Pick an image from camera roll" onPress={pickImage} />
+      </View>
 
       <TextInput
         placeholder="Description"
@@ -69,6 +160,33 @@ const CreateReport = ({ navigation }) => {
       </Picker>
 
       <TextInput
+        placeholder="Location"
+        value={location}
+        onChangeText={(text) => {
+          setLocation(text);
+          fetchLocationSuggestions(text);
+        }}
+        style={styles.input}
+      />
+
+      {/* Render Location Suggestions */}
+      {locationSuggestions.length > 0 && (
+        <FlatList
+          data={locationSuggestions}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <TouchableHighlight
+              onPress={() => handleLocationSelect(item)}
+              underlayColor="#ddd"
+            >
+              <Text style={styles.suggestionItem}>
+                {item.display_name}
+              </Text>
+            </TouchableHighlight>
+          )}
+        />
+      )}
+      <TextInput
         placeholder="Additional Comments"
         value={additionalComments}
         onChangeText={setAdditionalComments}
@@ -76,6 +194,7 @@ const CreateReport = ({ navigation }) => {
         multiline
         numberOfLines={4}
       />
+
 
       <TouchableOpacity style={styles.button} onPress={handleCreateReport}>
         <Text style={styles.buttonText}>Submit Report</Text>
@@ -91,6 +210,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: "center",
+    backgroundColor: "white",
   },
   title: {
     fontSize: 24,
@@ -124,5 +244,15 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  suggestionItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  image: {
+    alignSelf: "center",
+    width: 200,
+    height: 200,
   },
 });
