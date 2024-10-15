@@ -214,7 +214,7 @@ export default function Welcome({ navigation }) {
   useEffect(() => {
     if (locationData) {
       const currentProvince = getProvinceFromCity(locationData).toLowerCase();
-      // console.log('Current Province:', currentProvince);
+      // console.log('Current Province:', currentProvince);zzzzzz
       if (currentProvince) {
         filterDepartmentsByProvince(currentProvince);
       }
