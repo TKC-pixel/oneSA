@@ -23,6 +23,7 @@ import AppInfo from "./screens/AppInfo";
 import RateTheApp from "./screens/RateTheApp";
 import { UserProvider } from "./context/UserContext";
 import SplashScreen from "./components/SplashScreen";
+import EditProfile from "./screens/editProfile";
 
 const Stack = createNativeStackNavigator();
 
@@ -161,6 +162,11 @@ export default function App() {
             name="RateTheApp"
             options={{ headerShown: false }}
             component={RateTheApp}
+          />
+          <Stack.Screen
+            name="EditProfile"
+            options={{ headerShown: false }}
+            component={EditProfile}
           />
         </Stack.Navigator>
       </NavigationContainer>
