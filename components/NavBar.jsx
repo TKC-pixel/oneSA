@@ -16,6 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import { auth } from "../FIrebaseConfig";
 import { signOut } from "firebase/auth";
 import { UserContext } from "../context/UserContext";
+import { ThemeContext } from "../context/ThemeContext";
 
 const NavBar = ({ userInfo }) => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -24,6 +25,7 @@ const NavBar = ({ userInfo }) => {
   const navigation = useNavigation();
 
   const { userData } = useContext(UserContext);
+  const { theme, toggleTheme } = useContext(ThemeContext);
 
   const loadFonts = async () => {
     await Font.loadAsync({
@@ -103,8 +105,12 @@ const NavBar = ({ userInfo }) => {
         <TouchableOpacity onPress={toggleNavigation} style={styles.Icon}>
           <Ionicons name="notifications-outline" size={32} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.Icon}>
-          <Ionicons name="sunny-outline" size={32} color="black" />
+        <TouchableOpacity onPress={toggleTheme} style={styles.Icon}>
+          <Ionicons
+            name={theme === "light" ? "sunny-outline" : "moon-outline"}
+            size={32}
+            color="black"
+          />
         </TouchableOpacity>
         <TouchableOpacity onPress={toggleDropdown}>
           <Image

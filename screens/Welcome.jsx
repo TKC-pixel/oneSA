@@ -13,7 +13,7 @@ import {
   Pressable,
   SafeAreaView,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import * as Font from "expo-font";
 import NavBar from "../components/NavBar";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -22,6 +22,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Location from "expo-location";
 import axios from "axios";
+import { ThemeContext } from "../context/ThemeContext";
 
 const favicon = require("../assets/images/Favicon.png");
 
@@ -35,6 +36,7 @@ export default function Welcome({ navigation }) {
   const [locationData, setLocationData] = useState(null);
   const [scrapedData, setScrapedData] = useState({ links: [] });
   const [provinceDepartments, setProvinceDepartments] = useState([]);
+  const { theme } = useContext(ThemeContext); 
 
   const apiKey = "66a997da439128fae9fe1b8fd278de895bc7bbbc";
   const targetURL =
