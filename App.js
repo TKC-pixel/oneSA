@@ -24,6 +24,8 @@ import RateTheApp from "./screens/RateTheApp";
 import { UserProvider } from "./context/UserContext";
 import SplashScreen from "./components/SplashScreen";
 import EditProfile from "./screens/editProfile";
+import { ThemeProvider } from "./context/ThemeContext";
+import CreateReport from "./screens/CreateReport";
 
 const Stack = createNativeStackNavigator();
 
@@ -68,6 +70,7 @@ export default function App() {
 
   return (
     <UserProvider>
+      <ThemeProvider>
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName={viewedOnboarding ? "SignUp" : "Onboarding"}
@@ -168,8 +171,14 @@ export default function App() {
             options={{ headerShown: false }}
             component={EditProfile}
           />
+            <Stack.Screen
+            name="CreateReport"
+            options={{ headerShown: false }}
+            component={CreateReport}
+          />
         </Stack.Navigator>
       </NavigationContainer>
+      </ThemeProvider>
     </UserProvider>
   );
 }
