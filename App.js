@@ -23,13 +23,15 @@ import AppInfo from "./screens/AppInfo";
 import RateTheApp from "./screens/RateTheApp";
 import { UserProvider } from "./context/UserContext";
 import SplashScreen from "./components/SplashScreen";
+import Chat from "./components/Chat";
+import DebateRooms from "./components/debateRooms";
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [viewedOnboarding, setViewedOnboarding] = useState(false);
-  const [showSplash, setShowSplash] = useState(true); 
+  const [showSplash, setShowSplash] = useState(true);
 
   const checkOnboarding = async () => {
     try {
@@ -46,15 +48,15 @@ export default function App() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setShowSplash(false); 
-      checkOnboarding(); 
-    }, 2000); 
+      setShowSplash(false);
+      checkOnboarding();
+    }, 2000);
 
-    return () => clearTimeout(timer); 
+    return () => clearTimeout(timer);
   }, []);
 
   if (showSplash) {
-    return <SplashScreen />; 
+    return <SplashScreen />;
   }
 
   if (loading) {
@@ -162,6 +164,8 @@ export default function App() {
             options={{ headerShown: false }}
             component={RateTheApp}
           />
+          <Stack.Screen name="Chat" component={Chat} />
+          <Stack.Screen name="DebateRooms" component={DebateRooms} />
         </Stack.Navigator>
       </NavigationContainer>
     </UserProvider>
