@@ -37,8 +37,9 @@ export default function Welcome({ navigation }) {
   const [scrapedData, setScrapedData] = useState({ links: [] });
   const [provinceDepartments, setProvinceDepartments] = useState([]);
   const { theme } = useContext(ThemeContext); 
+  const [deptCodes, setDeptCodes] = useState([]);
 
-  const apiKey = "66a997da439128fae9fe1b8fd278de895bc7bbbc";
+  const apiKey = "984e92c064d5b5c29b0f1718435fdec919b949a8";
   const targetURL =
     "https://provincialgovernment.co.za/units/type/1/departments";
   const cssExtractor =
@@ -184,24 +185,31 @@ export default function Welcome({ navigation }) {
 
   const filterDepartmentsByProvince = (province) => {
     const provinceMap = {};
+    const codesMap = {};
     scrapedData.links.forEach((link) => {
       if (link.startsWith("/units/view/")) {
         const parts = link.split("/");
         if (parts.length >= 6) {
           const provinceName = parts[4];
           const departmentName = parts[5];
+          const departmentCode = parts[3];
           if (!provinceMap[provinceName]) {
             provinceMap[provinceName] = [];
+            codesMap[provinceName] = [];
           }
           provinceMap[provinceName].push(departmentName);
+          codesMap[provinceName].push(departmentCode);
         }
       }
     });
     setProvinceDepartments(provinceMap[province] || []);
     const departments = provinceMap[province] || [];
     setProvinceDepartments(departments);
+    const codes = codesMap[province] || [];
     if (departments.length > 0) {
       setDepartment(departments[0]);
+      deptCodes.length = 0; 
+      deptCodes.push(...codes); 
     } else {
       setDepartment("Loading Departments...");
     }
@@ -238,7 +246,7 @@ export default function Welcome({ navigation }) {
     ]);
     return true;
   };
-
+  console.log('codes', deptCodes);
   useFocusEffect(
     React.useCallback(() => {
       BackHandler.addEventListener("hardwareBackPress", handleBackPress);
@@ -327,7 +335,10 @@ export default function Welcome({ navigation }) {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate("Budget")}
+            onPress={() => {
+              navigation.navigate("Budget", { dept: provinceDepartments, id: deptCodes, prov: currentProvince });
+             
+            }}
           >
             <Text style={styles.cardText}>Budget Allocation</Text>
           </TouchableOpacity>
