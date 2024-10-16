@@ -98,7 +98,7 @@ export default function Welcome({ navigation }) {
     try {
       const response = await axios.get(
         `https://api.zenrows.com/v1/?apikey=${apiKey}&url=${targetURL}&css_extractor=${cssExtractor}`,
-        { timeout: 10000 }
+        { timeout: 70000 }
       );
       const linksData = response.data?.links || [];
       setScrapedData({ links: linksData });
@@ -282,7 +282,7 @@ export default function Welcome({ navigation }) {
             ? `${info[0].name} ${info[0].surname}`
             : "User"}
         </Text>
-        <Text>
+        <Text style={styles.cardText}>
           Current Province based on location:{" "}
           {currentProvince
             ? currentProvince.toUpperCase()
