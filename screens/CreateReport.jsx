@@ -14,12 +14,13 @@ import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import { auth, db, storage } from "../FIrebaseConfig"; // Firebase setup
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, collection, addDoc } from "firebase/firestore";
 
 const Nominatim_API_URL = "https://nominatim.openstreetmap.org/search";
 
 const CreateReport = ({ navigation }) => {
   const [description, setDescription] = useState("");
+  const [name, setName] = useState("");
   const [department, setDepartment] = useState("");
   const [status, setStatus] = useState("");
   const [additionalComments, setAdditionalComments] = useState("");
@@ -56,21 +57,29 @@ const CreateReport = ({ navigation }) => {
       if (image) {
         imageUrl = await uploadImage(image);
       }
-
+  
       const reportData = {
+        name,
         description,
         department,
         status,
         additionalComments,
         location,
         projectImage: imageUrl,
+        userId, // Add the userId for reference
+        timestamp: new Date(), // Add a timestamp
       };
-
+  
+      // Update the user's document with the report
       const userDocRef = doc(db, "Users", userId);
       await updateDoc(userDocRef, {
         reports: arrayUnion(reportData),
       });
-
+  
+      // Add the report to the reports collection
+      const reportsCollectionRef = collection(db, "reports");
+      await addDoc(reportsCollectionRef, reportData);
+  
       navigation.goBack();
     } catch (error) {
       console.error("Error submitting report: ", error);
@@ -123,6 +132,13 @@ const CreateReport = ({ navigation }) => {
         {image && <Image source={{ uri: image }} style={styles.image} />}
         <Button title="Pick an image from camera roll" onPress={pickImage} />
       </View>
+
+      <TextInput
+        placeholder="Name"
+        value={name}
+        onChangeText={setName}
+        style={styles.input}
+      />
 
       <TextInput
         placeholder="Description"

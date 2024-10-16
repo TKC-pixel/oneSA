@@ -113,14 +113,15 @@ const NavBar = ({ userInfo }) => {
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={toggleDropdown}>
-          <Image
-            style={styles.favIcon}
-            source={{
-              uri: userData.profileImageUrl
-                ? userData.profileImageUrl
-                : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
-            }}
-          />
+        <Image
+  style={styles.favIcon}
+  source={{
+    uri: userData && userData.profileImageUrl
+      ? userData.profileImageUrl
+      : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
+  }}
+/>
+
         </TouchableOpacity>
       </View>
 
@@ -130,14 +131,15 @@ const NavBar = ({ userInfo }) => {
             onPress={handleProfile}
             style={styles.userContainer}
           >
-            <Image
-              style={styles.favIcon}
-              source={{
-                uri: userData.profileImageUrl
-                  ? userData.profileImageUrl
-                  : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
-              }}
-            />
+          <Image
+  style={styles.favIcon}
+  source={{
+    uri: userData && userData.profileImageUrl
+      ? userData.profileImageUrl
+      : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
+  }}
+/>
+
             <Text style={[styles.userName, { fontFamily: "Poppins-Bold" }]}>
               {userInfo && userInfo.length > 0
                 ? `${userInfo[0].name} ${userInfo[0].surname}`
@@ -180,6 +182,14 @@ const NavBar = ({ userInfo }) => {
               style={[styles.dropdownText, { fontFamily: "Poppins-Regular" }]}
             >
               Rate The App
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.dropdownItem} onPress={handleRateApp}>
+            <Ionicons name="card-outline" />
+            <Text
+              style={[styles.dropdownText, { fontFamily: "Poppins-Regular" }]}
+            >
+              Upgrade Your Membership
             </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.dropdownItem} onPress={handleSignOut}>

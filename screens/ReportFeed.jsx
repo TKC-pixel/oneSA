@@ -1,81 +1,64 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { collection, onSnapshot } from "firebase/firestore";
+import { db } from "../FIrebaseConfig"; // Ensure Firebase is properly set up
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const ReportFeed = ({ navigation }) => {
+  const [reports, setReports] = useState([]);
   const favicon = require("../assets/images/Favicon.png");
-  const dummyData = [
-    {
-      profileImage: favicon,
-      name: "Candice",
-      reportTitle: "Public Hospital Renovations",
-      reportDescription:
-        "Lerato mentions that while renovations at the Soweto General Hospital have been exhausted.",
-      image: require("../assets/images/rural.jpg"),
-      department: "Department of Health and Science",
-      progress: "In Progress",
-      location: "Johannesburg General Hospital",
-      comments:
-        "Contractors have requested an extension due to bad weather conditions last month.",
-    },
-    {
-      profileImage: favicon,
-      name: "John",
-      reportTitle: "Community Center Updates",
-      reportDescription:
-        "John reports that the new community center will open next month.",
-      image: require("../assets/images/rural.jpg"),
-      department: "Department of Health and Science",
-      progress: "Not Started",
-      location: "Johannesburg",
-      comments:
-        "Contractors have requested an extension due to bad weather conditions last month.",
-    },
-    {
-      profileImage: favicon,
-      name: "Sarah",
-      reportTitle: "School Construction",
-      reportDescription:
-        "Sarah highlights the progress on the new school building in the area.",
-      image: require("../assets/images/rural.jpg"),
-      department: "Department of Health and Science",
-      progress: "Complete",
-      location: "Johannesburg",
-      comments:
-        "Contractors have requested an extension due to bad weather conditions last month.",
-    },
-  ];
-  
-  return (
-    <View style={styles.safeArea}>
-      <View style={styles.container}>
-        {dummyData.map((data, index) => (
-          <TouchableOpacity
-            key={index}
-           
-            style={styles.card}
-          >
-            <View style={styles.profileContainer}>
-              <Image source={data.profileImage} style={styles.profImage} />
-              <Text style={styles.name}>{data.name}</Text>
-            </View>
-            <Image source={data.image} style={styles.image} />
-            <View style={styles.info}>
-              <Text style={styles.reportTitle}>{data.reportTitle}</Text>
-              <Text style={styles.reportDescription}>{data.reportDescription}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </View>
-      <TouchableOpacity
-  style={styles.editButton}
-  onPress={() => navigation.navigate("CreateReport")}
-  accessibilityLabel="Create New Report"
->
-  <Ionicons size={30} name="add-outline" />
-</TouchableOpacity>
 
-    </View>
+  // Listen to real-time Firestore updates
+  useEffect(() => {
+    const reportsCollection = collection(db, "reports");
+
+    const unsubscribe = onSnapshot(reportsCollection, (snapshot) => {
+      const reportData = snapshot.docs.map((doc) => ({
+        id: doc.id, // include document ID
+        ...doc.data(),
+      }));
+      setReports(reportData);
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []);
+
+  const renderReport = ({ item }) => (
+    <TouchableOpacity key={item.id} style={styles.card}>
+      <View style={styles.profileContainer}>
+        <Image source={favicon} style={styles.profImage} />
+        <Text style={styles.name}>{item.name || "Unknown Reporter"}</Text>
+      </View>
+      {item.projectImage && (
+        <Image source={{ uri: item.projectImage }} style={styles.image} />
+      )}
+      <View style={styles.info}>
+        <Text style={styles.reportTitle}>{item.title || "No Title"}</Text>
+        <Text style={styles.reportDescription}>
+          {item.description || "No Description"}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  );
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <FlatList
+        data={reports}
+        renderItem={renderReport}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={styles.container}
+      />
+      <TouchableOpacity
+        style={styles.editButton}
+        onPress={() => navigation.navigate("CreateReport")}
+        accessibilityLabel="Create New Report"
+      >
+        <Ionicons size={30} name="add-outline" />
+      </TouchableOpacity>
+    </SafeAreaView>
   );
 };
 
