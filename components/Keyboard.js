@@ -14,12 +14,14 @@ export default function CustomKeyboardView({ children }) {
     <KeyboardAvoidingView
       behavior={ios ? "padding" : "height"}
       style={styles.container}
+      keyboardVerticalOffset={-70}
     >
       <ScrollView
         style={styles.scrollView}
         bounces={false}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollViewContent}
+        
       >
         {children}
       </ScrollView>
