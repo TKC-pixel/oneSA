@@ -3,18 +3,19 @@ import { StyleSheet, Text, ScrollView, View, Pressable } from "react-native";
 import axios from "axios"; 
 import NavBar from "./NavBar";
 import Ionicons from "@expo/vector-icons/Ionicons";
-const BudgetAllocation = ({ dept, id, prov })=> {
+
+const BudgetAllocation = ({ dept, id, prov }) => {
   const [current, setCurrent] = useState(prov);
-  console.log('prov', current);
   const [code, setCode] = useState(0);
   const [department, setDepartment] = useState(dept[0]);
   const [scrapedData, setScrapedData] = useState([]); 
   const cssExtractor = "%7B%22tables%22%3A%22table%22%2C%20%22rows%22%3A%22tr%22%2C%20%22cells%22%3A%22td%22%2C%20%22headers%22%3A%22th%22%7D";
   const apiKey = "984e92c064d5b5c29b0f1718435fdec919b949a8";
-  const targetURL = `https://provincialgovernment.co.za/units/financial/${id[code]}}/${current}}/${department}`;
+  const targetURL = `https://provincialgovernment.co.za/units/financial/${id[code]}/${current}/${department}`;
   const [disp, setDisp] = useState("none");
   const [disp2, setDisp2] = useState("none");
   const provinces = ["Eastern Cape", "Free State", "Gauteng", "KwaZulu-Natal", "Limpopo", "Mpumalanga", "Northern Cape", "North West", "Western Cape"];
+
   const fetchScrapedData = async (targetURL) => {
     try {
       const response = await axios.get(
@@ -67,10 +68,9 @@ const BudgetAllocation = ({ dept, id, prov })=> {
     }
 
     if (auditOutcomes.length > 0) {
-      output+='AUDIT OUTCOME\n\n';
-      output+=`${auditOutcomes[0]}\n\n\n`
+      output += 'AUDIT OUTCOME\n\n';
+      output += `${auditOutcomes[0]}\n\n\n`
     }
-
 
     const appropriationsIndex = scrapedData.indexOf("APPROPRIATION STATEMENT");
     const uifwIndex = scrapedData.indexOf("UIFW EXPENDITURE");
@@ -126,75 +126,128 @@ const BudgetAllocation = ({ dept, id, prov })=> {
 
     return output;
   };
+
   const toggleDisplay = () => {
     setDisp((prevDisp) => (prevDisp === "none" ? "block" : "none"));
   };
+
   const toggleDisplay2 = () => {
     setDisp2((prevDisp) => (prevDisp === "none" ? "block" : "none"));
   };
+
   return (
-    <ScrollView>
+    <ScrollView style={styles.container}>
       <NavBar />
       <Pressable>
-        <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
-          <Pressable onPress={() => {toggleDisplay2();setDisp('none');}}>
-            <View style={{flexDirection: 'row'}}>
-              <Ionicons name="menu-outline" size={30} style={{marginTop: '-2%'}}/>
-              <Text style={{marginTop: '4%'}}>Select province</Text>
-            </View>
+        <View style={styles.buttonContainer}>
+          <Pressable onPress={() => {toggleDisplay2(); setDisp('none');}} style={styles.pressable}>
+            <Ionicons name="menu-outline" size={30} />
+            <Text style={styles.buttonText}>Select province</Text>
           </Pressable>
-          <Pressable onPress={() => {toggleDisplay();setDisp2('none');}}>
-            <View style={{flexDirection: 'row'}}>
-              <Ionicons name="menu-outline" size={30} style={{marginTop: '-2%'}}/>
-              <Text style={{marginTop: '4%'}}>Select department</Text>
-            </View>
+          <Pressable onPress={() => {toggleDisplay(); setDisp2('none');}} style={styles.pressable}>
+            <Ionicons name="menu-outline" size={30} />
+            <Text style={styles.buttonText}>Select department</Text>
           </Pressable>
         </View>
       </Pressable>
-      <View style={{display: disp2, backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '10%', marginRight: 160, marginLeft: 20, padding: '3%'}}>
-      {provinces.length > 0 ? ( 
-        provinces.map((department, deptIndex) => (
-            <Pressable
-              key={deptIndex}
-              style={{  marginBottom: "5%" }}
-              onPress={() => {
-                setCurrent(department);
-                setDisp2('none');
-              }}
-            >
-              <Text>{department}</Text>
-            </Pressable>
-          ))
-        ) : (
-          <Text>No departments available for this province.</Text>
-        )}
+      <View style={[styles.dropdown, { display: disp2 }]}>
+        {provinces.map((department, deptIndex) => (
+          <Pressable
+            key={deptIndex}
+            style={styles.dropdownItem}
+            onPress={() => {
+              setCurrent(department);
+              setDisp2('none');
+            }}
+          >
+            <Text style={styles.dropdownText}>{department}</Text>
+          </Pressable>
+        ))}
       </View>
-      <View style={{display: disp, backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: '10%', marginLeft: 100, padding: '3%'}}>
-      {dept.length > 0 ? ( 
-        dept.map((department, deptIndex) => (
-            <Pressable
-              key={deptIndex}
-              style={{ marginBottom: "5%" }}
-              onPress={() => {
-                setDepartment(department); 
-                setCode(deptIndex);
-                setDisp('none');
-              }}
-            >
-              <Text>{department}</Text>
-            </Pressable>
-          ))
-        ) : (
-          <Text>No departments available for this province.</Text>
-        )}
+      <View style={[styles.dropdown, { display: disp }]}>
+        {dept.map((department, deptIndex) => (
+          <Pressable
+            key={deptIndex}
+            style={styles.dropdownItem}
+            onPress={() => {
+              setDepartment(department); 
+              setCode(deptIndex);
+              setDisp('none');
+            }}
+          >
+            <Text style={styles.dropdownText}>{department}</Text>
+          </Pressable>
+        ))}
       </View>
-      <Text style={{marginTop: 10, fontWeight: 'bold', marginBottom: 10, fontSize: '17%'}}>Budget Allocation for the department of:</Text>
-      <Text style={{fontSize: '17%'}}>{department.replace(/-/g, ' ').replace(/\b\w/, char => char.toUpperCase())} - {current.replace(/\b\w/, char => char.toUpperCase())}</Text>
-      <Text>{displayData()}</Text>
+      <Text style={styles.headerText}>Budget Allocation for the department of:</Text>
+      <Text style={styles.departmentText}>
+        {department.replace(/-/g, ' ').replace(/\b\w/, char => char.toUpperCase())} - {current.replace(/\b\w/, char => char.toUpperCase())}
+      </Text>
+      <Text style={styles.dataText}>{displayData()}</Text>
     </ScrollView>
   );
 };
 
 export default BudgetAllocation;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#ffffff', // Light mode background
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 10,
+    marginTop: 8
+  },
+  pressable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0', // Light background for buttons
+    borderRadius: 8,
+    padding: 10,
+    elevation: 3,
+  },
+  buttonText: {
+    marginLeft: 8,
+    color: '#333333', // Dark text for readability
+    fontSize: 16,
+  },
+  dropdown: {
+    backgroundColor: '#ffffff', // White background for dropdowns
+    borderRadius: 8,
+    marginBottom: 12,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: '#cccccc', // Light border
+  },
+  dropdownItem: {
+    padding: 10,
+    borderBottomColor: '#cccccc', // Light border for items
+    borderBottomWidth: 1,
+  },
+  dropdownText: {
+    color: '#333333', // Dark text for dropdown items
+    fontSize: 16,
+  },
+  headerText: {
+    fontSize: 22,
+    color: '#333333', // Dark text for header
+    marginVertical: 10,
+  },
+  departmentText: {
+    fontSize: 20,
+    color: '#333333', // Dark text for department name
+    marginBottom: 12,
+  },
+  dataText: {
+    fontSize: 16,
+    color: '#333333', // Dark text for data output
+    lineHeight: 24,
+    padding: 12,
+    backgroundColor: '#f9f9f9', // Slightly darker background for data output
+    borderRadius: 8,
+    marginBottom: 20,
+  },
+});
