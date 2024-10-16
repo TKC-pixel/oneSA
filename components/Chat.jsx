@@ -14,6 +14,7 @@ import { auth, db } from "../FIrebaseConfig";
 import { GiftedChat, Bubble,InputToolbar } from "react-native-gifted-chat";
 import { useNavigation } from "@react-navigation/native";
 import { UserContext } from "../context/UserContext";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Chat({ route }) {
   const { userData } = useContext(UserContext);
@@ -33,7 +34,7 @@ export default function Chat({ route }) {
         senderId: userID,
         timestamp: serverTimestamp(),
         senderName: userData.name, 
-        senderAvatar: userData.profilePic,
+        senderAvatar: userData.profileImageUrl,
       });
       console.log("Message sent successfully", `user: ${userData.name}`);
     } catch (error) {
@@ -90,17 +91,17 @@ export default function Chat({ route }) {
   }, [groupID]);
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <GiftedChat
         messages={messages}
         onSend={(newMessages) => onSend(newMessages)}
         user={{
           _id: userID,
-          avatar: userData.profilePic,
+          avatar: userData.profileImageUrl,
         }}
         renderBubble={renderBubble}
         renderInputToolbar={renderInputToolbar}
       />
-    </View>
+    </SafeAreaView>
   );
 }
