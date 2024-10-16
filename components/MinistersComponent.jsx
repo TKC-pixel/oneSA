@@ -11,10 +11,14 @@ import { useNavigation } from "@react-navigation/native";
 import { db } from "../FIrebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 import NavBar from "./NavBar";
+import { useContext } from "react";
+import { ThemeContext } from "../context/ThemeContext";
 
 const MinistersComponent = () => {
   const [ministers, setMinisters] = useState([]);
   const navigation = useNavigation();
+
+  const { theme } = useContext(ThemeContext); // Access theme from context
 
   const fetchMinisters = async () => {
     const querySnapshot = await getDocs(collection(db, "ministers"));
@@ -32,7 +36,10 @@ const MinistersComponent = () => {
 
   const renderMinister = ({ item }) => (
     <TouchableOpacity
-      style={styles.ministerCard}
+      style={[
+        styles.ministerCard,
+        theme === "light" ? styles.lightCard : styles.darkCard,
+      ]} // Apply conditional styles
       onPress={() => handlePress(item)}
     >
       <Image
@@ -40,8 +47,20 @@ const MinistersComponent = () => {
         source={{ uri: item.ministerProfileImage }}
       />
       <View>
-        <Text style={styles.ministerName}>{item.ministerName}</Text>
-        <Text style={styles.ministerDepartment}>
+        <Text
+          style={[
+            styles.ministerName,
+            theme === "light" ? styles.lightText : styles.darkText,
+          ]}
+        >
+          {item.ministerName}
+        </Text>
+        <Text
+          style={[
+            styles.ministerDepartment,
+            theme === "light" ? styles.lightText : styles.darkText,
+          ]}
+        >
           {item.ministerDepartment.name}
         </Text>
       </View>
@@ -49,7 +68,9 @@ const MinistersComponent = () => {
   );
 
   return (
-    <View>
+    <View
+      style={theme === "light" ? styles.lightBackground : styles.darkBackground}
+    >
       <NavBar />
       <FlatList
         data={ministers}
@@ -74,7 +95,6 @@ const styles = StyleSheet.create({
   ministerCard: {
     padding: 20,
     margin: 10,
-    backgroundColor: "#f9f9f9",
     borderRadius: 10,
     flexDirection: "row",
     alignItems: "center",
@@ -94,6 +114,27 @@ const styles = StyleSheet.create({
   },
   ministerDepartment: {
     fontSize: 16,
-    color: "gray",
+  },
+  // Light theme styles
+  lightBackground: {
+    backgroundColor: "#f9f9f9",
+    flex: 1,
+  },
+  lightCard: {
+    backgroundColor: "#fff",
+  },
+  lightText: {
+    color: "#000",
+  },
+  // Dark theme styles
+  darkBackground: {
+    backgroundColor: "#333",
+    flex: 1,
+  },
+  darkCard: {
+    backgroundColor: "#444",
+  },
+  darkText: {
+    color: "#fff",
   },
 });

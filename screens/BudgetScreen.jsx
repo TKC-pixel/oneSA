@@ -1,11 +1,13 @@
-import { StyleSheet, Text, View } from "react-native";
 import React from "react";
+import { StyleSheet, View } from "react-native";
 import BudgetAllocation from "../components/BudgetAllocation";
 
-const BudgetScreen = () => {
+const BudgetScreen = ({ route }) => {
+  const { dept, id, prov } = route.params || {};
+
   return (
     <View style={styles.safeArea}>
-      <BudgetAllocation />
+      <BudgetAllocation dept={dept} id={id} prov={prov}/>
     </View>
   );
 };

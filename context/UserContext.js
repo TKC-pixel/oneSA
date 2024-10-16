@@ -32,8 +32,8 @@ export const UserProvider = ({ children }) => {
         if (userSnap.exists()) {
           const data = userSnap.data();
           console.log("Fetched user data:", data);
-          setUserData({
-            ...userData,
+          setUserData((prevUserData) => ({
+            ...prevUserData,
             email: data.email || user.email,
             name: data.name || "",
             surname: data.surname || "",
@@ -41,11 +41,12 @@ export const UserProvider = ({ children }) => {
             isMinister: data.isMinister || false,
             bio: data.bio || "",
             coverPic: data.coverPic || "",
+            coverImageUrl: data.coverImageUrl || "",
             favorites: data.favorites || [],
             isVerified: data.isVerified || false,
-            profilePic: data.profilePic || "",
+            profileImageUrl: data.profileImageUrl || "",
             reports: data.reports || [],
-          });
+          }));
         } else {
           console.log("No such user data!");
         }

@@ -25,6 +25,10 @@ import { UserProvider } from "./context/UserContext";
 import SplashScreen from "./components/SplashScreen";
 import Chat from "./components/Chat";
 import DebateRooms from "./components/debateRooms";
+import EditProfile from "./screens/editProfile";
+import { ThemeProvider } from "./context/ThemeContext";
+import CreateReport from "./screens/CreateReport";
+import UserReportDetails from "./screens/UserReportDetails";
 
 const Stack = createNativeStackNavigator();
 
@@ -69,6 +73,7 @@ export default function App() {
 
   return (
     <UserProvider>
+      <ThemeProvider>
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName={viewedOnboarding ? "SignUp" : "Onboarding"}
@@ -166,8 +171,24 @@ export default function App() {
           />
           <Stack.Screen name="Chat" component={Chat} />
           <Stack.Screen name="DebateRooms" component={DebateRooms} />
+          <Stack.Screen
+            name="EditProfile"
+            options={{ headerShown: false }}
+            component={EditProfile}
+          />
+            <Stack.Screen
+            name="CreateReport"
+            options={{ headerShown: false }}
+            component={CreateReport}
+          />
+           <Stack.Screen
+            name="UserReportDetails"
+            options={{ headerShown: false }}
+            component={UserReportDetails}
+          />
         </Stack.Navigator>
       </NavigationContainer>
+      </ThemeProvider>
     </UserProvider>
   );
 }

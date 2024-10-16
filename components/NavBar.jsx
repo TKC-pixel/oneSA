@@ -8,19 +8,24 @@ import {
   useWindowDimensions,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 const favicon = require("../assets/images/Favicon.png");
 import * as Font from "expo-font";
 import { useNavigation } from "@react-navigation/native";
 import { auth } from "../FIrebaseConfig";
 import { signOut } from "firebase/auth";
+import { UserContext } from "../context/UserContext";
+import { ThemeContext } from "../context/ThemeContext";
 
 const NavBar = ({ userInfo }) => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [notificationVisible, setNotificationVisible] = useState(false);
   const navigation = useNavigation();
+
+  const { userData } = useContext(UserContext);
+  const { theme, toggleTheme } = useContext(ThemeContext);
 
   const loadFonts = async () => {
     await Font.loadAsync({
@@ -100,14 +105,20 @@ const NavBar = ({ userInfo }) => {
         <TouchableOpacity onPress={toggleNavigation} style={styles.Icon}>
           <Ionicons name="notifications-outline" size={32} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.Icon}>
-          <Ionicons name="sunny-outline" size={32} color="black" />
+        <TouchableOpacity onPress={toggleTheme} style={styles.Icon}>
+          <Ionicons
+            name={theme === "light" ? "sunny-outline" : "moon-outline"}
+            size={32}
+            color="black"
+          />
         </TouchableOpacity>
         <TouchableOpacity onPress={toggleDropdown}>
           <Image
             style={styles.favIcon}
             source={{
-              uri: "https://img.freepik.com/free-photo/portrait-fair-haired-woman-with-warm-blue-eyes-dry-lips-healthy-skin-looking-directly-alluring-girl-with-beautiful-appearance-dressed-casually-posing_273609-7635.jpg",
+              uri: userData.profileImageUrl
+                ? userData.profileImageUrl
+                : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
             }}
           />
         </TouchableOpacity>
@@ -119,7 +130,14 @@ const NavBar = ({ userInfo }) => {
             onPress={handleProfile}
             style={styles.userContainer}
           >
-            <Ionicons name="person-circle" size={30} color="black" />
+            <Image
+              style={styles.favIcon}
+              source={{
+                uri: userData.profileImageUrl
+                  ? userData.profileImageUrl
+                  : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
+              }}
+            />
             <Text style={[styles.userName, { fontFamily: "Poppins-Bold" }]}>
               {userInfo && userInfo.length > 0
                 ? `${userInfo[0].name} ${userInfo[0].surname}`
@@ -224,7 +242,7 @@ const styles = StyleSheet.create({
     top: 70,
     padding: 18,
     right: 10,
-    width: 220,
+    width: 250,
     backgroundColor: "#ffffff",
     borderRadius: 8,
     shadowColor: "#000",
