@@ -3,17 +3,18 @@ import {
   Text,
   View,
   TouchableOpacity,
-  ScrollView,
   Image,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react"; // Added useContext here
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
+import { ThemeContext } from "../context/ThemeContext"; // Ensure this path is correct
 
 const FavoriteDetails = ({ route, navigation }) => {
   const { item } = route.params; // Get the item data passed from the previous screen
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const { theme } = useContext(ThemeContext); // Accessing the theme from context
 
   // Load fonts asynchronously
   const loadFonts = async () => {
@@ -34,7 +35,9 @@ const FavoriteDetails = ({ route, navigation }) => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={theme === "light" ? styles.container : darkModeStyles.container}
+    >
       <Image
         style={styles.image}
         source={{
@@ -42,24 +45,68 @@ const FavoriteDetails = ({ route, navigation }) => {
         }}
       />
       <TouchableOpacity
-        style={styles.backBtn}
+        style={theme === "light" ? styles.backBtn : darkModeStyles.backBtn}
         onPress={() => navigation.navigate("Welcome")}
       >
-        <Ionicons name="arrow-back-outline" size={24} color="black" />
+        <Ionicons
+          name="arrow-back-outline"
+          size={24}
+          color={theme === "light" ? "black" : "white"}
+        />
       </TouchableOpacity>
       <View style={styles.textContainer}>
-        <Text style={styles.projectName}>{item.projectName}</Text>
-        <Text style={styles.projectDescription}>{item.projectDepartment}</Text>
-        <Text style={styles.projectStatus}>
+        <Text
+          style={
+            theme === "light"
+              ? styles.projectName
+              : darkModeStyles.projectName
+          }
+        >
+          {item.projectName}
+        </Text>
+        <Text
+          style={
+            theme === "light"
+              ? styles.projectDescription
+              : darkModeStyles.projectDescription
+          }
+        >
+          {item.projectDepartment}
+        </Text>
+        <Text
+          style={
+            theme === "light"
+              ? styles.projectStatus
+              : darkModeStyles.projectStatus
+          }
+        >
           Status: {item.projectCompletionStatus}
         </Text>
-        <Text style={styles.projectStartDate}>
+        <Text
+          style={
+            theme === "light"
+              ? styles.projectStartDate
+              : darkModeStyles.projectStartDate
+          }
+        >
           Start Date: {item.projectStartDate}
         </Text>
-        <Text style={styles.projectBudget}>
+        <Text
+          style={
+            theme === "light"
+              ? styles.projectBudget
+              : darkModeStyles.projectBudget
+          }
+        >
           Budget Allocation: R{item.projectBudgetAllocation.toLocaleString()}
         </Text>
-        <Text style={styles.projectTenderCompany}>
+        <Text
+          style={
+            theme === "light"
+              ? styles.projectTenderCompany
+              : darkModeStyles.projectTenderCompany
+          }
+        >
           Tender Company: {item.projectTenderCompany}
         </Text>
       </View>
@@ -74,7 +121,7 @@ const styles = StyleSheet.create({
   },
   projectName: {
     fontSize: 24,
-    fontFamily: "Poppins-Bold", // Applying Poppins-Bold for the project name
+    fontFamily: "Poppins-Bold",
     color: "#333",
     marginBottom: 10,
   },
@@ -86,31 +133,31 @@ const styles = StyleSheet.create({
   },
   projectDescription: {
     fontSize: 18,
-    fontFamily: "Poppins-Regular", // Applying Poppins-Regular for description
+    fontFamily: "Poppins-Regular",
     color: "#555",
     marginBottom: 5,
   },
   projectStatus: {
     fontSize: 16,
-    fontFamily: "Poppins-Regular", // Applying Poppins-Regular for status
+    fontFamily: "Poppins-Regular",
     color: "#555",
     marginBottom: 5,
   },
   projectStartDate: {
     fontSize: 16,
-    fontFamily: "Poppins-Regular", // Applying Poppins-Regular for start date
+    fontFamily: "Poppins-Regular",
     color: "#555",
     marginBottom: 5,
   },
   projectBudget: {
     fontSize: 16,
-    fontFamily: "Poppins-Regular", // Applying Poppins-Regular for budget
+    fontFamily: "Poppins-Regular",
     color: "#555",
     marginBottom: 5,
   },
   projectTenderCompany: {
     fontSize: 16,
-    fontFamily: "Poppins-Regular", // Applying Poppins-Regular for tender company
+    fontFamily: "Poppins-Regular",
     color: "#555",
     marginBottom: 20,
   },
@@ -127,6 +174,60 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     paddingHorizontal: 18,
+  },
+});
+
+const darkModeStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#121212", // Dark background
+  },
+  projectName: {
+    fontSize: 24,
+    fontFamily: "Poppins-Bold",
+    color: "#fff", // White text for dark mode
+    marginBottom: 10,
+  },
+  projectDescription: {
+    fontSize: 18,
+    fontFamily: "Poppins-Regular",
+    color: "#ccc", // Light text for dark mode
+    marginBottom: 5,
+  },
+  projectStatus: {
+    fontSize: 16,
+    fontFamily: "Poppins-Regular",
+    color: "#ccc",
+    marginBottom: 5,
+  },
+  projectStartDate: {
+    fontSize: 16,
+    fontFamily: "Poppins-Regular",
+    color: "#ccc",
+    marginBottom: 5,
+  },
+  projectBudget: {
+    fontSize: 16,
+    fontFamily: "Poppins-Regular",
+    color: "#ccc",
+    marginBottom: 5,
+  },
+  projectTenderCompany: {
+    fontSize: 16,
+    fontFamily: "Poppins-Regular",
+    color: "#ccc",
+    marginBottom: 20,
+  },
+  backBtn: {
+    position: "absolute",
+    width: 50,
+    height: 50,
+    backgroundColor: "#333",
+    borderRadius: 25,
+    top: 60,
+    left: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
