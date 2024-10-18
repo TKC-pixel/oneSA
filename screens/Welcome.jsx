@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Pressable,
   SafeAreaView,
+  LogBox,
 } from "react-native";
 import React, { useState, useEffect, useContext } from "react";
 import * as Font from "expo-font";
@@ -23,9 +24,13 @@ import { useFocusEffect } from "@react-navigation/native";
 import * as Location from "expo-location";
 import axios from "axios";
 import { ThemeContext } from "../context/ThemeContext";
+import AnimatedFlatList from "./AnimatedFavorites";
 
 const favicon = require("../assets/images/Favicon.png");
 
+LogBox.ignoreLogs([
+  "VirtualizedLists should never be nested inside plain ScrollViews with the same orientation because it can break windowing and other functionality - use another VirtualizedList-backed container instead.", 
+]);
 export default function Welcome({ navigation }) {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [department, setDepartment] = useState("provinceDepartments");
@@ -36,7 +41,7 @@ export default function Welcome({ navigation }) {
   const [locationData, setLocationData] = useState(null);
   const [scrapedData, setScrapedData] = useState({ links: [] });
   const [provinceDepartments, setProvinceDepartments] = useState([]);
-  const { theme } = useContext(ThemeContext); 
+  const { theme } = useContext(ThemeContext);
   const [deptCodes, setDeptCodes] = useState([]);
 
   const apiKey = "984e92c064d5b5c29b0f1718435fdec919b949a8";
@@ -208,8 +213,8 @@ export default function Welcome({ navigation }) {
     const codes = codesMap[province] || [];
     if (departments.length > 0) {
       setDepartment(departments[0]);
-      deptCodes.length = 0; 
-      deptCodes.push(...codes); 
+      deptCodes.length = 0;
+      deptCodes.push(...codes);
     } else {
       setDepartment("Loading Departments...");
     }
@@ -246,7 +251,7 @@ export default function Welcome({ navigation }) {
     ]);
     return true;
   };
-  console.log('codes', deptCodes);
+  console.log("codes", deptCodes);
   useFocusEffect(
     React.useCallback(() => {
       BackHandler.addEventListener("hardwareBackPress", handleBackPress);
@@ -277,7 +282,7 @@ export default function Welcome({ navigation }) {
         <NavBar userInfo={info} />
 
         <Text style={styles.welcomeText}>
-          Welcome{" "}
+          Hello{" "}
           {info && info.length > 0
             ? `${info[0].name} ${info[0].surname}`
             : "User"}
@@ -292,15 +297,15 @@ export default function Welcome({ navigation }) {
         <View style={styles.searchContainer}>
           <Pressable onPress={toggleDisplay}>
             <View style={styles.menuIconContainer}>
-              <Ionicons name="menu-outline" size={30} />
+              <Ionicons name="filter-outline" size={30} />
             </View>
           </Pressable>
           <TextInput
             placeholder={department}
             placeholderTextColor={"black"}
             style={styles.textInput}
+            editable={false}
           />
-          <Ionicons name="search" size={24} />
         </View>
 
         <View
@@ -331,40 +336,75 @@ export default function Welcome({ navigation }) {
             style={styles.card}
             onPress={() => navigation.navigate("Projects")}
           >
-            <Text style={styles.cardText}>Projects</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() => {
-              navigation.navigate("Budget", { dept: provinceDepartments, id: deptCodes, prov: currentProvince });
-             
-            }}
-          >
-            <Text style={styles.cardText}>Budget Allocation</Text>
+            <View style={styles.cardInfo}>
+              <Ionicons
+                color="#fff"
+                size={25}
+                style={styles.cardIconOne}
+                name="briefcase-outline"
+              />
+              <Text style={styles.cardText}>Projects</Text>
+              {/* <Text></Text> nubmber of projects should be shown here */}
+            </View>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.card}
             onPress={() => navigation.navigate("SuccessRate")}
           >
-            <Text style={styles.cardText}>Success Rates</Text>
+            <View style={styles.cardInfo}>
+              <Ionicons
+                color="#fff"
+                size={25}
+                style={styles.cardIconOne}
+                name="checkmark-done-outline"
+              />
+              <Text style={styles.cardText}>Success Rates</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.budgetInfoContainer}>
+          <TouchableOpacity
+            style={styles.budgetCard}
+            onPress={() => {
+              navigation.navigate("Budget", {
+                dept: provinceDepartments,
+                id: deptCodes,
+                prov: currentProvince,
+              });
+            }}
+          >
+            <View style={styles.cardInfo}>
+              <Ionicons
+                color="#fff"
+                size={25}
+                style={styles.cardIconOne}
+                name="cash-outline"
+              />
+              <Text style={styles.cardText}>Budget Allocation</Text>
+            </View>
           </TouchableOpacity>
         </View>
         <View style={styles.buttonContainer}>
-          <Pressable
-            style={styles.button}
-            onPress={() => navigation.navigate("MinisterScreen")}
-          >
-            <Text style={styles.buttonText}>Explore Ministers</Text>
-          </Pressable>
-          <Pressable
-            style={styles.button}
-            onPress={() => navigation.navigate("Report")}
-          >
-            <Text style={styles.buttonText}>Report Issues</Text>
-          </Pressable>
+          <View style={styles.buttonItem}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => navigation.navigate("MinisterScreen")}
+            >
+              <Text style={styles.buttonText}>Explore Ministers</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.buttonItem}>
+            <TouchableOpacity
+              style={styles.reportButton}
+              onPress={() => navigation.navigate("Report")}
+            >
+              <Text style={styles.buttonTextReport}>Report Issues</Text>
+            </TouchableOpacity>
+          </View>
         </View>
         <View>
           <Text style={styles.favouritesTitle}>Your favourites</Text>
+          <AnimatedFlatList />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -385,7 +425,7 @@ const styles = StyleSheet.create({
   welcomeText: {
     fontSize: 24,
     fontFamily: "Poppins-Bold",
-    marginVertical: 16,
+    marginTop: 15,
   },
   searchContainer: {
     margin: 8,
@@ -420,7 +460,12 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
   },
   infoContainer: {
-    margin: 8,
+    // margin: 5,
+    flexDirection: "row",
+    alignSelf: "center",
+  },
+  budgetInfoContainer: {
+    // margin: 8,
   },
   departmentTitle: {
     fontFamily: "Poppins-Bold",
@@ -433,33 +478,96 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 5,
     height: 120,
-    marginBottom: 12,
+    width: "45%",
+    marginBottom: 1,
     backgroundColor: "white",
     padding: 16,
     borderRadius: 20,
+    margin: 10,
+  },
+  budgetCard: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 5,
+    height: 120,
+    marginBottom: 11,
+    marginTop: 20,
+    backgroundColor: "white",
+    padding: 16,
+    borderRadius: 20,
+    margin: 10,
   },
   cardText: {
-    fontFamily: "Poppins-Regular",
+    fontFamily: "Poppins-Bold",
   },
   buttonContainer: {
+    borderWidth: 1,
+    borderColor: "#D3D3D3",
+    margin: 10,
+    borderRadius: 99,
+    padding: 5,
     flexDirection: "row",
     marginTop: 20,
-    justifyContent: "center",
+    justifyContent: "space-between",
     marginBottom: 20,
   },
   button: {
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    justifyContent: "center",
+    backgroundColor: "#000",
     padding: 8,
-    borderRadius: 10,
-    marginHorizontal: 10,
+    borderRadius: 99,
+    alignItems: "center",
+
+    // paddingHorizontal: 20
+    // marginHorizontal: 10,
+  },
+  reportButton: {
+    backgroundColor: "#fff",
+    padding: 8,
+    borderRadius: 99,
+    alignItems: "center",
   },
   buttonText: {
-    color: "#B7C42E",
-    fontSize: 20,
+    color: "#fff",
+    fontSize: 16,
+    fontFamily: "Poppins-Bold",
+  },
+  buttonTextReport: {
+    color: "#000",
+    fontSize: 16,
     fontFamily: "Poppins-Bold",
   },
   favouritesTitle: {
     fontFamily: "Poppins-Bold",
     marginTop: 20,
+  },
+  cardInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  cardIconOne: {
+    backgroundColor: "#B7C42E",
+    padding: 6,
+    borderRadius: 99,
+    marginRight: 5,
+  },
+  cardIconTwo: {
+    backgroundColor: "#000",
+    padding: 6,
+    borderRadius: 99,
+    marginRight: 5,
+  },
+  cardIconThree: {
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    padding: 6,
+    borderRadius: 99,
+    marginRight: 5,
+  },
+  buttonItem: {
+    justifyContent: "center",
+    // backgroundColor: "blue",
+    width: 160,
   },
 });
