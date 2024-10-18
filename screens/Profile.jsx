@@ -57,6 +57,12 @@ const Profile = () => {
         }}
         style={{ width: "100%", height: 160 }}
       />
+       <TouchableOpacity
+        style={styles.backBtn}
+        onPress={() => navigation.navigate("Welcome")}
+      >
+        <Ionicons name="arrow-back-outline" size={24} color="black" />
+      </TouchableOpacity>
       <TouchableOpacity
         style={styles.editButton}
         onPress={() => navigation.navigate("EditProfile")}
@@ -211,6 +217,17 @@ const styles = StyleSheet.create({
   },
   additionalComments: {
     color: "gray",
+  },
+  backBtn: {
+    position: "absolute",
+    width: 50,
+    height: 50,
+    backgroundColor: "#D9D9D9",
+    borderRadius: 25,
+    top: 60,
+    left: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
