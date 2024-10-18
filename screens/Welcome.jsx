@@ -29,8 +29,7 @@ import AnimatedFlatList from "./AnimatedFavorites";
 const favicon = require("../assets/images/Favicon.png");
 
 LogBox.ignoreLogs([
-  "VirtualizedLists should never be nested inside plain ScrollViews with the same orientation because it can break windowing and other functionality - use another VirtualizedList-backed container instead.", // Another warning to hide
-  // Add more messages as needed
+  "VirtualizedLists should never be nested inside plain ScrollViews with the same orientation because it can break windowing and other functionality - use another VirtualizedList-backed container instead.", 
 ]);
 export default function Welcome({ navigation }) {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -345,6 +344,7 @@ export default function Welcome({ navigation }) {
                 name="briefcase-outline"
               />
               <Text style={styles.cardText}>Projects</Text>
+              {/* <Text></Text> nubmber of projects should be shown here */}
             </View>
           </TouchableOpacity>
           <TouchableOpacity
