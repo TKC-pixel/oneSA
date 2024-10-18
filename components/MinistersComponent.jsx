@@ -94,7 +94,7 @@ const MinistersComponent = () => {
         styles.fullWidth, // Apply full width to remove space on the sides
       ]}
     >
-      <NavBar />
+      <NavBar  />
       <FlatList
         data={ministers}
         keyExtractor={(item) => item.ministerID}

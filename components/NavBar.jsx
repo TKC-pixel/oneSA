@@ -113,15 +113,15 @@ const NavBar = ({ userInfo }) => {
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={toggleDropdown}>
-        <Image
-  style={styles.favIcon}
-  source={{
-    uri: userData && userData.profileImageUrl
-      ? userData.profileImageUrl
-      : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
-  }}
-/>
-
+          <Image
+            style={styles.favIcon}
+            source={{
+              uri:
+                userData && userData.profileImageUrl
+                  ? userData.profileImageUrl
+                  : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
+            }}
+          />
         </TouchableOpacity>
       </View>
 
@@ -131,14 +131,15 @@ const NavBar = ({ userInfo }) => {
             onPress={handleProfile}
             style={styles.userContainer}
           >
-          <Image
-  style={styles.favIcon}
-  source={{
-    uri: userData && userData.profileImageUrl
-      ? userData.profileImageUrl
-      : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
-  }}
-/>
+            <Image
+              style={styles.favIcon}
+              source={{
+                uri:
+                  userData && userData.profileImageUrl
+                    ? userData.profileImageUrl
+                    : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
+              }}
+            />
 
             <Text style={[styles.userName, { fontFamily: "Poppins-Bold" }]}>
               {userInfo && userInfo.length > 0
@@ -305,5 +306,96 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 10,
     fontFamily: "Poppins-Bold",
+  },
+});
+
+const darkModeStyles = StyleSheet.create({
+  NavTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingTop: 10,
+    zIndex: 1000,
+    backgroundColor: "#1C1C1C", // Dark background for the navigation
+  },
+  cornerIcons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: 170,
+  },
+  favIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 99,
+  },
+  Icon: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: 50,
+    height: 50,
+    backgroundColor: "#3A3A3A", // Darker background for icons
+    borderRadius: 99,
+  },
+  dropdownMenu: {
+    marginTop: 30,
+    position: "absolute",
+    top: 70,
+    padding: 18,
+    right: 10,
+    width: 250,
+    backgroundColor: "#2C2C2C", // Dark background for dropdown menu
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    zIndex: 1000,
+  },
+  dropdownItem: {
+    padding: 10,
+    marginBottom: 5,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#3A3A3A", // Darker background for dropdown items
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 3.5,
+    elevation: 2,
+  },
+  dropdownText: {
+    fontSize: 16,
+    marginLeft: 10,
+    color: "#FFFFFF", // White text for contrast
+  },
+  userContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#2C2C2C", // Dark background for user container
+    padding: 10,
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    elevation: 5,
+    marginBottom: 15,
+  },
+  userName: {
+    fontSize: 16,
+    marginLeft: 10,
+    fontFamily: "Poppins-Bold",
+    color: "#FFFFFF", // White text for contrast
   },
 });

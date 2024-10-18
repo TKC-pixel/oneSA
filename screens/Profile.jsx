@@ -6,9 +6,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
+import { ThemeContext } from "../context/ThemeContext"; // Import ThemeContext
 
 const Profile = () => {
   const { userData } = useContext(UserContext);
+  const { theme } = useContext(ThemeContext); // Get the current theme
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
@@ -42,13 +44,13 @@ const Profile = () => {
       </View>
     );
   }
+
   const handlePress = (item) => {
     navigation.navigate('UserReportDetails', { item });
   };
-  
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme === "light" ? "white" : "#1e1e1e" }]}>
       <Image
         source={{
           uri: userData.coverImageUrl
@@ -57,17 +59,17 @@ const Profile = () => {
         }}
         style={{ width: "100%", height: 160 }}
       />
-       <TouchableOpacity
+      <TouchableOpacity
         style={styles.backBtn}
         onPress={() => navigation.navigate("Welcome")}
       >
-        <Ionicons name="arrow-back-outline" size={24} color="black" />
+        <Ionicons name="arrow-back-outline" size={24} color={theme === "light" ? "#000" : "#fff"} />
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.editButton}
         onPress={() => navigation.navigate("EditProfile")}
       >
-        <Ionicons name="pencil-outline" />
+        <Ionicons name="pencil-outline" color={theme === "light" ? "black" : "white"} />
       </TouchableOpacity>
       <Image
         source={{
@@ -77,54 +79,54 @@ const Profile = () => {
         }}
         style={styles.profileImage}
       />
-     <View style={styles.nameContainer}>
-  <Text style={styles.labelName}>
-    {userData.name} {userData.surname}
-  </Text>
-  {userData && (
-    <>
-      {userData.isMinister ? (
-        <Ionicons
-          name="checkmark-circle"
-          size={20}
-          color="green"
-          style={styles.verifiedIcon}
-        />
-      ) : userData.isVerified ? (
-        <Ionicons
-          name="checkmark-circle"
-          size={20}
-          color="#1D9BF0"
-          style={styles.verifiedIcon}
-        />
-      ) : null}
-    </>
-  )}
-</View>
+      <View style={styles.nameContainer}>
+        <Text style={[styles.labelName, { color: theme === "light" ? "black" : "white" }]}>
+          {userData.name} {userData.surname}
+        </Text>
+        {userData && (
+          <>
+            {userData.isMinister ? (
+              <Ionicons
+                name="checkmark-circle"
+                size={20}
+                color="green"
+                style={styles.verifiedIcon}
+              />
+            ) : userData.isVerified ? (
+              <Ionicons
+                name="checkmark-circle"
+                size={20}
+                color="#1D9BF0"
+                style={styles.verifiedIcon}
+              />
+            ) : null}
+          </>
+        )}
+      </View>
 
-      <Text style={styles.labelBio}>{userData.bio || "N/A"}</Text>
-      <Text style={styles.label}>Your Reports</Text>
+      <Text style={[styles.labelBio, { color: theme === "light" ? "black" : "white" }]}>
+        {userData.bio || "N/A"}
+      </Text>
+      <Text style={[styles.label, { color: theme === "light" ? "black" : "white" }]}>Your Reports</Text>
       <FlatList
-  data={userData.reports}
-  keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}  // Use `id` if it exists, otherwise use the index
-  renderItem={({ item }) => (
-    <View style={styles.reportContainer}>
-      {item.projectImage ? (
-        <TouchableOpacity onPress={() => handlePress(item)}>
-          <Image
-            source={{ uri: item.projectImage }}
-            style={styles.reportImage}
-          />
-        </TouchableOpacity>
-      ) : (
-        <Text>No Image Available</Text>
-      )}
-    </View>
-  )}
-  ListEmptyComponent={<Text>No reports available</Text>}
-/>
-
-
+        data={userData.reports}
+        keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}  
+        renderItem={({ item }) => (
+          <View style={styles.reportContainer}>
+            {item.projectImage ? (
+              <TouchableOpacity onPress={() => handlePress(item)}>
+                <Image
+                  source={{ uri: item.projectImage }}
+                  style={styles.reportImage}
+                />
+              </TouchableOpacity>
+            ) : (
+              <Text>No Image Available</Text>
+            )}
+          </View>
+        )}
+        ListEmptyComponent={<Text style={{ color: theme === "light" ? "black" : "white" }}>No reports available</Text>}
+      />
 
       {console.log(userData)}
     </SafeAreaView>
@@ -133,7 +135,6 @@ const Profile = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white",
     flex: 1,
   },
   title: {
@@ -144,7 +145,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     marginVertical: 5,
-    fontFamily: "Poppins-Regular"
+    fontFamily: "Poppins-Regular",
   },
   nameContainer: {
     flexDirection: "row",
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
   },
   labelBio: {
     alignSelf: "center",
-    fontFamily: "Poppins-Regular"
+    fontFamily: "Poppins-Regular",
   },
   editButton: {
     position: "absolute",
@@ -188,7 +189,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   reportContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: "white",
     borderRadius: 8,
     padding: 10,
     marginBottom: 15,
@@ -201,22 +202,10 @@ const styles = StyleSheet.create({
     shadowRadius: 1.5,
     elevation: 3,
   },
-  reportDescription: {
-    fontWeight: "bold",
-  },
-  reportLocation: {
-    color: "gray",
-  },
-  reportStatus: {
-    color: "blue",
-  },
   reportImage: {
     width: "100%",
     height: 100,
     marginVertical: 5,
-  },
-  additionalComments: {
-    color: "gray",
   },
   backBtn: {
     position: "absolute",
