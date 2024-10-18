@@ -181,8 +181,10 @@ const BudgetAllocation = ({ dept, id, prov }) => {
       </View>
       <Text style={styles.headerText}>Budget Allocation for the department of:</Text>
       <Text style={styles.departmentText}>
-        {department.replace(/-/g, ' ').replace(/\b\w/, char => char.toUpperCase())} - {current.replace(/\b\w/, char => char.toUpperCase())}
-      </Text>
+  {department ? department.replace(/-/g, ' ').replace(/\b\w/, char => char.toUpperCase()) : 'No Department Selected'} - 
+  {current ? current.replace(/\b\w/, char => char.toUpperCase()) : 'No Province Selected'}
+</Text>
+
       <Text style={styles.dataText}>{displayData()}</Text>
     </ScrollView>
   );

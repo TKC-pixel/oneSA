@@ -71,42 +71,54 @@ const Profile = () => {
         }}
         style={styles.profileImage}
       />
-      <View style={styles.nameContainer}>
-        <Text style={styles.labelName}>
-          {userData.name} {userData.surname}
-        </Text>
-        {userData.isVerified && (
-          <Ionicons
-            name="checkmark-circle"
-            size={20}
-            color="green"
-            style={styles.verifiedIcon}
-          />
-        )}
-      </View>
+     <View style={styles.nameContainer}>
+  <Text style={styles.labelName}>
+    {userData.name} {userData.surname}
+  </Text>
+  {userData && (
+    <>
+      {userData.isMinister ? (
+        <Ionicons
+          name="checkmark-circle"
+          size={20}
+          color="green"
+          style={styles.verifiedIcon}
+        />
+      ) : userData.isVerified ? (
+        <Ionicons
+          name="checkmark-circle"
+          size={20}
+          color="#1D9BF0"
+          style={styles.verifiedIcon}
+        />
+      ) : null}
+    </>
+  )}
+</View>
+
       <Text style={styles.labelBio}>{userData.bio || "N/A"}</Text>
       <Text style={styles.label}>Your Reports</Text>
       <FlatList
-      data={userData.reports}
-      keyExtractor={(item) => item.description}
-      renderItem={({ item }) => (
-        <View style={styles.reportContainer}>
-          {item.projectImage && (
-            <TouchableOpacity onPress={() => handlePress(item)}>
-              <Image
-                source={{ uri: item.projectImage }}
-                style={styles.reportImage}
-              />
-            </TouchableOpacity>
-          )}
-          {/* Optionally, you can show a placeholder if there's no image */}
-          {!item.projectImage && (
-            <Text>No Image Available</Text>
-          )}
-        </View>
+  data={userData.reports}
+  keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}  // Use `id` if it exists, otherwise use the index
+  renderItem={({ item }) => (
+    <View style={styles.reportContainer}>
+      {item.projectImage ? (
+        <TouchableOpacity onPress={() => handlePress(item)}>
+          <Image
+            source={{ uri: item.projectImage }}
+            style={styles.reportImage}
+          />
+        </TouchableOpacity>
+      ) : (
+        <Text>No Image Available</Text>
       )}
-      ListEmptyComponent={<Text>No reports available</Text>}
-    />
+    </View>
+  )}
+  ListEmptyComponent={<Text>No reports available</Text>}
+/>
+
+
 
       {console.log(userData)}
     </SafeAreaView>
@@ -141,7 +153,7 @@ const styles = StyleSheet.create({
   },
   verifiedIcon: {
     marginLeft: 5,
-    marginTop: 76,
+    marginTop: 71,
   },
   profileImage: {
     position: "absolute",
