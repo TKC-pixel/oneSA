@@ -113,17 +113,9 @@ const SignUpForm = () => {
           email,
           phone,
           isMinister, 
-          favorites: null,
+          favorites: [],
           isVerified: false,
           reports: [
-            {
-              projectName: null,
-              projectImage: null,
-              projectStatus: null,
-              description: null,
-              location: null,
-              additionalComments: null,
-            },
           ],
         });
 
@@ -260,17 +252,12 @@ const SignUpForm = () => {
                 uncheckedIcon="checkbox-blank-outline"
                 checkedColor="#B7C42E"
               />
+              
               <Text style={styles.checkboxText}>
                 I agree to the Terms & Conditions and Privacy Policy.
               </Text>
             </View>
-            <Pressable
-              style={styles.loginButton}
-              onPress={handleAuthentication}
-            >
-              <Text style={styles.loginText}>Sign Up</Text>
-            </Pressable>
-            <View style={styles.checkboxContainer}>
+            <View style={styles.checkboxContainerMinister}>
               <CheckBox
                 checked={ministerChecked}
                 onPress={toggleMinister}
@@ -281,6 +268,13 @@ const SignUpForm = () => {
               />
               <Text style={styles.checkboxText}>Are you a Minister?</Text>
             </View>
+            <Pressable
+              style={styles.loginButton}
+              onPress={handleAuthentication}
+            >
+              <Text style={styles.loginText}>Sign Up</Text>
+            </Pressable>
+            
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -321,6 +315,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginLeft: -50,
+  },
+  checkboxContainerMinister:{
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: -240,
   },
   checkboxText: {
     fontFamily: "Poppins-Regular",

@@ -13,10 +13,26 @@ import { collection, getDocs } from "firebase/firestore";
 import NavBar from "./NavBar";
 import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
+import * as Font from "expo-font";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const MinistersComponent = () => {
   const [ministers, setMinisters] = useState([]);
   const navigation = useNavigation();
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  // Load custom fonts
+  const loadFonts = async () => {
+    await Font.loadAsync({
+      "Poppins-Regular": require("../assets/fonts/Poppins-Regular.ttf"),
+      "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
+    });
+    setFontsLoaded(true);
+  };
+
+  useEffect(() => {
+    loadFonts();
+  }, []);
 
   const { theme } = useContext(ThemeContext); // Access theme from context
 
@@ -39,7 +55,7 @@ const MinistersComponent = () => {
       style={[
         styles.ministerCard,
         theme === "light" ? styles.lightCard : styles.darkCard,
-      ]} // Apply conditional styles
+      ]}
       onPress={() => handlePress(item)}
     >
       <Image
@@ -67,74 +83,94 @@ const MinistersComponent = () => {
     </TouchableOpacity>
   );
 
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>; // Render a loading state if fonts aren't loaded yet
+  }
+
   return (
-    <View
-      style={theme === "light" ? styles.lightBackground : styles.darkBackground}
+    <SafeAreaView
+      style={[
+        theme === "light" ? styles.lightBackground : styles.darkBackground,
+        styles.fullWidth, // Apply full width to remove space on the sides
+      ]}
     >
       <NavBar />
       <FlatList
         data={ministers}
         keyExtractor={(item) => item.ministerID}
         renderItem={renderMinister}
-        ListHeaderComponent={<Text style={styles.header}>Ministers</Text>}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.flatListContainer} // Ensure the list uses full width
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
 export default MinistersComponent;
 
 const styles = StyleSheet.create({
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    padding: 10,
-    textAlign: "center",
+  fullWidth: {
+    flex: 1,
+    paddingHorizontal: 0, // Ensure full width
+    width: "100%",
   },
   ministerCard: {
-    padding: 20,
-    margin: 10,
-    borderRadius: 10,
+    padding: 16,
+    marginVertical: 10,
+    borderRadius: 12,
     flexDirection: "row",
     alignItems: "center",
     shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+    marginHorizontal: 0,  // Set horizontal margin to 0 to remove space
+    width: "100%", // Ensure the card takes up the full width
   },
   ministerProfileImage: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    marginRight: 20,
+    marginRight: 15,
+    borderColor: "#ccc",
+    borderWidth: 1,
   },
   ministerName: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
+    marginBottom: 5,
   },
   ministerDepartment: {
-    fontSize: 16,
+    fontSize: 14,
+    fontFamily: "Poppins-Regular",
   },
   // Light theme styles
   lightBackground: {
     backgroundColor: "#f9f9f9",
-    flex: 1,
   },
   lightCard: {
     backgroundColor: "#fff",
+    borderColor: "#e0e0e0",
+    borderWidth: 1,
   },
   lightText: {
-    color: "#000",
+    color: "#333",
   },
   // Dark theme styles
   darkBackground: {
-    backgroundColor: "#333",
-    flex: 1,
+    backgroundColor: "#222",
   },
   darkCard: {
-    backgroundColor: "#444",
+    backgroundColor: "#333",
+    borderColor: "#444",
+    borderWidth: 1,
   },
   darkText: {
     color: "#fff",
+  },
+  flatListContainer: {
+    paddingHorizontal: 0, // Remove padding around FlatList
+    marginHorizontal: 0,  // Remove any margin around FlatList
   },
 });

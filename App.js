@@ -29,6 +29,7 @@ import EditProfile from "./screens/editProfile";
 import { ThemeProvider } from "./context/ThemeContext";
 import CreateReport from "./screens/CreateReport";
 import UserReportDetails from "./screens/UserReportDetails";
+import FavoriteDetails from "./screens/FavoriteDetails";
 
 const Stack = createNativeStackNavigator();
 
@@ -185,6 +186,11 @@ export default function App() {
             name="UserReportDetails"
             options={{ headerShown: false }}
             component={UserReportDetails}
+          />
+            <Stack.Screen
+            name="FavoriteDetails"
+            options={{ headerShown: false }}
+            component={FavoriteDetails}
           />
         </Stack.Navigator>
       </NavigationContainer>
