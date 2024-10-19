@@ -5,8 +5,10 @@ import {
   Text,
   View,
   TextInput,
+  ScrollView,
   TouchableOpacity,
   KeyboardAvoidingView,
+  FlatList,
   Platform,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
@@ -18,7 +20,9 @@ import { arrayUnion, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db } from "../FIrebaseConfig";
 import { ThemeContext } from "../context/ThemeContext";
-
+import { TouchableHighlight } from "react-native";
+const Nominatim_API_URL = "https://nominatim.openstreetmap.org/search";
+import { Ionicons } from "@expo/vector-icons";
 const CreateProject = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [image, setImage] = useState(null);
@@ -29,6 +33,10 @@ const CreateProject = () => {
   const [startDate, setStartDate] = useState("");
   const { userData } = useContext(UserContext);
   const { theme } = useContext(ThemeContext);
+  const [location, setLocation] = useState("");
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
 
   console.log(userData.ministerID);
   const pickImage = async () => {
@@ -66,6 +74,10 @@ const CreateProject = () => {
       projectName,
       projectStartDate: startDate,
       projectTenderCompany: tenderCompany,
+      location: {
+        latitude: latitude,
+        longitude: longitude,
+      },
     };
 
     // Get the minister ID from context
@@ -117,100 +129,174 @@ const CreateProject = () => {
     return null; // or a loading spinner
   }
 
+  const fetchLocationSuggestions = async (query) => {
+    if (query.length < 3) {
+      setLocationSuggestions([]);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${Nominatim_API_URL}?q=${encodeURIComponent(
+          query
+        )}&format=json&addressdetails=1&limit=5&countrycodes=ZA`
+      );
+      const data = await response.json();
+      setLocationSuggestions(data);
+    } catch (error) {
+      console.error("Error fetching location suggestions: ", error);
+    }
+  };
+
+  const handleLocationSelect = (location) => {
+    setLocation(location.display_name);
+    setLocationSuggestions([]);
+    setLatitude(location.lat); // Set the latitude
+    setLongitude(location.lon); // Set the longitude
+  };
+
   return (
-    <SafeAreaView
+    <KeyboardAvoidingView
+    behavior={Platform.OS === "ios" ? "padding" : "height"} 
       style={{
         backgroundColor: theme === "light" ? "#fff" : "#1e1e1e",
         flex: 1,
+        
       }}
     >
-       <KeyboardAvoidingView
+      {/* <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"} // Adjusts the view when the keyboard is active
         style={{ flex: 1 }}
-      >
-      <Text
-        style={[styles.title, { color: theme === "light" ? "#000" : "#fff" }]}
-      >
-        Create a Project
-      </Text>
-      <View style={styles.container}>
-        <TouchableOpacity style={styles.uploadImage} onPress={pickImage}>
-          <ImageBackground
-            borderRadius={25}
-            style={
-              theme === "light"
-                ? styles.imageBackground
-                : darkmodeStyles.imageBackground
-            }
-            source={{
-              uri: image
-                ? image
-                : "https://w7.pngwing.com/pngs/230/819/png-transparent-cloud-upload-uploading-upload-arrow-upload-cloud-cloud-data-3d-icon-thumbnail.png",
-            }}
-          />
-        </TouchableOpacity>
-        <View>
-          <Text style={theme === "light" ? styles.label : darkmodeStyles.label}>
-            Project Name
-          </Text>
-          <TextInput
-            style={theme === "light" ? styles.input : darkmodeStyles.input}
-            placeholder="Enter project name"
-            placeholderTextColor={theme === "light" ? "#000" : "#fff"}
-            value={projectName}
-            onChangeText={setProjectName}
-          />
-          <Text style={theme === "light" ? styles.label : darkmodeStyles.label}>
-            Department Responsible
-          </Text>
-          <TextInput
-            style={theme === "light" ? styles.input : darkmodeStyles.input}
-            placeholder="Enter department"
-            placeholderTextColor={theme === "light" ? "#000" : "#fff"}
-            value={department}
-            onChangeText={setDepartment}
-          />
-          <Text style={theme === "light" ? styles.label : darkmodeStyles.label}>
-            Budget Allocation
-          </Text>
-          <TextInput
-            style={theme === "light" ? styles.input : darkmodeStyles.input}
-            placeholder="Enter budget"
-            placeholderTextColor={theme === "light" ? "#000" : "#fff"}
-            value={budget}
-            onChangeText={setBudget}
-          />
-          <Text style={theme === "light" ? styles.label : darkmodeStyles.label}>
-            Tender Company
-          </Text>
-          <TextInput
-            style={theme === "light" ? styles.input : darkmodeStyles.input}
-            placeholder="Enter tender company"
-            placeholderTextColor={theme === "light" ? "#000" : "#fff"}
-            value={tenderCompany}
-            onChangeText={setTenderCompany}
-          />
-          <Text style={theme === "light" ? styles.label : darkmodeStyles.label}>
-            Start Date
-          </Text>
-          <TextInput
-            style={theme === "light" ? styles.input : darkmodeStyles.input}
-            placeholder="Enter start date"
-            placeholderTextColor={theme === "light" ? "#000" : "#fff"}
-            value={startDate}
-            onChangeText={setStartDate}
-          />
-          <TouchableOpacity
-            style={styles.buttonPublish}
-            onPress={handlePublishProject}
-          >
-            <Text style={styles.buttonText}>Publish Project</Text>
+      > */}
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <Text
+          style={[styles.title, { color: theme === "light" ? "#000" : "#fff" }]}
+        >
+          Create a Project
+        </Text>
+        <View style={styles.container}>
+          <TouchableOpacity style={styles.uploadImage} onPress={pickImage}>
+            <ImageBackground
+              borderRadius={25}
+              style={
+                theme === "light"
+                  ? styles.imageBackground
+                  : darkmodeStyles.imageBackground
+              }
+              source={{
+                uri: image
+                  ? image
+                  : "https://w7.pngwing.com/pngs/230/819/png-transparent-cloud-upload-uploading-upload-arrow-upload-cloud-cloud-data-3d-icon-thumbnail.png",
+              }}
+            />
           </TouchableOpacity>
+          <View>
+            <Text
+              style={theme === "light" ? styles.label : darkmodeStyles.label}
+            >
+              Project Name
+            </Text>
+            <TextInput
+              style={theme === "light" ? styles.input : darkmodeStyles.input}
+              placeholder="Enter project name"
+              placeholderTextColor={theme === "light" ? "#000" : "#fff"}
+              value={projectName}
+              onChangeText={setProjectName}
+            />
+            <Text
+              style={theme === "light" ? styles.label : darkmodeStyles.label}
+            >
+              Department Responsible
+            </Text>
+            <TextInput
+              style={theme === "light" ? styles.input : darkmodeStyles.input}
+              placeholder="Enter department"
+              placeholderTextColor={theme === "light" ? "#000" : "#fff"}
+              value={department}
+              onChangeText={setDepartment}
+            />
+            <Text
+              style={theme === "light" ? styles.label : darkmodeStyles.label}
+            >
+              Budget Allocation
+            </Text>
+            <TextInput
+              style={theme === "light" ? styles.input : darkmodeStyles.input}
+              placeholder="Enter budget"
+              placeholderTextColor={theme === "light" ? "#000" : "#fff"}
+              value={budget}
+              onChangeText={setBudget}
+            />
+            <Text
+              style={theme === "light" ? styles.label : darkmodeStyles.label}
+            >
+              Tender Company
+            </Text>
+            <TextInput
+              style={theme === "light" ? styles.input : darkmodeStyles.input}
+              placeholder="Enter tender company"
+              placeholderTextColor={theme === "light" ? "#000" : "#fff"}
+              value={tenderCompany}
+              onChangeText={setTenderCompany}
+            />
+            <Text
+              style={theme === "light" ? styles.label : darkmodeStyles.label}
+            >
+              Start Date
+            </Text>
+            <TextInput
+              style={theme === "light" ? styles.input : darkmodeStyles.input}
+              placeholder="Enter start date"
+              placeholderTextColor={theme === "light" ? "#000" : "#fff"}
+              value={startDate}
+              onChangeText={setStartDate}
+            />
+            <TextInput
+              placeholder="Location"
+              value={location}
+              onChangeText={(text) => {
+                setLocation(text);
+                fetchLocationSuggestions(text);
+              }}
+              style={styles.input}
+            />
+
+            {locationSuggestions.length > 0 && (
+              <FlatList
+                data={locationSuggestions}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item }) => (
+                  <TouchableHighlight
+                    onPress={() => handleLocationSelect(item)}
+                    underlayColor="#ddd"
+                  >
+                    <View style={styles.suggestionItem}>
+                      {/* Ionicons Location Icon */}
+                      <Ionicons
+                        name="location-outline"
+                        size={20}
+                        color="#333"
+                        style={styles.icon}
+                      />
+                      <Text style={styles.suggestionText}>
+                        {item.display_name}
+                      </Text>
+                    </View>
+                  </TouchableHighlight>
+                )}
+              />
+            )}
+            <TouchableOpacity
+              style={styles.buttonPublish}
+              onPress={handlePublishProject}
+            >
+              <Text style={styles.buttonText}>Publish Project</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-    
+        </ScrollView>
+      {/* </KeyboardAvoidingView> */}
+    </KeyboardAvoidingView>
   );
 };
 
@@ -287,9 +373,26 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.5,
     elevation: 5,
+    marginBottom: 100
   },
   buttonText: {
     color: "#fff",
+    fontFamily: "Poppins-Bold",
+  },
+  suggestionItem: {
+    flexDirection: "row", // Align icon and text in a row
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "#f9f9f9",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  icon: {
+    marginRight: 10, // Space between icon and text
+  },
+  suggestionText: {
+    fontSize: 16,
+    color: "#333",
     fontFamily: "Poppins-Bold",
   },
 });
@@ -372,6 +475,22 @@ const darkmodeStyles = StyleSheet.create({
   },
   buttonText: {
     color: "#fff", // Keep white text
+    fontFamily: "Poppins-Bold",
+  },
+  suggestionItem: {
+    flexDirection: "row", // Align icon and text in a row
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "#f9f9f9",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  icon: {
+    marginRight: 10, // Space between icon and text
+  },
+  suggestionText: {
+    fontSize: 16,
+    color: "#333",
     fontFamily: "Poppins-Bold",
   },
 });
