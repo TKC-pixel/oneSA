@@ -15,8 +15,7 @@ export default MinisterScreen;
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "white",
-    paddingHorizontal: 18,
-    position: "relative",
+    // backgroundColor: "white",
+    // position: "relative",
   },
 });

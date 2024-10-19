@@ -1,23 +1,21 @@
-import React, { useRef, useState, useContext } from "react";
+import React, { useContext } from "react";
 import { FlatList, Text, TouchableOpacity, StyleSheet, View } from "react-native";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from "react-native-reanimated";
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
 import { UserContext } from "../context/UserContext";
 import { useNavigation } from "@react-navigation/native";
 
-const AnimatedListItem = ({ projectName, isFocused, onPress }) => {
-    
-  const scale = useSharedValue(isFocused ? 1 : 0.8);
+const AnimatedListItem = ({ projectName, onPress }) => {
+  const scale = useSharedValue(0.8);
+  const opacity = useSharedValue(0);
 
   React.useEffect(() => {
-    scale.value = withTiming(isFocused ? 1 : 0.5, { duration: 300 });
-  }, [isFocused]);
+    scale.value = withTiming(1, { duration: 400 });
+    opacity.value = withTiming(1, { duration: 400 });
+  }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
+    opacity: opacity.value,
   }));
 
   return (
@@ -33,33 +31,20 @@ const AnimatedFlatList = () => {
   const { userData } = useContext(UserContext);
   const { favorites } = userData || {}; // Handle case where userData is undefined
   const navigation = useNavigation();
-  const [focusedItems, setFocusedItems] = useState([]);
-
-  const viewabilityConfig = useRef({
-    itemVisiblePercentThreshold: 50,
-  }).current;
-
-  const onViewableItemsChanged = useRef(({ viewableItems }) => {
-    const viewableItemIds = viewableItems.map((item) => item.item.id);
-    setFocusedItems(viewableItemIds);
-  }).current;
 
   const renderItem = ({ item }) => {
-    const isFocused = focusedItems.includes(item.id);
     const onPress = () => {
       navigation.navigate("FavoriteDetails", { item });
     };
     return (
       <AnimatedListItem
         projectName={item.projectName}
-        isFocused={isFocused}
         onPress={onPress}
       />
     );
   };
 
   if (!favorites || favorites.length === 0) {
-    // Display a fallback message or empty view if there are no favorites
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>No favorites available</Text>
@@ -73,19 +58,17 @@ const AnimatedFlatList = () => {
       data={favorites}
       renderItem={renderItem}
       keyExtractor={(item) => item.id ? item.id.toString() : `key-${Math.random()}`}
-
-      onViewableItemsChanged={onViewableItemsChanged}
-      viewabilityConfig={viewabilityConfig}
-      snapToInterval={110}
-      decelerationRate="fast"
       showsVerticalScrollIndicator={false}
+      snapToInterval={100} // Match this with the item height
+      snapToAlignment="start" // Ensures snapping to the start of the item
+      decelerationRate="fast" // Adjusts the deceleration speed
     />
   );
 };
 
 const styles = StyleSheet.create({
   animatedView: {
-    height: 100,
+    height: 100, // Ensure this matches your snapToInterval
     backgroundColor: "lightblue",
     marginVertical: 5,
     borderRadius: 10,

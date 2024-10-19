@@ -86,17 +86,21 @@ export default function Welcome({ navigation }) {
 
   //Location
   const getLocation = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      setLocationError("Permission to access location was denied.");
-      return;
+    try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        throw new Error("Permission to access location was denied.");
+      }
+  
+      let location = await Location.getCurrentPositionAsync();
+      const address = await Location.reverseGeocodeAsync(location.coords);
+      setLocationData(address[0]?.city || null);
+    } catch (error) {
+      setLocationError(error.message);
+      Alert.alert("Error", error.message);
     }
-
-    let location = await Location.getCurrentPositionAsync();
-    const address = await Location.reverseGeocodeAsync(location.coords);
-    // console.log(address);
-    setLocationData(address[0]?.city || null);
   };
+  
 
   // Scraped data
   const fetchScrapedData = async () => {

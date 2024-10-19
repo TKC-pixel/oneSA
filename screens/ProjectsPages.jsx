@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { collection, getDocs, doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { auth, db } from '../FIrebaseConfig';
 import { UserContext } from '../context/UserContext';
@@ -8,7 +8,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemeContext } from '../context/ThemeContext'; // Import your theme context
-
+import LoadingScreen from '../components/LoadingScreen';
 const ProjectPage = () => {
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
@@ -17,7 +17,7 @@ const ProjectPage = () => {
   const [departmentFilter, setDepartmentFilter] = useState('');
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const { userData, setUserData } = useContext(UserContext);
-  const { theme } = useContext(ThemeContext); // Get current theme
+  const { theme } = useContext(ThemeContext); 
   const navigation = useNavigation();
 
   const loadFonts = async () => {
@@ -110,7 +110,7 @@ const ProjectPage = () => {
   };
 
   if (loading) {
-    return <Text>Loading...</Text>;
+    return <LoadingScreen/>
   }
 
   return (

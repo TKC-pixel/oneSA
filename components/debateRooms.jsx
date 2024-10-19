@@ -174,17 +174,18 @@ export default function DebateRooms() {
   }, []);
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <CustomKeyboardView>
         {debates.length !== 0 ? <FilledDebatesRoom /> : <EmptyDebatesRoom />}
       </CustomKeyboardView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    paddingHorizontal: 18
   },
   container: {
     flex: 1,
@@ -214,7 +215,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 15,
     marginVertical: 10,
-    marginHorizontal: 20,
+    marginHorizontal: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
