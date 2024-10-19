@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-} from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 import React, { useState, useEffect, useContext } from "react"; // Added useContext here
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -41,10 +35,12 @@ const FavoriteDetails = ({ route, navigation }) => {
       <Image
         style={styles.image}
         source={{
-          uri: "https://masterbuilders.site-ym.com/resource/resmgr/docs/2022/Cabinet_approves_National_In.jpg",
+          uri:
+            item.imageUrl ||
+            "https://masterbuilders.site-ym.com/resource/resmgr/docs/2022/Cabinet_approves_National_In.jpg",
         }}
       />
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={theme === "light" ? styles.backBtn : darkModeStyles.backBtn}
         onPress={() => navigation.navigate("Welcome")}
       >
@@ -53,13 +49,11 @@ const FavoriteDetails = ({ route, navigation }) => {
           size={24}
           color={theme === "light" ? "black" : "white"}
         />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <View style={styles.textContainer}>
         <Text
           style={
-            theme === "light"
-              ? styles.projectName
-              : darkModeStyles.projectName
+            theme === "light" ? styles.projectName : darkModeStyles.projectName
           }
         >
           {item.projectName}
@@ -117,7 +111,7 @@ const FavoriteDetails = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: "#fff",
   },
   projectName: {
     fontSize: 24,
@@ -127,7 +121,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 390,
+    height: 430,
     borderRadius: 45,
     marginBottom: 21,
   },
