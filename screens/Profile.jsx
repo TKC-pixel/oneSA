@@ -7,6 +7,7 @@ import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
 import { ThemeContext } from "../context/ThemeContext"; // Import ThemeContext
+import LoadingScreen from "../components/LoadingScreen";
 
 const Profile = () => {
   const { userData } = useContext(UserContext);
@@ -15,6 +16,7 @@ const Profile = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
   const [selectedImage, setSelectedImage] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const loadFonts = async () => {
     await Font.loadAsync({
@@ -25,13 +27,13 @@ const Profile = () => {
 
   useEffect(() => {
     loadFonts().then(() => setFontsLoaded(true));
+
+    setTimeout(() => setLoading(false), 2000);
   }, []);
 
   if (!fontsLoaded) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
+      <LoadingScreen/>
     );
   }
 

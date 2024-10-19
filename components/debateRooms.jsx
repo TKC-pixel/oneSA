@@ -7,6 +7,7 @@ import {
   TextInput,
   ScrollView,
   Alert,
+  Image,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import NavBar from "./NavBar";
@@ -134,20 +135,20 @@ export default function DebateRooms() {
 
   const EmptyDebatesRoom = () => {
     return (
-      <>
+      <View>
         <NavBar />
         <View style={styles.backgroundContainer}>
-          <ImageBackground
+          <Image
             source={require("../assets/images/debate.png")}
             style={styles.backgroundImage}
             resizeMode="contain"
           />
+          <DebateDetails />
           <Pressable style={styles.floatingButton} onPress={handleAdd}>
             <Entypo name="plus" size={24} color="black" />
           </Pressable>
-          <DebateDetails />
         </View>
-      </>
+      </View>
     );
   };
 
@@ -177,6 +178,7 @@ export default function DebateRooms() {
     <View style={styles.safeArea}>
       <CustomKeyboardView>
         {debates.length !== 0 ? <FilledDebatesRoom /> : <EmptyDebatesRoom />}
+        {/* <EmptyDebatesRoom /> */}
       </CustomKeyboardView>
     </View>
   );
@@ -185,7 +187,8 @@ export default function DebateRooms() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    paddingHorizontal: 18
+    paddingHorizontal: 18,
+    backgroundColor: "#fff"
   },
   container: {
     flex: 1,
@@ -195,8 +198,8 @@ const styles = StyleSheet.create({
   },
   floatingButton: {
     position: "absolute",
-    right: 20,
-    bottom: 100,
+    right: 5,
+    bottom: -170,
     width: 50,
     height: 50,
     alignItems: "center",
@@ -239,12 +242,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   backgroundImage: {
-    flex: 1,
     justifyContent: "center",
     width: 300,
     height: 400,
-    position: "absolute",
+    marginTop: 140,
     backgroundColor: "transparent",
+    alignSelf: "center"
   },
   input: {
     width: width - 40,

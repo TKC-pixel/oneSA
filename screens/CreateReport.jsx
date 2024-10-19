@@ -25,7 +25,8 @@ import {
 } from "firebase/firestore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-
+import analyzeSentiment from "../components/sentimentUtil";
+import containsProfanity from "../components/profanityFilter";
 const Nominatim_API_URL = "https://nominatim.openstreetmap.org/search";
 
 const CreateReport = ({ navigation }) => {
@@ -64,10 +65,20 @@ const CreateReport = ({ navigation }) => {
 
   const handleCreateReport = async () => {
     try {
+      // Check for profanity in the description
+      if (containsProfanity(description)) {
+        alert("Your description contains inappropriate language. Please revise.");
+        return; // Exit the function if profanity is found
+      }
+
       let imageUrl = "";
       if (image) {
         imageUrl = await uploadImage(image);
       }
+
+      // Analyze the sentiment of the description
+      const sentimentResult = analyzeSentiment(description);
+      console.log("Sentiment:", sentimentResult); // Log the sentiment
 
       const reportData = {
         title,
@@ -80,6 +91,7 @@ const CreateReport = ({ navigation }) => {
         projectImage: imageUrl,
         userId, // Add the userId for reference
         timestamp: new Date(), // Add a timestamp
+        sentiment: sentimentResult, // Add the sentiment result to report data
       };
 
       // Update the user's document with the report
