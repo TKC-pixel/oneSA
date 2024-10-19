@@ -12,6 +12,7 @@ export const UserProvider = ({ children }) => {
     surname: null,
     phone: null,
     isMinister: false,
+    ministerID: null, // Added ministerID to userData
     bio: null,
     coverPic: null,
     favorites: null,
@@ -40,6 +41,7 @@ export const UserProvider = ({ children }) => {
               surname: data.surname || "",
               phone: data.phone || "",
               isMinister: data.isMinister || false,
+              ministerID: data.isMinister ? data.ministerID : null, // Conditionally include ministerID
               bio: data.bio || "",
               coverPic: data.coverPic || "",
               coverImageUrl: data.coverImageUrl || "",

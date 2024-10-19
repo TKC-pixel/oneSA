@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { collection, getDocs, doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { auth, db } from '../FIrebaseConfig';
 import { UserContext } from '../context/UserContext';
@@ -7,7 +7,8 @@ import * as Font from "expo-font";
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import { ThemeContext } from '../context/ThemeContext'; // Import your theme context
+import LoadingScreen from '../components/LoadingScreen';
 const ProjectPage = () => {
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
@@ -16,6 +17,7 @@ const ProjectPage = () => {
   const [departmentFilter, setDepartmentFilter] = useState('');
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const { userData, setUserData } = useContext(UserContext);
+  const { theme } = useContext(ThemeContext); 
   const navigation = useNavigation();
 
   const loadFonts = async () => {
@@ -108,20 +110,22 @@ const ProjectPage = () => {
   };
 
   if (loading) {
-    return <Text>Loading...</Text>;
+    return <LoadingScreen/>
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={theme === "light" ? styles.container : darkModeStyles.container}>
       <TextInput
-        style={styles.searchInput}
+        style={theme === "light" ? styles.searchInput : darkModeStyles.searchInput}
         placeholder="Search by project name"
+        placeholderTextColor={theme === "light" ? "#aaa" : "#ccc"} // Change placeholder color based on theme
         value={searchTerm}
         onChangeText={handleSearch}
       />
       <TextInput
-        style={styles.searchInput}
+        style={theme === "light" ? styles.searchInput : darkModeStyles.searchInput}
         placeholder="Filter by department"
+        placeholderTextColor={theme === "light" ? "#aaa" : "#ccc"}
         value={departmentFilter}
         onChangeText={handleDepartmentFilter}
       />
@@ -131,9 +135,9 @@ const ProjectPage = () => {
           data={filteredProjects}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item: project }) => (
-            <View style={styles.projectContainer}>
+            <View style={theme === "light" ? styles.projectContainer : darkModeStyles.projectContainer}>
               <TouchableOpacity onPress={() => navigateToProjectDetails(project)}>
-                <Text style={styles.projectName}>{project.projectName}</Text>
+                <Text style={theme === "light" ? styles.projectName : darkModeStyles.projectName}>{project.projectName}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleLikeProject(project)} style={styles.likeButton}>
                 <Ionicons
@@ -146,7 +150,7 @@ const ProjectPage = () => {
           )}
         />
       ) : (
-        <Text>No projects found.</Text>
+        <Text style={theme === "light" ? styles.noProjectsText : darkModeStyles.noProjectsText}>No projects found.</Text>
       )}
     </SafeAreaView>
   );
@@ -184,5 +188,48 @@ const styles = StyleSheet.create({
   },
   likeButton: {
     paddingLeft: 10,
+  },
+  noProjectsText: {
+    fontSize: 16,
+    fontFamily: 'Poppins-Regular',
+    color: '#333',
+  },
+});
+
+// Dark mode styles
+const darkModeStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#121212', // Dark background
+  },
+  searchInput: {
+    height: 40,
+    borderColor: '#555',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingLeft: 8,
+    marginBottom: 20,
+    fontFamily: 'Poppins-Regular',
+    color: '#fff', // White text
+  },
+  projectContainer: {
+    marginBottom: 10,
+    padding: 10,
+    backgroundColor: '#1e1e1e', // Darker project background
+    borderRadius: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  projectName: {
+    fontSize: 16,
+    fontFamily: 'Poppins-Bold',
+    color: '#fff', // White text for project name
+  },
+  noProjectsText: {
+    fontSize: 16,
+    fontFamily: 'Poppins-Regular',
+    color: '#ccc', // Lighter text for no projects
   },
 });

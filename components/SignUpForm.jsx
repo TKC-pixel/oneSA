@@ -117,6 +117,7 @@ const SignUpForm = () => {
           isVerified: false,
           reports: [
           ],
+          ...(isMinister && { ministerID }),
         });
 
         alert("Registration successful");

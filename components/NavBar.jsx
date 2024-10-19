@@ -113,15 +113,15 @@ const NavBar = ({ userInfo }) => {
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={toggleDropdown}>
-        <Image
-  style={styles.favIcon}
-  source={{
-    uri: userData && userData.profileImageUrl
-      ? userData.profileImageUrl
-      : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
-  }}
-/>
-
+          <Image
+            style={styles.favIcon}
+            source={{
+              uri:
+                userData && userData.profileImageUrl
+                  ? userData.profileImageUrl
+                  : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
+            }}
+          />
         </TouchableOpacity>
       </View>
 
@@ -131,14 +131,15 @@ const NavBar = ({ userInfo }) => {
             onPress={handleProfile}
             style={styles.userContainer}
           >
-          <Image
-  style={styles.favIcon}
-  source={{
-    uri: userData && userData.profileImageUrl
-      ? userData.profileImageUrl
-      : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
-  }}
-/>
+            <Image
+              style={styles.favIcon}
+              source={{
+                uri:
+                  userData && userData.profileImageUrl
+                    ? userData.profileImageUrl
+                    : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
+              }}
+            />
 
             <Text style={[styles.userName, { fontFamily: "Poppins-Bold" }]}>
               {userInfo && userInfo.length > 0

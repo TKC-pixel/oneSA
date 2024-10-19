@@ -1,23 +1,28 @@
 import { StyleSheet, Text, View } from "react-native";
-import React, { useContext } from "react"; // Import useContext
+import React, { useContext } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Welcome from "../screens/Welcome";
-import ReportFeed from "../screens/ReportFeed"; // This will be the Reports component
-import CreateProject from "../screens/CreateProject"; // Import CreateProject component
+import ReportFeed from "../screens/ReportFeed";
+import CreateProject from "../screens/CreateProject";
 import Profile from "../screens/Profile";
 import DebateRoom from "../screens/DebateRoom";
 import { Ionicons } from "@expo/vector-icons";
-import { UserContext } from "../context/UserContext"; // Import UserContext
+import { UserContext, UserProvider } from "../context/UserContext";
+import { ThemeContext } from "../context/ThemeContext"; // Import ThemeContext
 
 const Tab = createBottomTabNavigator();
 
 const HomeTabs = () => {
-  const { userData } = useContext(UserContext); // Access userData from context
+  const { userData } = useContext(UserContext);
+  const { theme } = useContext(ThemeContext); // Access theme from ThemeContext
 
-  // Safely access isMinister, defaulting to null if userData is not available
   const isMinister = userData?.isMinister;
 
+  // Define theme-specific styles
+  const themedStyles = theme === "dark" ? styles.dark : styles.light;
+
   return (
+    <UserProvider>
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size, focused }) => {
@@ -30,7 +35,7 @@ const HomeTabs = () => {
               iconName = focused ? "document-text" : "document-text-outline";
               break;
             case "Create Project":
-              iconName = focused ? "add-circle" : "add-circle-outline"; // Change icon for Create Project
+              iconName = focused ? "add-circle" : "add-circle-outline";
               break;
             case "Debate":
               iconName = focused ? "chatbubbles" : "chatbubbles-outline";
@@ -39,10 +44,9 @@ const HomeTabs = () => {
               iconName = focused ? "person" : "person-outline";
               break;
             default:
-              iconName = "alert-circle"; // Fallback icon for unknown routes
+              iconName = "alert-circle";
               break;
           }
-
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarLabel: ({ children, color, focused }) => (
@@ -56,10 +60,11 @@ const HomeTabs = () => {
             {children}
           </Text>
         ),
-        tabBarStyle: styles.tabBarStyle,
+        tabBarStyle: [styles.tabBarStyle, themedStyles.tabBarStyle],
         tabBarItemStyle: styles.tabBarItemStyle,
-        tabBarActiveBackgroundColor: "#696969",
-        tabBarActiveTintColor: "#B7C42E",
+        tabBarActiveBackgroundColor: themedStyles.tabBarActiveBackgroundColor,
+        tabBarActiveTintColor: themedStyles.tabBarActiveTintColor,
+        tabBarInactiveTintColor: themedStyles.tabBarInactiveTintColor,
       })}
     >
       <Tab.Screen
@@ -69,24 +74,21 @@ const HomeTabs = () => {
       />
 
       {isMinister === true ? (
-        // If the user is a minister, show Create Project instead of Reports
         <Tab.Screen
           name="Create Project"
-          component={CreateProject} // The component for creating projects
+          component={CreateProject}
           options={{ headerShown: false }}
         />
       ) : isMinister === false ? (
-        // If the user is not a minister, show the Reports tab
         <Tab.Screen
           name="Reports"
-          component={ReportFeed} // The existing Reports component
+          component={ReportFeed}
           options={{ headerShown: false }}
         />
       ) : (
-        // If isMinister is null (e.g., user logged out), show a fallback
         <Tab.Screen
-          name="Login" // Redirect to a Login or another appropriate component
-          component={Welcome} // Replace with your Login component
+          name="Login"
+          component={Welcome}
           options={{ headerShown: false }}
         />
       )}
@@ -102,6 +104,7 @@ const HomeTabs = () => {
         options={{ headerShown: false }}
       />
     </Tab.Navigator>
+    </UserProvider>
   );
 };
 
@@ -126,5 +129,21 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     margin: 10,
     borderRadius: 23,
+  },
+  light: {
+    tabBarStyle: {
+      backgroundColor: "#FFFFFF", // Light background
+    },
+    tabBarActiveBackgroundColor: "#E0E0E0", // Light active background
+    tabBarActiveTintColor: "#000000", // Active tab icon color
+    tabBarInactiveTintColor: "#7A7A7A", // Inactive tab icon color
+  },
+  dark: {
+    tabBarStyle: {
+      backgroundColor: "#000000", // Dark background
+    },
+    tabBarActiveBackgroundColor: "#333333", // Dark active background
+    tabBarActiveTintColor: "#B7C42E", // Active tab icon color in dark mode
+    tabBarInactiveTintColor: "#FFFFFF", // Inactive tab icon color
   },
 });

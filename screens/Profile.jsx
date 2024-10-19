@@ -1,16 +1,20 @@
 import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, Text, View, Button, Image, FlatList, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View, Button, Image, FlatList, ActivityIndicator, Modal, Pressable } from "react-native";
 import { UserContext } from "../context/UserContext";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
+import { ThemeContext } from "../context/ThemeContext"; // Import ThemeContext
 
 const Profile = () => {
   const { userData } = useContext(UserContext);
+  const { theme } = useContext(ThemeContext); // Get the current theme
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const loadFonts = async () => {
     await Font.loadAsync({
@@ -42,98 +46,121 @@ const Profile = () => {
       </View>
     );
   }
+
   const handlePress = (item) => {
     navigation.navigate('UserReportDetails', { item });
   };
-  
+  const handleImagePress = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setModalVisible(true);
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Image
-        source={{
-          uri: userData.coverImageUrl
-            ? userData.coverImageUrl
-            : "https://iconerecife.com.br/wp-content/plugins/uix-page-builder/uixpb_templates/images/UixPageBuilderTmpl/default-cover-5.jpg",
-        }}
-        style={{ width: "100%", height: 160 }}
-      />
-       <TouchableOpacity
-        style={styles.backBtn}
-        onPress={() => navigation.navigate("Welcome")}
-      >
-        <Ionicons name="arrow-back-outline" size={24} color="black" />
+    <SafeAreaView style={[styles.container, { backgroundColor: theme === "light" ? "white" : "#1e1e1e" }]}>
+     <TouchableOpacity onPress={() => handleImagePress(userData.coverImageUrl)}>
+        <Image
+          source={{
+            uri: userData.coverImageUrl
+              ? userData.coverImageUrl
+              : "https://iconerecife.com.br/wp-content/plugins/uix-page-builder/uixpb_templates/images/UixPageBuilderTmpl/default-cover-5.jpg",
+          }}
+          style={{ width: "100%", height: 160 }}
+        />
       </TouchableOpacity>
+      
       <TouchableOpacity
         style={styles.editButton}
         onPress={() => navigation.navigate("EditProfile")}
       >
-        <Ionicons name="pencil-outline" />
+        <Ionicons name="pencil-outline" color={theme === "light" ? "black" : "black"} />
       </TouchableOpacity>
-      <Image
-        source={{
-          uri: userData.profileImageUrl
-            ? userData.profileImageUrl
-            : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
-        }}
-        style={styles.profileImage}
-      />
-     <View style={styles.nameContainer}>
-  <Text style={styles.labelName}>
-    {userData.name} {userData.surname}
-  </Text>
-  {userData && (
-    <>
-      {userData.isMinister ? (
-        <Ionicons
-          name="checkmark-circle"
-          size={20}
-          color="green"
-          style={styles.verifiedIcon}
+      
+      <TouchableOpacity style={{marginBottom: 10}} onPress={() => handleImagePress(userData.profileImageUrl)}>
+        <Image
+          source={{
+            uri: userData.profileImageUrl
+              ? userData.profileImageUrl
+              : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
+          }}
+          style={[
+            styles.profileImage,
+            {
+              borderColor: theme === "light" ? '#fff' : '#1E1D1E'  
+            }
+          ]}
         />
-      ) : userData.isVerified ? (
-        <Ionicons
-          name="checkmark-circle"
-          size={20}
-          color="#1D9BF0"
-          style={styles.verifiedIcon}
-        />
-      ) : null}
-    </>
-  )}
-</View>
+      </TouchableOpacity>
+      <View style={styles.nameContainer}>
+        <Text style={[styles.labelName, { color: theme === "light" ? "black" : "white" }]}>
+          {userData.name} {userData.surname}
+        </Text>
+        {userData && (
+          <>
+            {userData.isMinister ? (
+              <Ionicons
+                name="checkmark-circle"
+                size={20}
+                color="green"
+                style={styles.verifiedIcon}
+              />
+            ) : userData.isVerified ? (
+              <Ionicons
+                name="checkmark-circle"
+                size={20}
+                color="#1D9BF0"
+                style={styles.verifiedIcon}
+              />
+            ) : null}
+          </>
+        )}
+      </View>
 
-      <Text style={styles.labelBio}>{userData.bio || "N/A"}</Text>
-      <Text style={styles.label}>Your Reports</Text>
+      <Text style={[styles.labelBio, { color: theme === "light" ? "black" : "white" }]}>
+        {userData.bio || "N/A"}
+      </Text>
+      <Text style={[styles.label, { color: theme === "light" ? "black" : "white" }]}>Your Reports</Text>
       <FlatList
-  data={userData.reports}
-  keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}  // Use `id` if it exists, otherwise use the index
-  renderItem={({ item }) => (
-    <View style={styles.reportContainer}>
-      {item.projectImage ? (
-        <TouchableOpacity onPress={() => handlePress(item)}>
-          <Image
-            source={{ uri: item.projectImage }}
-            style={styles.reportImage}
-          />
-        </TouchableOpacity>
-      ) : (
-        <Text>No Image Available</Text>
-      )}
-    </View>
-  )}
-  ListEmptyComponent={<Text>No reports available</Text>}
-/>
-
-
+        data={userData.reports}
+        keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}  
+        renderItem={({ item }) => (
+          <View style={styles.reportContainer}>
+            {item.projectImage ? (
+              <TouchableOpacity onPress={() => handlePress(item)}>
+                <Image
+                  source={{ uri: item.projectImage }}
+                  style={styles.reportImage}
+                />
+              </TouchableOpacity>
+            ) : (
+              <Text>No Image Available</Text>
+            )}
+          </View>
+        )}
+        ListEmptyComponent={<Text style={{ color: theme === "light" ? "black" : "white" }}>No reports available</Text>}
+      />
 
       {console.log(userData)}
+      <Modal visible={modalVisible} transparent={true} animationType="slide">
+        <View style={styles.modalContainer}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setModalVisible(false)}
+          >
+            <Ionicons name="close" size={30} color="white" />
+          </TouchableOpacity>
+          <Image
+            source={{ uri: selectedImage }}
+            style={styles.fullImage}
+            resizeMode="contain"
+          />
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white",
     flex: 1,
   },
   title: {
@@ -144,7 +171,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     marginVertical: 5,
-    fontFamily: "Poppins-Regular"
+    fontFamily: "Poppins-Regular",
   },
   nameContainer: {
     flexDirection: "row",
@@ -163,17 +190,17 @@ const styles = StyleSheet.create({
   },
   profileImage: {
     position: "absolute",
-    top: 120,
+    top: -60,
     borderWidth: 10,
-    borderColor: "white",
     borderRadius: 99,
+    // marginBottom: 15,
     width: 150,
     height: 150,
     alignSelf: "center",
   },
   labelBio: {
     alignSelf: "center",
-    fontFamily: "Poppins-Regular"
+    fontFamily: "Poppins-Regular",
   },
   editButton: {
     position: "absolute",
@@ -188,7 +215,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   reportContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: "white",
     borderRadius: 8,
     padding: 10,
     marginBottom: 15,
@@ -201,22 +228,10 @@ const styles = StyleSheet.create({
     shadowRadius: 1.5,
     elevation: 3,
   },
-  reportDescription: {
-    fontWeight: "bold",
-  },
-  reportLocation: {
-    color: "gray",
-  },
-  reportStatus: {
-    color: "blue",
-  },
   reportImage: {
     width: "100%",
     height: 100,
     marginVertical: 5,
-  },
-  additionalComments: {
-    color: "gray",
   },
   backBtn: {
     position: "absolute",
@@ -228,6 +243,21 @@ const styles = StyleSheet.create({
     left: 20,
     justifyContent: "center",
     alignItems: "center",
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.9)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 40,
+    right: 20,
+  },
+  fullImage: {
+    width: "100%",
+    height: "80%",
   },
 });
 

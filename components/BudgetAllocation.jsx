@@ -206,18 +206,18 @@ const styles = StyleSheet.create({
   pressable: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f0f0f0', // Light background for buttons
+    backgroundColor: '#f0f0f0', 
     borderRadius: 8,
     padding: 10,
     elevation: 3,
   },
   buttonText: {
     marginLeft: 8,
-    color: '#333333', // Dark text for readability
+    color: '#333333',
     fontSize: 16,
   },
   dropdown: {
-    backgroundColor: '#ffffff', // White background for dropdowns
+    backgroundColor: '#ffffff', 
     borderRadius: 8,
     marginBottom: 12,
     padding: 8,
