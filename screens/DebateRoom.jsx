@@ -5,11 +5,11 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 const DebateRoom = () => {
   return (
-    <SafeAreaView style={{flex: 1}}>
+    // <SafeAreaView style={{flex: 1}}>
     <View style={{flex: 1}}>
       <DebateRooms/>
     </View>
-    </SafeAreaView>
+    // </SafeAreaView>
   )
 }
 

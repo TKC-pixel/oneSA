@@ -5,21 +5,24 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
+  ActivityIndicator, // Import ActivityIndicator
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { db } from "../FIrebaseConfig";
 import { collection, getDocs } from "firebase/firestore";
 import NavBar from "./NavBar";
-import { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
 import * as Font from "expo-font";
 import { SafeAreaView } from "react-native-safe-area-context";
+import LoadingScreen from "./LoadingScreen";
 
 const MinistersComponent = () => {
   const [ministers, setMinisters] = useState([]);
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState(null); // Error state
 
   // Load custom fonts
   const loadFonts = async () => {
@@ -37,9 +40,15 @@ const MinistersComponent = () => {
   const { theme } = useContext(ThemeContext); // Access theme from context
 
   const fetchMinisters = async () => {
-    const querySnapshot = await getDocs(collection(db, "ministers"));
-    const ministersData = querySnapshot.docs.map((doc) => doc.data());
-    setMinisters(ministersData);
+    try {
+      const querySnapshot = await getDocs(collection(db, "ministers"));
+      const ministersData = querySnapshot.docs.map((doc) => doc.data());
+      setMinisters(ministersData);
+    } catch (err) {
+      setError("Failed to load ministers.");
+    } finally {
+      setLoading(false); // Set loading to false after fetching
+    }
   };
 
   useEffect(() => {
@@ -57,6 +66,8 @@ const MinistersComponent = () => {
         theme === "light" ? styles.lightCard : styles.darkCard,
       ]}
       onPress={() => handlePress(item)}
+      accessible={true} // Accessibility
+      accessibilityLabel={`View details for ${item.ministerName}`}
     >
       <Image
         style={styles.ministerProfileImage}
@@ -84,35 +95,50 @@ const MinistersComponent = () => {
   );
 
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>; // Render a loading state if fonts aren't loaded yet
+    return (
+      <LoadingScreen/>
+    ); // Loading indicator
+  }
+
+  if (loading) {
+    return (
+      <LoadingScreen/>
+    ); // Loading state
+  }
+
+  if (error) {
+    return <Text style={styles.errorText}>{error}</Text>; // Display error
   }
 
   return (
-    <SafeAreaView
+    <View
       style={[
         theme === "light" ? styles.lightBackground : styles.darkBackground,
-        styles.fullWidth, // Apply full width to remove space on the sides
+        styles.fullWidth,
       ]}
     >
-      <NavBar  />
+      <NavBar />
       <FlatList
         data={ministers}
         keyExtractor={(item) => item.ministerID}
         renderItem={renderMinister}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.flatListContainer} // Ensure the list uses full width
+        contentContainerStyle={styles.flatListContainer}
       />
-    </SafeAreaView>
+    </View>
   );
 };
-
 export default MinistersComponent;
 
 const styles = StyleSheet.create({
   fullWidth: {
     flex: 1,
-    paddingHorizontal: 0, // Ensure full width
-    width: "100%",
+    paddingHorizontal: 18,
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    margin: 20,
   },
   ministerCard: {
     padding: 16,
@@ -125,7 +151,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
-    marginHorizontal: 0,  // Set horizontal margin to 0 to remove space
+    marginHorizontal: 0, // Set horizontal margin to 0 to remove space
     width: "100%", // Ensure the card takes up the full width
   },
   ministerProfileImage: {
@@ -171,6 +197,6 @@ const styles = StyleSheet.create({
   },
   flatListContainer: {
     paddingHorizontal: 0, // Remove padding around FlatList
-    marginHorizontal: 0,  // Remove any margin around FlatList
+    marginHorizontal: 0, // Remove any margin around FlatList
   },
 });

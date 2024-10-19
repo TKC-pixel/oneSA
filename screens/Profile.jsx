@@ -59,12 +59,7 @@ const Profile = () => {
         }}
         style={{ width: "100%", height: 160 }}
       />
-      <TouchableOpacity
-        style={styles.backBtn}
-        onPress={() => navigation.navigate("Welcome")}
-      >
-        <Ionicons name="arrow-back-outline" size={24} color={theme === "light" ? "#000" : "#fff"} />
-      </TouchableOpacity>
+      
       <TouchableOpacity
         style={styles.editButton}
         onPress={() => navigation.navigate("EditProfile")}
