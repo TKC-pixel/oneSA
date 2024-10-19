@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, Text, View, Button, Image, FlatList, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View, Button, Image, FlatList, ActivityIndicator, Modal, Pressable } from "react-native";
 import { UserContext } from "../context/UserContext";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -13,6 +13,8 @@ const Profile = () => {
   const { theme } = useContext(ThemeContext); // Get the current theme
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const loadFonts = async () => {
     await Font.loadAsync({
@@ -48,32 +50,46 @@ const Profile = () => {
   const handlePress = (item) => {
     navigation.navigate('UserReportDetails', { item });
   };
+  const handleImagePress = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setModalVisible(true);
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme === "light" ? "white" : "#1e1e1e" }]}>
-      <Image
-        source={{
-          uri: userData.coverImageUrl
-            ? userData.coverImageUrl
-            : "https://iconerecife.com.br/wp-content/plugins/uix-page-builder/uixpb_templates/images/UixPageBuilderTmpl/default-cover-5.jpg",
-        }}
-        style={{ width: "100%", height: 160 }}
-      />
+     <TouchableOpacity onPress={() => handleImagePress(userData.coverImageUrl)}>
+        <Image
+          source={{
+            uri: userData.coverImageUrl
+              ? userData.coverImageUrl
+              : "https://iconerecife.com.br/wp-content/plugins/uix-page-builder/uixpb_templates/images/UixPageBuilderTmpl/default-cover-5.jpg",
+          }}
+          style={{ width: "100%", height: 160 }}
+        />
+      </TouchableOpacity>
       
       <TouchableOpacity
         style={styles.editButton}
         onPress={() => navigation.navigate("EditProfile")}
       >
-        <Ionicons name="pencil-outline" color={theme === "light" ? "black" : "white"} />
+        <Ionicons name="pencil-outline" color={theme === "light" ? "black" : "black"} />
       </TouchableOpacity>
-      <Image
-        source={{
-          uri: userData.profileImageUrl
-            ? userData.profileImageUrl
-            : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
-        }}
-        style={styles.profileImage}
-      />
+      
+      <TouchableOpacity style={{marginBottom: 10}} onPress={() => handleImagePress(userData.profileImageUrl)}>
+        <Image
+          source={{
+            uri: userData.profileImageUrl
+              ? userData.profileImageUrl
+              : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
+          }}
+          style={[
+            styles.profileImage,
+            {
+              borderColor: theme === "light" ? '#fff' : '#1E1D1E'  
+            }
+          ]}
+        />
+      </TouchableOpacity>
       <View style={styles.nameContainer}>
         <Text style={[styles.labelName, { color: theme === "light" ? "black" : "white" }]}>
           {userData.name} {userData.surname}
@@ -124,6 +140,21 @@ const Profile = () => {
       />
 
       {console.log(userData)}
+      <Modal visible={modalVisible} transparent={true} animationType="slide">
+        <View style={styles.modalContainer}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setModalVisible(false)}
+          >
+            <Ionicons name="close" size={30} color="white" />
+          </TouchableOpacity>
+          <Image
+            source={{ uri: selectedImage }}
+            style={styles.fullImage}
+            resizeMode="contain"
+          />
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -159,10 +190,10 @@ const styles = StyleSheet.create({
   },
   profileImage: {
     position: "absolute",
-    top: 120,
+    top: -60,
     borderWidth: 10,
-    borderColor: "white",
     borderRadius: 99,
+    // marginBottom: 15,
     width: 150,
     height: 150,
     alignSelf: "center",
@@ -212,6 +243,21 @@ const styles = StyleSheet.create({
     left: 20,
     justifyContent: "center",
     alignItems: "center",
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.9)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 40,
+    right: 20,
+  },
+  fullImage: {
+    width: "100%",
+    height: "80%",
   },
 });
 
