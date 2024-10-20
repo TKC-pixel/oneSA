@@ -72,6 +72,8 @@ const LoginForm = () => {
       return;
     }
 
+    setError("");
+
     try {
       const userCredential = await signInWithEmailAndPassword(
         auth,
@@ -85,6 +87,8 @@ const LoginForm = () => {
       if (userDoc.exists) {
         const userData = { ...userDoc.data(), uid: user.uid };
         console.log("User data fetched from Firestore: ", userData);
+
+        await AsyncStorage.setItem("isLoggedIn", "true");
       }
 
       navigation.navigate("Welcome");
