@@ -111,6 +111,7 @@ export default function Welcome({ navigation }) {
       );
       const linksData = response.data?.links || [];
       setScrapedData({ links: linksData });
+      console.log(`links data : ${linksData}`);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
