@@ -17,6 +17,7 @@ import { auth } from "../FIrebaseConfig";
 import { signOut } from "firebase/auth";
 import { UserContext } from "../context/UserContext";
 import { ThemeContext } from "../context/ThemeContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const NavBar = ({ userInfo }) => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -84,19 +85,27 @@ const NavBar = ({ userInfo }) => {
   const handleSignOut = async () => {
     try {
       console.log("Attempting to sign out...");
+      
+      // Sign out the user
       await signOut(auth);
       console.log("User signed out!");
-
+  
+      // Update AsyncStorage to reflect the logged-out state
+      await AsyncStorage.setItem("isLoggedIn", "false");
+  
+      // Reset the navigation to the SignUp screen
       navigation.reset({
         index: 0,
         routes: [{ name: "SignUp" }],
       });
-
+  
+      // Close the dropdown or any other UI element
       setDropdownVisible(false);
     } catch (error) {
       console.error("Error signing out: ", error);
     }
   };
+  
 
   return (
     <SafeAreaView style={[styles.NavTop, { position: "relative" }]}>

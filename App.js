@@ -32,6 +32,7 @@ import UserReportDetails from "./screens/UserReportDetails";
 import FavoriteDetails from "./screens/FavoriteDetails";
 import ProjectDetails from "./screens/ProjectDetails";
 import * as settingScreens from "./settingsScreens/exportSettings";
+import LoadingScreen from "./components/LoadingScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +40,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [viewedOnboarding, setViewedOnboarding] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const checkOnboarding = async () => {
     try {
@@ -53,11 +55,37 @@ export default function App() {
     }
   };
 
+  const checkLoginStatus = async () => {
+    try {
+      const value = await AsyncStorage.getItem("isLoggedIn");
+      console.log(
+        value === "true"
+          ? "User Logged In Asyn Caught"
+          : "User not logged in async caught"
+      );
+      if (value !== null) {
+        setLoggedIn(true); // User has logged in before
+      }
+    } catch (err) {
+      console.log("Error @checkLoginStatus: ", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-      checkOnboarding();
-    }, 2000);
+    const initializeApp = async () => {
+      try {
+        await Promise.all([checkLoginStatus(), checkOnboarding()]);
+      } catch (error) {
+        console.error("Initialization error:", error);
+      } finally {
+        setLoading(false);
+        setShowSplash(false); // Move this here to ensure it shows after checks
+      }
+    };
+
+    const timer = setTimeout(initializeApp, 2000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -79,7 +107,13 @@ export default function App() {
       <ThemeProvider>
         <NavigationContainer>
           <Stack.Navigator
-            initialRouteName={viewedOnboarding ? "SignUp" : "Onboarding"}
+            initialRouteName={
+              loggedIn === "true"
+                ? "Dashboard"
+                : viewedOnboarding
+                ? "SignUp"
+                : "Onboarding" // Redirect to Signup if not logged in and onboarding completed
+            }
           >
             <Stack.Screen
               name="Onboarding"
