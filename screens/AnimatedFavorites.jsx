@@ -34,7 +34,7 @@ const AnimatedListItem = ({ imageUrl, projectName, onPress }) => {
     <TouchableOpacity onPress={onPress}>
       <Animated.View style={[styles.animatedView, animatedStyle]}>
         <ImageBackground
-        borderRadius={10}
+          borderRadius={10}
           source={{ uri: imageUrl }}
           style={styles.imageBackground}
           blurRadius={5}
@@ -57,7 +57,10 @@ const AnimatedFlatList = () => {
     };
     return (
       <AnimatedListItem
-        imageUrl={item.imageUrl || "https://st.depositphotos.com/22224476/61424/i/450/depositphotos_614249470-stock-photo-colorful-background-template-gentle-classic.jpg"}
+        imageUrl={
+          item.imageUrl ||
+          "https://masterbuilders.site-ym.com/resource/resmgr/docs/2022/Cabinet_approves_National_In.jpg"
+        }
         projectName={item.projectName}
         onPress={onPress}
       />
@@ -108,7 +111,7 @@ const styles = StyleSheet.create({
     fontSize: 34,
     // fontWeight: "bold",
     color: "#333",
-    fontFamily: "Poppins-Bold"
+    fontFamily: "Poppins-Bold",
   },
   emptyContainer: {
     flex: 1,
@@ -119,11 +122,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#888",
   },
-  imageBackground:{
+  imageBackground: {
     height: 100,
     alignItems: "center",
-    justifyContent: "center"
-  }
+    justifyContent: "center",
+  },
 });
 
 export default AnimatedFlatList;

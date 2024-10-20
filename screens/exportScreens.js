@@ -1,0 +1,21 @@
+// screens/index.js
+export { default as Home } from './Home';
+export { default as Onboarding } from './Onboarding';
+export { default as Signup } from './Signup';
+export { default as ReportScreen } from './ReportScreen';
+export { default as ReportInfo } from './ReportInfo';
+export { default as Forgot } from './Forgot';
+export { default as MinisterScreen } from './MinisterScreen';
+export { default as BudgetScreen } from './BudgetScreen';
+export { default as SuccessRateScreen } from './SuccessRateScreen';
+export { default as ProjectsPages } from './ProjectsPages';
+export { default as MinisterDetail } from './MinisterDetails';
+export { default as Settings } from './Settings';
+export { default as HelpCentre } from './HelpCentre';
+export { default as AppInfo } from './AppInfo';
+export { default as RateTheApp } from './RateTheApp';
+export { default as EditProfile } from './editProfile';
+export { default as CreateReport } from './CreateReport';
+export { default as UserReportDetails } from './UserReportDetails';
+export { default as FavoriteDetails } from './FavoriteDetails';
+export { default as ProjectDetails } from './ProjectDetails';

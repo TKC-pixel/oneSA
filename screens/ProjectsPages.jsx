@@ -106,8 +106,8 @@ const ProjectPage = () => {
     }
   };
 
-  const navigateToProjectDetails = (project) => {
-    navigation.navigate('ProjectDetails', { project });
+  const navigateToProjectDetails = (item) => {
+    navigation.navigate('ProjectDetails', { item });
   };
 
   if (loading) {
