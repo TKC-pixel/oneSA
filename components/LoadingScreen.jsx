@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#f8f9fa", // Light background color
+    width: "100%",
   },
   animation: {
     width: 150, // Adjust the width as needed
@@ -56,6 +57,9 @@ const darkStyles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: '#1c1c1e', // Dark background color
+      width: "112%", //can be removed..... filling screen with loading screen
+      marginLeft: '-6%'
+      
     },
     animation: {
       width: 150, // Adjust the width as needed

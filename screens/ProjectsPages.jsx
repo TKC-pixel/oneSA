@@ -9,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemeContext } from '../context/ThemeContext'; // Import your theme context
 import LoadingScreen from '../components/LoadingScreen';
+
 const ProjectPage = () => {
   const [projects, setProjects] = useState([]);
   const [filteredProjects, setFilteredProjects] = useState([]);
@@ -105,8 +106,8 @@ const ProjectPage = () => {
     }
   };
 
-  const navigateToProjectDetails = (project) => {
-    navigation.navigate('ProjectDetails', { project });
+  const navigateToProjectDetails = (item) => {
+    navigation.navigate('ProjectDetails', { item });
   };
 
   if (loading) {

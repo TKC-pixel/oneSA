@@ -7,6 +7,7 @@ import { TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
 import { ThemeContext } from "../context/ThemeContext"; // Import ThemeContext
+import LoadingScreen from "../components/LoadingScreen";
 
 const Profile = () => {
   const { userData } = useContext(UserContext);
@@ -15,6 +16,7 @@ const Profile = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
   const [selectedImage, setSelectedImage] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const loadFonts = async () => {
     await Font.loadAsync({
@@ -25,13 +27,13 @@ const Profile = () => {
 
   useEffect(() => {
     loadFonts().then(() => setFontsLoaded(true));
+
+    setTimeout(() => setLoading(false), 2000);
   }, []);
 
   if (!fontsLoaded) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
+      <LoadingScreen/>
     );
   }
 
@@ -118,12 +120,13 @@ const Profile = () => {
       <Text style={[styles.labelBio, { color: theme === "light" ? "black" : "white" }]}>
         {userData.bio || "N/A"}
       </Text>
-      <Text style={[styles.label, { color: theme === "light" ? "black" : "white" }]}>Your Reports</Text>
+      <Text style={[styles.label, { color: theme === "light" ? "black" : "white", paddingHorizontal: 18}]}>Your Reports</Text>
       <FlatList
+      horizontal
         data={userData.reports}
         keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}  
         renderItem={({ item }) => (
-          <View style={styles.reportContainer}>
+          <View style={{paddingHorizontal: 15}}>
             {item.projectImage ? (
               <TouchableOpacity onPress={() => handlePress(item)}>
                 <Image
@@ -171,7 +174,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     marginVertical: 5,
-    fontFamily: "Poppins-Regular",
+    fontFamily: "Poppins-Bold",
   },
   nameContainer: {
     flexDirection: "row",
@@ -215,7 +218,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   reportContainer: {
-    backgroundColor: "white",
+    // backgroundColor: "white",
+    width: 150,
+    height: 150,
     borderRadius: 8,
     padding: 10,
     marginBottom: 15,
@@ -229,10 +234,22 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   reportImage: {
-    width: "100%",
-    height: 100,
+    width: 150,
+    height: 150,
     marginVertical: 5,
+    borderRadius: 10,
+    // iOS shadow properties
+    shadowColor: '#000', // Shadow color
+    shadowOffset: {
+      width: 0, // Horizontal offset
+      height: 2, // Vertical offset
+    },
+    shadowOpacity: 0.3, // Opacity of the shadow
+    shadowRadius: 4, // Blur radius of the shadow
+    // Android elevation
+    elevation: 5, // Elevation level
   },
+  
   backBtn: {
     position: "absolute",
     width: 50,

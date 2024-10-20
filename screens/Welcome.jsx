@@ -14,6 +14,7 @@ import {
   SafeAreaView,
   LogBox,
 } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useEffect, useContext } from "react";
 import * as Font from "expo-font";
 import NavBar from "../components/NavBar";
@@ -24,6 +25,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import * as Location from "expo-location";
 import axios from "axios";
 import { ThemeContext } from "../context/ThemeContext";
+import { UserContext } from "../context/UserContext";
 import AnimatedFlatList from "./AnimatedFavorites";
 
 const favicon = require("../assets/images/Favicon.png");
@@ -42,9 +44,11 @@ export default function Welcome({ navigation }) {
   const [scrapedData, setScrapedData] = useState({ links: [] });
   const [provinceDepartments, setProvinceDepartments] = useState([]);
   const { theme } = useContext(ThemeContext);
+  const { userData, updateLocationPermission, locationPermissions } = useContext(UserContext);
   const [deptCodes, setDeptCodes] = useState([]);
+  
 
-  const apiKey = "984e92c064d5b5c29b0f1718435fdec919b949a8";
+  const apiKey = "36706c5aeb736ac9e572db7569b9380bd996dee5";
   const targetURL =
     "https://provincialgovernment.co.za/units/type/1/departments";
   const cssExtractor =
@@ -83,7 +87,7 @@ export default function Welcome({ navigation }) {
       }
     }
   };
-
+  console.log("User location: ", locationPermissions)
   //Location
   const getLocation = async () => {
     try {
@@ -91,10 +95,20 @@ export default function Welcome({ navigation }) {
       if (status !== "granted") {
         throw new Error("Permission to access location was denied.");
       }
-  
-      let location = await Location.getCurrentPositionAsync();
-      const address = await Location.reverseGeocodeAsync(location.coords);
-      setLocationData(address[0]?.city || null);
+      const newPermission = 'yes'; 
+      updateLocationPermission(newPermission);
+      await AsyncStorage.setItem('location', newPermission);
+
+      if (locationPermissions === 'yes') {
+        try {
+          
+          let location = await Location.getCurrentPositionAsync();
+          const address = await Location.reverseGeocodeAsync(location.coords);
+          setLocationData(address[0]?.city || null);
+        } catch (error) {
+          console.error("Error fetching location:", error);
+        }
+      }
     } catch (error) {
       setLocationError(error.message);
       Alert.alert("Error", error.message);
@@ -285,7 +299,7 @@ useEffect(() => {
   };
 
   const currentProvince =
-    getProvinceFromCity(locationData)?.toLowerCase() || "unknown province";
+    getProvinceFromCity(locationData)?.toLowerCase() || "checking location permissions";
 
   return (
     <SafeAreaView style={theme == "light" ? styles.safeArea : darkModeStyles.safeArea}>
@@ -305,7 +319,7 @@ useEffect(() => {
         : "Loading Location..."}
     </Text>
 
-    <View style={theme == "light" ? styles.searchContainer : darkModeStyles.searchContainer}>
+    {/* <View style={theme == "light" ? styles.searchContainer : darkModeStyles.searchContainer}>
       <Pressable onPress={toggleDisplay}>
         <View style={theme == "light" ? styles.menuIconContainer : darkModeStyles.menuIconContainer}>
           <Ionicons name="filter-outline" size={30} />
@@ -317,7 +331,7 @@ useEffect(() => {
         style={theme == "light" ? styles.textInput : darkModeStyles.textInput}
         editable={false}
       />
-    </View>
+    </View> */}
 
     <View
       style={[

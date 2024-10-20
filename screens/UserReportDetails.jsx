@@ -1,90 +1,130 @@
 import React, { useContext, useState, useEffect } from "react";
-import { StyleSheet, Text, View, Image, ScrollView, ActivityIndicator } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import * as Font from "expo-font";
 import { SafeAreaView } from "react-native-safe-area-context";
+import LoadingScreen from "../components/LoadingScreen";
+import { Ionicons } from "@expo/vector-icons";
+import { ThemeContext } from "../context/ThemeContext";
 
 const UserReportDetails = ({ route }) => {
-    const { item } = route.params; // Access the passed item data
-    const [fontsLoaded, setFontsLoaded] = useState(false);
+  const { item } = route.params; // Access the passed item data
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+  const { theme } = useContext(ThemeContext);
+  console.log(item);
 
-    const loadFonts = async () => {
-        await Font.loadAsync({
-            "Poppins-Regular": require("../assets/fonts/Poppins-Regular.ttf"),
-            "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
-        });
-    };
+  const loadFonts = async () => {
+    await Font.loadAsync({
+      "Poppins-Regular": require("../assets/fonts/Poppins-Regular.ttf"),
+      "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
+    });
+  };
 
-    useEffect(() => {
-        loadFonts().then(() => setFontsLoaded(true));
-    }, []);
-
-    if (!fontsLoaded) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#0000ff" />
-            </View>
-        );
+  const renderStatus = (status) => {
+    switch (status) {
+      case "not_started":
+        return <Text style={[styles.statusText, styles.notStarted]}>Not Started</Text>;
+      case "in_progress":
+        return <Text style={[styles.statusText, styles.inProgress]}>In Progress</Text>;
+      case "completed":
+        return <Text style={[styles.statusText, styles.completed]}>Completed</Text>;
+      default:
+        return <Text style={styles.statusText}>Unknown Status</Text>;
     }
+  };
 
-    return (
-        <SafeAreaView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>Report Details</Text>
+  useEffect(() => {
+    loadFonts().then(() => setFontsLoaded(true));
+  }, []);
 
-            {item.projectImage && (
-                <Image
-                    source={{ uri: item.projectImage }}
-                    style={styles.reportImage}
-                />
-            )}
+  if (!fontsLoaded) {
+    return <LoadingScreen />;
+  }
 
-            <Text style={styles.description}>Description:</Text>
-            <Text style={styles.info}>{item.description}</Text>
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: theme === "light" ? "#fff" : "#1e1e1e" }]}>
+      {item.projectImage && (
+        <Image source={{ uri: item.projectImage }} style={styles.reportImage} />
+      )}
+      <View style={styles.content}>
+        <Text style={[styles.title, { color: theme === "light" ? "#343a40" : "#ffffff" }]}>{item.title}</Text>
 
-            <Text style={styles.description}>Location:</Text>
-            <Text style={styles.info}>{item.location}</Text>
+        <Text style={[styles.info, { color: theme === "light" ? "#6c757d" : "#adb5bd" }]}>{item.description}</Text>
 
-            <Text style={styles.description}>Status:</Text>
-            <Text style={styles.info}>{item.status}</Text>
+        <Text style={[styles.info, { color: theme === "light" ? "#6c757d" : "#adb5bd" }]}>
+          <Ionicons name="location-outline" color={theme === "light" ? "#6c757d" : "#adb5bd"} />
+          {item.location}
+        </Text>
 
-            <Text style={styles.description}>Additional Comments:</Text>
-            <Text style={styles.info}>{item.additionalComments || "N/A"}</Text>
-        </SafeAreaView>
-    );
+        <Text style={[styles.description, { color: theme === "light" ? "#495057" : "#e9ecef" }]}>Status:</Text>
+        {renderStatus(item.status)}  
+
+        <Text style={[styles.description, { color: theme === "light" ? "#495057" : "#e9ecef" }]}>Additional Comments:</Text>
+        <Text style={[styles.info, { color: theme === "light" ? "#6c757d" : "#adb5bd" }]}>{item.additionalComments || "N/A"}</Text>
+      </View>
+    </SafeAreaView>
+  );
 };
 
 export default UserReportDetails;
 
 const styles = StyleSheet.create({
-    container: {
-        flexGrow: 1,
-        padding: 20,
-        backgroundColor: '#fff', // Light background color
+  container: {
+    flex: 1,
+  },
+  content: {
+    marginHorizontal: 18,
+  },
+  title: {
+    fontSize: 24,
+    fontFamily: "Poppins-Bold",
+    marginBottom: 20,
+  },
+  reportImage: {
+    width: "100%",
+    height: 390,
+    borderRadius: 45,
+    marginBottom: 21,
+    shadowColor: '#000', 
+    shadowOffset: {
+      width: 0,
+      height: 2, 
     },
-    title: {
-        fontSize: 24,
-        fontFamily: 'Poppins-Bold', // Use Poppins Bold
-        marginBottom: 20,
-        textAlign: 'center',
-        color: '#343a40', // Dark text color
-    },
-    reportImage: {
-        width: '100%', // Full width
-        height: 200,   // Set height as needed
-        borderRadius: 10,
-        marginBottom: 20,
-        alignSelf: 'center',
-    },
-    description: {
-        fontSize: 18,
-        fontFamily: 'Poppins-Bold', // Use Poppins Bold for descriptions
-        marginVertical: 10,
-        color: '#495057', // Darker text color for descriptions
-    },
-    info: {
-        fontSize: 16,
-        fontFamily: 'Poppins-Regular', // Use Poppins Regular for info
-        marginBottom: 15,
-        lineHeight: 24,
-        color: '#6c757d', // Gray text color for info
-    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    elevation: 5,
+    resizeMode: "cover"
+  },
+  description: {
+    fontSize: 18,
+    fontFamily: "Poppins-Bold",
+    marginVertical: 10,
+  },
+  info: {
+    fontSize: 16,
+    fontFamily: "Poppins-Regular",
+    marginBottom: 15,
+    lineHeight: 24,
+  },
+  statusText: {
+    fontSize: 16,
+    fontFamily: "Poppins-Bold", 
+    marginBottom: 15,
+    lineHeight: 24,
+  },
+  notStarted: {
+    color: "#dc3545", 
+  },
+  inProgress: {
+    color: "#ffc107", 
+  },
+  completed: {
+    color: "#28a745", 
+  },
 });
