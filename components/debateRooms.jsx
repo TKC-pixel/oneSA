@@ -9,13 +9,14 @@ import {
   Alert,
   Image,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import NavBar from "./NavBar";
 import Entypo from "@expo/vector-icons/Entypo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TouchableOpacity } from "react-native";
 import { Dimensions } from "react-native";
 import { app, db } from "../FIrebaseConfig";
+import { ThemeContext } from "../context/ThemeContext";
 import {
   collection,
   addDoc,
@@ -36,7 +37,7 @@ export default function DebateRooms() {
   const [debateName, setDebateName] = useState("");
   const [department, setDepartment] = useState("");
   const [groupID, setGroupID] = useState("");
-
+  const { theme } = useContext(ThemeContext);
   const handleAdd = () => {
     setAdd(true);
   };
@@ -76,7 +77,8 @@ export default function DebateRooms() {
     };
 
     return (
-      <View style={[styles.debateDetails, { display: add ? "flex" : "none" }]}>
+      
+        <View style={[styles.debateDetails, { display: add ? "flex" : "none" }]}>
         <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
           <Entypo name="cross" size={24} color="black" />
         </TouchableOpacity>
@@ -103,6 +105,9 @@ export default function DebateRooms() {
           </TouchableOpacity>
         </View>
       </View>
+
+      
+      
     );
   };
 
@@ -301,5 +306,165 @@ const styles = StyleSheet.create({
     top: 15,
     right: 15,
     zIndex: 1,
+  },
+});
+const darkModeStyles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "#121212", // Dark background
+    paddingHorizontal: 18,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#121212", // Dark background
+  },
+  welcomeText: {
+    fontSize: 24,
+    fontFamily: "Poppins-Bold",
+    color: "#FFFFFF", // Light text color
+    marginTop: 15,
+  },
+  searchContainer: {
+    margin: 8,
+    borderRadius: 20,
+    padding: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#1E1E1E", // Darker background for input
+  },
+  menuIconContainer: {
+    marginRight: 10,
+  },
+  icon: {
+    width: 30,
+    height: 30,
+  },
+  textInput: {
+    width: 250,
+    height: 30,
+    marginRight: 15,
+    fontFamily: "Poppins-Regular",
+    color: "#FFFFFF", // Light text for input
+  },
+  dropdown: {
+    backgroundColor: "rgba(255, 255, 255, 0.1)", // Light translucent effect for dropdown
+    padding: 16,
+    borderRadius: 10,
+  },
+  dropdownItem: {
+    marginBottom: 10,
+  },
+  dropdownText: {
+    fontFamily: "Poppins-Regular",
+    color: "#FFFFFF", // Light text for dropdown items
+  },
+  infoContainer: {
+    flexDirection: "row",
+    alignSelf: "center",
+  },
+  budgetInfoContainer: {},
+  departmentTitle: {
+    fontFamily: "Poppins-Bold",
+    color: "#FFFFFF", // Light text color
+    marginBottom: 20,
+  },
+  card: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 5,
+    height: 120,
+    width: "45%",
+    marginBottom: 1,
+    backgroundColor: "#1E1E1E", // Dark card background
+    padding: 16,
+    borderRadius: 20,
+    margin: 10,
+  },
+  budgetCard: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 5,
+    height: 120,
+    marginBottom: 11,
+    marginTop: 20,
+    backgroundColor: "#1E1E1E", // Dark card background
+    padding: 16,
+    borderRadius: 20,
+    margin: 10,
+  },
+  cardText: {
+    fontFamily: "Poppins-Bold",
+    color: "#FFFFFF", // Light text for card content
+  },
+  buttonContainer: {
+    borderWidth: 1,
+    borderColor: "#4D4D4D", // Darker border
+    margin: 10,
+    borderRadius: 99,
+    padding: 5,
+    flexDirection: "row",
+    marginTop: 20,
+    justifyContent: "space-between",
+    marginBottom: 20,
+  },
+  button: {
+    justifyContent: "center",
+    backgroundColor: "#1F1F1F", // Dark button background
+    padding: 8,
+    borderRadius: 99,
+    alignItems: "center",
+  },
+  reportButton: {
+    backgroundColor: "#333333", // Lighter dark background
+    padding: 8,
+    borderRadius: 99,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#FFFFFF", // Light text for buttons
+    fontSize: 16,
+    fontFamily: "Poppins-Bold",
+  },
+  buttonTextReport: {
+    color: "#FFFFFF", // Light text for report button
+    fontSize: 16,
+    fontFamily: "Poppins-Bold",
+  },
+  favouritesTitle: {
+    fontFamily: "Poppins-Bold",
+    marginTop: 20,
+    color: "#FFFFFF", // Light text
+  },
+  cardInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  cardIconOne: {
+    backgroundColor: "#B7C42E",
+    padding: 6,
+    borderRadius: 99,
+    marginRight: 5,
+  },
+  cardIconTwo: {
+    backgroundColor: "#000",
+    padding: 6,
+    borderRadius: 99,
+    marginRight: 5,
+  },
+  cardIconThree: {
+    backgroundColor: "rgba(255, 255, 255, 0.4)", // Adjusted opacity for dark theme
+    padding: 6,
+    borderRadius: 99,
+    marginRight: 5,
+  },
+  buttonItem: {
+    justifyContent: "center",
+    width: 160,
   },
 });

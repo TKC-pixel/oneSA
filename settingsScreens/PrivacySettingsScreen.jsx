@@ -1,16 +1,38 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Switch, TouchableOpacity, Alert, Linking } from 'react-native';
-import { ThemeContext } from '../context/ThemeContext'; // Adjust the import path as needed
+import { ThemeContext } from '../context/ThemeContext'; 
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { UserContext } from "../context/UserContext";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PrivacySettingsScreen = () => {
-  const { theme } = useContext(ThemeContext); // Get the current theme from context
-  const [locationSharingEnabled, setLocationSharingEnabled] = useState(true);
+  const { locationPermissions, updateLocationPermission, toggleLocation } = useContext(UserContext);
+  const { theme } = useContext(ThemeContext); 
+  console.log('privacy', locationPermissions)
+  const [location, setLocation] = useState(false);
+  
+  // Combine both useEffect hooks into one to track locationPermissions
+  useEffect(() => {
+    setLocation(locationPermissions === 'yes');
+  }, [locationPermissions]);
+  
   const [dataAccessEnabled, setDataAccessEnabled] = useState(true);
-
-  const handleToggleLocationSharing = () => {
-    setLocationSharingEnabled(previousState => !previousState);
+  
+  const handleToggleLocationSharing = (newValue) => {
+    setLocation(newValue);
+    const newPermission = newValue ? 'yes' : 'no';
+    updateLocationPermission(newPermission);
+    Alert.alert("Location permission Changed", `Location sharing is now ${newPermission === 'yes' ? 'enabled' : 'disabled'}`);
   };
 
+  const handleToggleTheme = () => {
+    toggleTheme(); 
+    Alert.alert(
+      "Theme Changed",
+      `The theme has been changed to ${theme === "light" ? "Dark" : "Light"}.`
+    );
+  };
+  
   const handleToggleDataAccess = () => {
     setDataAccessEnabled(previousState => !previousState);
   };
@@ -20,47 +42,47 @@ const PrivacySettingsScreen = () => {
   };
 
   const handleSaveSettings = () => {
-    // Logic to save settings goes here
     Alert.alert("Settings Saved", "Your privacy preferences have been saved.");
   };
 
   return (
-    <View style={[styles.container, theme === 'dark' ? styles.darkBackground : styles.lightBackground]}>
-      <Text style={[styles.title, theme === 'dark' ? styles.darkText : styles.lightText]}>
-        Privacy Settings
-      </Text>
-
-      <View style={styles.settingItem}>
-        <Text style={[styles.label, theme === 'dark' ? styles.darkText : styles.lightText]}>
-          Enable Location Sharing:
+    <SafeAreaView style={[styles.container, theme === 'dark' ? styles.darkBackground : styles.lightBackground]}>
+      <View>
+        <Text style={[styles.title, theme === 'dark' ? styles.darkText : styles.lightText]}>
+          Privacy Settings
         </Text>
-        <Switch
-          value={locationSharingEnabled}
-          onValueChange={handleToggleLocationSharing}
-        />
+
+        <View style={styles.settingItem}>
+          <Text style={[styles.label, theme === 'dark' ? styles.darkText : styles.lightText]}>
+            Enable Location Sharing:
+          </Text>
+          <Switch
+            value={location}
+            onValueChange={handleToggleLocationSharing}
+          />
+        </View>
+
+        <View style={styles.settingItem}>
+          <Text style={[styles.label, theme === 'dark' ? styles.darkText : styles.lightText]}>
+            Allow Data Access:
+          </Text>
+          <Switch
+            value={dataAccessEnabled}
+            onValueChange={handleToggleDataAccess}
+          />
+        </View>
+
+        <TouchableOpacity style={[styles.button, { backgroundColor: theme === 'dark' ? '#0056b3' : '#007bff' }]} onPress={handlePrivacyPolicyPress}>
+          <Text style={styles.buttonText}>View Privacy Policy</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.button, { backgroundColor: theme === 'dark' ? '#0056b3' : '#007bff' }]} onPress={handleSaveSettings}>
+          <Text style={styles.buttonText}>Save Settings</Text>
+        </TouchableOpacity>
       </View>
-
-      <View style={styles.settingItem}>
-        <Text style={[styles.label, theme === 'dark' ? styles.darkText : styles.lightText]}>
-          Allow Data Access:
-        </Text>
-        <Switch
-          value={dataAccessEnabled}
-          onValueChange={handleToggleDataAccess}
-        />
-      </View>
-
-      <TouchableOpacity style={[styles.button, { backgroundColor: theme === 'dark' ? '#0056b3' : '#007bff' }]} onPress={handlePrivacyPolicyPress}>
-        <Text style={styles.buttonText}>View Privacy Policy</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={[styles.button, { backgroundColor: theme === 'dark' ? '#0056b3' : '#007bff' }]} onPress={handleSaveSettings}>
-        <Text style={styles.buttonText}>Save Settings</Text>
-      </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

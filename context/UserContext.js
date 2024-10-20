@@ -2,17 +2,19 @@ import React, { createContext, useState, useEffect } from "react";
 import { auth, db } from "../FIrebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, onSnapshot } from "firebase/firestore";
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
+  const [locationPermissions, setLocationPermissions] = useState('no');
   const [userData, setUserData] = useState({
     email: null,
     name: null,
     surname: null,
     phone: null,
     isMinister: false,
-    ministerID: null, // Added ministerID to userData
+    ministerID: null,
     bio: null,
     coverPic: null,
     favorites: null,
@@ -21,6 +23,38 @@ export const UserProvider = ({ children }) => {
     reports: null,
   });
 
+  const updateLocationPermission = async (newPermission) => {
+    try {
+      await AsyncStorage.setItem('locationPermission', newPermission);
+      setLocationPermissions(newPermission);
+      console.log("Location permission updated to:", newPermission); // Debug log
+    } catch (error) {
+      console.error("Error updating location permissions", error);
+    }
+  };
+  
+  const toggleLocation = async () => {
+    const newLocation = locationPermissions === 'yes' ? 'no' : 'yes';
+    await updateLocationPermission(newLocation); // Call this to update both AsyncStorage and state
+  };
+
+  useEffect(() => {
+    const loadLocationPermissions = async () => {
+      try {
+        const storedLocation = await AsyncStorage.getItem('locationPermission'); // Check for 'locationPermission'
+        if (storedLocation) {
+          setLocationPermissions(storedLocation); 
+        } else {
+          setLocationPermissions('no'); 
+        }
+      } catch (error) {
+        console.error('Failed to load location permission:', error);
+      }
+    };
+
+    loadLocationPermissions();
+  }, []);
+  
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -66,7 +100,7 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ userData, setUserData }}>
+    <UserContext.Provider value={{ userData, setUserData, updateLocationPermission, toggleLocation, locationPermissions }}>
       {children}
     </UserContext.Provider>
   );
