@@ -18,7 +18,7 @@ const BudgetAllocation = ({ dept, id, prov }) => {
   const [department, setDepartment] = useState(dept[0]);
   const [scrapedData, setScrapedData] = useState([]); 
   const cssExtractor = "%7B%22tables%22%3A%22table%22%2C%20%22rows%22%3A%22tr%22%2C%20%22cells%22%3A%22td%22%2C%20%22headers%22%3A%22th%22%7D";
-  const apiKey = "36706c5aeb736ac9e572db7569b9380bd996dee5";
+  const apiKey = "1232de8bee06751cfdd2b48d0b8157e289d320fb";
   const targetURL = `https://provincialgovernment.co.za/units/financial/${id[code]}/${current}/${department}`;
   const [disp, setDisp] = useState("none");
   const [disp2, setDisp2] = useState("none");
