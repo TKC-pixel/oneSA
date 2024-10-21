@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { View, Text, StyleSheet, Switch, Alert } from "react-native";
+import { View, Text, StyleSheet, Switch, Alert, SafeAreaView } from "react-native";
 import { ThemeContext } from "../context/ThemeContext";
 // Adjust the import path as needed
 
@@ -15,12 +15,13 @@ const ThemeSettingsScreen = () => {
   };
 
   return (
-    <View
+    <SafeAreaView
       style={[
         styles.container,
         theme === "dark" ? styles.darkBackground : styles.lightBackground,
       ]}
     >
+      <View style={{padding : 15}}>
       <Text
         style={[
           styles.title,
@@ -42,11 +43,12 @@ const ThemeSettingsScreen = () => {
         <Switch
           value={theme === "dark"}
           onValueChange={handleToggleTheme}
-          trackColor={{ false: "#767577", true: "#81b0ff" }}
+          trackColor={{ false: "black", true: "#81b0ff" }}
           thumbColor={theme === "dark" ? "#f4f3f4" : "#f4f3f4"}
         />
       </View>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 };
 

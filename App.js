@@ -33,6 +33,7 @@ import FavoriteDetails from "./screens/FavoriteDetails";
 import ProjectDetails from "./screens/ProjectDetails";
 import * as settingScreens from "./settingsScreens/exportSettings";
 import LoadingScreen from "./components/LoadingScreen";
+import DebateRoom from "./screens/DebateRoom";
 
 const Stack = createNativeStackNavigator();
 
@@ -121,6 +122,11 @@ export default function App() {
               options={{ headerShown: false }}
             />
             <Stack.Screen
+              name="DebateRoom"
+              component={DebateRoom}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
               name="SignUp"
               component={SignUp}
               options={{ headerShown: false }}
@@ -206,8 +212,15 @@ export default function App() {
               options={{ headerShown: false }}
               component={RateTheApp}
             />
-            <Stack.Screen name="Chat" component={Chat} />
-            <Stack.Screen name="DebateRooms" component={DebateRooms} />
+            <Stack.Screen 
+              name="Chat" component={Chat} 
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen 
+              name="DebateRooms" 
+              options={{ headerShown: false }}
+              component={DebateRooms} 
+            />
             <Stack.Screen
               name="EditProfile"
               options={{ headerShown: false }}

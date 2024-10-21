@@ -15,13 +15,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import LoadingScreen from "../components/LoadingScreen";
 import { ThemeContext } from "../context/ThemeContext";
 import NavBar from "../components/NavBar";
-
+import { UserContext } from "../context/UserContext";
 const ReportFeed = ({ navigation }) => {
   const { theme } = useContext(ThemeContext); // Access theme from context
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true); // State to manage loading
   const favicon = require("../assets/images/Favicon.png");
-
+  const { userData } = useContext(UserContext);
+  
   // Listen to real-time Firestore updates
   useEffect(() => {
     const reportsCollection = collection(db, "reports");
@@ -121,7 +122,7 @@ const ReportFeed = ({ navigation }) => {
         <LoadingScreen />
       ) : (
         <View>
-          <NavBar />
+          <NavBar userInfo={userData}/>
           <FlatList
           style={{marginBottom: 180}}
             data={reports}
@@ -160,7 +161,7 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 10,
-   
+    
   },
   card: {
     borderRadius: 8,
@@ -203,6 +204,7 @@ const styles = StyleSheet.create({
   },
   info: {
     padding: 10,
+    
   },
   reportTitle: {
     fontSize: 16,
