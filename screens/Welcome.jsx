@@ -14,7 +14,7 @@ import {
   SafeAreaView,
   LogBox,
 } from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect, useContext } from "react";
 import * as Font from "expo-font";
 import NavBar from "../components/NavBar";
@@ -22,7 +22,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { db, auth } from "../FIrebaseConfig";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useFocusEffect } from "@react-navigation/native";
-import * as Location from 'expo-location';
+import * as Location from "expo-location";
 import axios from "axios";
 import { ThemeContext } from "../context/ThemeContext";
 import { UserContext } from "../context/UserContext";
@@ -31,7 +31,7 @@ import AnimatedFlatList from "./AnimatedFavorites";
 const favicon = require("../assets/images/Favicon.png");
 
 LogBox.ignoreLogs([
-  "VirtualizedLists should never be nested inside plain ScrollViews with the same orientation because it can break windowing and other functionality - use another VirtualizedList-backed container instead.", 
+  "VirtualizedLists should never be nested inside plain ScrollViews with the same orientation because it can break windowing and other functionality - use another VirtualizedList-backed container instead.",
 ]);
 export default function Welcome({ navigation }) {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -44,10 +44,15 @@ export default function Welcome({ navigation }) {
   const [scrapedData, setScrapedData] = useState({ links: [] });
   const [provinceDepartments, setProvinceDepartments] = useState([]);
   const { theme } = useContext(ThemeContext);
-  const { userData, updateLocationPermission, locationPermissions, setUserData } = useContext(UserContext);
+  const {
+    userData,
+    updateLocationPermission,
+    locationPermissions,
+    setUserData,
+  } = useContext(UserContext);
   const [deptCodes, setDeptCodes] = useState([]);
-  
-  const apiKey = "36706c5aeb736ac9e572db7569b9380bd996dee5";
+
+  const apiKey = "1232de8bee06751cfdd2b48d0b8157e289d320fb";
   const targetURL =
     "https://provincialgovernment.co.za/units/type/1/departments";
   const cssExtractor =
@@ -91,25 +96,24 @@ export default function Welcome({ navigation }) {
   const getLocation = async () => {
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
-      
+
       if (status !== "granted") {
         throw new Error("Permission to access location was denied.");
       }
-  
-      const newPermission = 'yes'; 
+
+      const newPermission = "yes";
       updateLocationPermission(newPermission);
-      await AsyncStorage.setItem('location', newPermission);
-  
-      if (newPermission === 'yes') {
+      await AsyncStorage.setItem("location", newPermission);
+
+      if (newPermission === "yes") {
         try {
           let location = await Location.getCurrentPositionAsync();
           // console.log("User location:", location);
-  
+
           const address = await Location.reverseGeocodeAsync(location.coords);
           // console.log("Address:", address);
-          
+
           setLocationData(address[0]?.city || null);
-  
         } catch (error) {
           console.error("Error fetching location:", error);
           throw new Error("Failed to get current location.");
@@ -129,7 +133,6 @@ export default function Welcome({ navigation }) {
       );
       const linksData = response.data?.links || [];
       setScrapedData({ links: linksData });
-      console.log(`links data : ${linksData}`);
     } catch (error) {
       console.error("Error fetching data:", error.message);
     }
@@ -245,25 +248,24 @@ export default function Welcome({ navigation }) {
   };
 
   useEffect(() => {
-  // Fetch user data and location on mount
-  fetchUserData();
-  getLocation(); // Make sure this is working correctly
-  fetchScrapedData();
-}, []);
+    // Fetch user data and location on mount
+    fetchUserData();
+    getLocation(); // Make sure this is working correctly
+    fetchScrapedData();
+  }, []);
 
-useEffect(() => {
-  if (locationData) {
-    // console.log("Location data available: ", locationData);
-    const currentProvince = getProvinceFromCity(locationData)?.toLowerCase();
-    // console.log("Current province: ", currentProvince);
-    if (currentProvince) {
-      filterDepartmentsByProvince(currentProvince);
+  useEffect(() => {
+    if (locationData) {
+      // console.log("Location data available: ", locationData);
+      const currentProvince = getProvinceFromCity(locationData)?.toLowerCase();
+      // console.log("Current province: ", currentProvince);
+      if (currentProvince) {
+        filterDepartmentsByProvince(currentProvince);
+      }
+    } else {
+      console.log("Location data is null or not yet available.");
     }
-  } else {
-    console.log("Location data is null or not yet available.");
-  }
-}, [locationData]); // Triggers whenever locationData is updated
-
+  }, [locationData]); // Triggers whenever locationData is updated
 
   // Handle back button press
   const handleBackPress = () => {
@@ -302,32 +304,42 @@ useEffect(() => {
     setDisp((prevDisp) => (prevDisp === "none" ? "block" : "none"));
   };
 
-  const currentProvince = getProvinceFromCity(locationData)?.toLowerCase() || "checking location permissions";
+  const currentProvince =
+    getProvinceFromCity(locationData)?.toLowerCase() ||
+    "checking location permissions";
   let userInfo;
   if (Array.isArray(userData) && userData.length < 1) {
-    userInfo = { info }; 
+    userInfo = { info };
   } else {
     userInfo = userData[0];
   }
   return (
-    <SafeAreaView style={theme == "light" ? styles.safeArea : darkModeStyles.safeArea}>
-    <ScrollView>
-    <NavBar userInfo={userInfo} />
+    <SafeAreaView
+      style={theme == "light" ? styles.safeArea : darkModeStyles.safeArea}
+    >
+      <ScrollView>
+        <NavBar userInfo={userInfo} />
 
-    <Text style={theme == "light" ? styles.welcomeText : darkModeStyles.welcomeText}>
-      Hello{" "}
-      {info && info.length > 0
-        ? `${info[0].name} ${info[0].surname}`
-        : "User"}
-    </Text>
-    <Text style={theme == "light" ? styles.cardText : darkModeStyles.cardText}>
-      Current Province:{" "}
-      {currentProvince
-        ? currentProvince.toUpperCase()
-        : "Loading Location..."}
-    </Text>
+        <Text
+          style={
+            theme == "light" ? styles.welcomeText : darkModeStyles.welcomeText
+          }
+        >
+          Hello{" "}
+          {info && info.length > 0
+            ? `${info[0].name} ${info[0].surname}`
+            : "User"}
+        </Text>
+        <Text
+          style={theme == "light" ? styles.cardText : darkModeStyles.cardText}
+        >
+          Current Province:{" "}
+          {currentProvince
+            ? currentProvince.toUpperCase()
+            : "Loading Location..."}
+        </Text>
 
-    {/* <View style={theme == "light" ? styles.searchContainer : darkModeStyles.searchContainer}>
+        {/* <View style={theme == "light" ? styles.searchContainer : darkModeStyles.searchContainer}>
       <Pressable onPress={toggleDisplay}>
         <View style={theme == "light" ? styles.menuIconContainer : darkModeStyles.menuIconContainer}>
           <Ionicons name="filter-outline" size={30} />
@@ -341,113 +353,201 @@ useEffect(() => {
       />
     </View> */}
 
-    <View
-      style={[
-        theme == "light" ? styles.dropdown : darkModeStyles.dropdown,
-        { display: disp, marginLeft: "5%", marginRight: "5%" },
-      ]}
-    >
-      {provinceDepartments.length > 0 && currentProvince !== "Loading..." ? (
-        provinceDepartments.map((department, deptIndex) => (
-          <Pressable
-            key={deptIndex}
-            style={{ marginLeft: 10, marginBottom: "7%" }}
+        <View
+          style={[
+            theme == "light" ? styles.dropdown : darkModeStyles.dropdown,
+            { display: disp, marginLeft: "5%", marginRight: "5%" },
+          ]}
+        >
+          {provinceDepartments.length > 0 &&
+          currentProvince !== "Loading..." ? (
+            provinceDepartments.map((department, deptIndex) => (
+              <Pressable
+                key={deptIndex}
+                style={{ marginLeft: 10, marginBottom: "7%" }}
+                onPress={() => {
+                  setDepartment(department), setDisp("none");
+                }}
+              >
+                <Text>{department}</Text>
+              </Pressable>
+            ))
+          ) : (
+            <Text>No departments available for this province.</Text>
+          )}
+        </View>
+
+        <View
+          style={
+            theme == "light"
+              ? styles.infoContainer
+              : darkModeStyles.infoContainer
+          }
+        >
+          <TouchableOpacity
+            style={theme == "light" ? styles.card : darkModeStyles.card}
+            onPress={() => navigation.navigate("Projects")}
+          >
+            <View
+              style={
+                theme == "light" ? styles.cardInfo : darkModeStyles.cardInfo
+              }
+            >
+              <Ionicons
+                color="#fff"
+                size={25}
+                style={styles.cardIconOne}
+                name="briefcase-outline"
+              />
+              <Text
+                style={
+                  theme == "light" ? styles.cardText : darkModeStyles.cardText
+                }
+              >
+                Projects
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={theme == "light" ? styles.card : darkModeStyles.card}
             onPress={() => {
-              setDepartment(department), setDisp("none");
+              if (deptCodes.length > 0) {
+                navigation.navigate("SuccessRate", {
+                  dept: provinceDepartments,
+                  id: deptCodes,
+                  prov: currentProvince,
+                });
+              } else {
+                alert("Check for location permissions.");
+              }
             }}
           >
-            <Text>{department}</Text>
-          </Pressable>
-        ))
-      ) : (
-        <Text>No departments available for this province.</Text>
-      )}
-    </View>
-
-    <View style={theme == "light" ? styles.infoContainer : darkModeStyles.infoContainer}>
-      <TouchableOpacity
-        style={theme == "light" ? styles.card : darkModeStyles.card}
-        onPress={() => navigation.navigate("Projects")}
-      >
-        <View style={theme == "light" ? styles.cardInfo : darkModeStyles.cardInfo}>
-          <Ionicons
-            color="#fff"
-            size={25}
-            style={styles.cardIconOne}
-            name="briefcase-outline"
-          />
-          <Text style={theme == "light" ? styles.cardText : darkModeStyles.cardText}>Projects</Text>
+            <View
+              style={
+                theme == "light" ? styles.cardInfo : darkModeStyles.cardInfo
+              }
+            >
+              <Ionicons
+                color="#fff"
+                size={25}
+                style={styles.cardIconOne}
+                name="checkmark-done-outline"
+              />
+              <Text
+                style={
+                  theme == "light" ? styles.cardText : darkModeStyles.cardText
+                }
+              >
+                Success Rates
+              </Text>
+            </View>
+          </TouchableOpacity>
         </View>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={theme == "light" ? styles.card : darkModeStyles.card}
-        onPress={() => navigation.navigate("SuccessRate")}
-      >
-        <View style={theme == "light" ? styles.cardInfo : darkModeStyles.cardInfo}>
-          <Ionicons
-            color="#fff"
-            size={25}
-            style={styles.cardIconOne}
-            name="checkmark-done-outline"
-          />
-          <Text style={theme == "light" ? styles.cardText : darkModeStyles.cardText}>Success Rates</Text>
-        </View>
-      </TouchableOpacity>
-    </View>
 
-    <View style={theme == "light" ? styles.budgetInfoContainer : darkModeStyles.budgetInfoContainer}>
-    <TouchableOpacity
-        style={theme == "light" ? styles.budgetCard : darkModeStyles.budgetCard}
-        onPress={() => {
-          if (deptCodes.length > 0) {  
-            navigation.navigate("Budget", {
-              dept: provinceDepartments,
-              id: deptCodes,
-              prov: currentProvince,
-            });
-          } else {
-            alert('Check for location permissions.');
+        <View
+          style={
+            theme == "light"
+              ? styles.budgetInfoContainer
+              : darkModeStyles.budgetInfoContainer
           }
-        }}
-      >
-        <View style={theme == "light" ? styles.cardInfo : darkModeStyles.cardInfo}>
-          <Ionicons
-            color="#fff"
-            size={25}
-            style={styles.cardIconOne}
-            name="cash-outline"
-          />
-          <Text style={theme == "light" ? styles.cardText : darkModeStyles.cardText}>Budget Allocation</Text>
+        >
+          <TouchableOpacity
+            style={
+              theme == "light" ? styles.budgetCard : darkModeStyles.budgetCard
+            }
+            onPress={() => {
+              if (deptCodes.length > 0) {
+                navigation.navigate("Budget", {
+                  dept: provinceDepartments,
+                  id: deptCodes,
+                  prov: currentProvince,
+                });
+              } else {
+                alert("Check for location permissions.");
+              }
+            }}
+          >
+            <View
+              style={
+                theme == "light" ? styles.cardInfo : darkModeStyles.cardInfo
+              }
+            >
+              <Ionicons
+                color="#fff"
+                size={25}
+                style={styles.cardIconOne}
+                name="cash-outline"
+              />
+              <Text
+                style={
+                  theme == "light" ? styles.cardText : darkModeStyles.cardText
+                }
+              >
+                Budget Allocation
+              </Text>
+            </View>
+          </TouchableOpacity>
         </View>
-      </TouchableOpacity>
-    </View>
 
-    <View style={theme == "light" ? styles.buttonContainer : darkModeStyles.buttonContainer}>
-      <View style={styles.buttonItem}>
-        <TouchableOpacity
-          style={theme == "light" ? styles.button : darkModeStyles.button}
-          onPress={() => navigation.navigate("MinisterScreen")}
+        <View
+          style={
+            theme == "light"
+              ? styles.buttonContainer
+              : darkModeStyles.buttonContainer
+          }
         >
-          <Text style={theme == "light" ? styles.buttonText : darkModeStyles.buttonText}>Explore Ministers</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.buttonItem}>
-        <TouchableOpacity
-          style={theme == "light" ? styles.reportButton : darkModeStyles.reportButton}
-          onPress={() => navigation.navigate("Report")}
-        >
-          <Text style={theme == "light" ? styles.buttonTextReport : darkModeStyles.buttonTextReport}>Report Issues</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+          <View style={styles.buttonItem}>
+            <TouchableOpacity
+              style={theme == "light" ? styles.button : darkModeStyles.button}
+              onPress={() => navigation.navigate("MinisterScreen")}
+            >
+              <Text
+                style={
+                  theme == "light"
+                    ? styles.buttonText
+                    : darkModeStyles.buttonText
+                }
+              >
+                Explore Ministers
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.buttonItem}>
+            <TouchableOpacity
+              style={
+                theme == "light"
+                  ? styles.reportButton
+                  : darkModeStyles.reportButton
+              }
+              onPress={() => navigation.navigate("Report")}
+            >
+              <Text
+                style={
+                  theme == "light"
+                    ? styles.buttonTextReport
+                    : darkModeStyles.buttonTextReport
+                }
+              >
+                Report Issues
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
-    <View>
-      <Text style={theme == "light" ? styles.favouritesTitle : darkModeStyles.favouritesTitle}>Your favourites</Text>
-      <AnimatedFlatList />
-    </View>
-  </ScrollView>
-</SafeAreaView>
-
+        <View>
+          <Text
+            style={
+              theme == "light"
+                ? styles.favouritesTitle
+                : darkModeStyles.favouritesTitle
+            }
+          >
+            Your favourites
+          </Text>
+          <AnimatedFlatList />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({

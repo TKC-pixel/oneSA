@@ -2,10 +2,11 @@ import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import SuccessRate from "../components/SuccessRate";
 
-const SuccessRateScreen = () => {
+const SuccessRateScreen = ({ route }) => {
+  const { dept, id, prov } = route.params || {};
   return (
     <View style={styles.safeArea}>
-      <SuccessRate />
+      <SuccessRate dept={dept} id={id} prov={prov}/>
     </View>
   );
 };
