@@ -4,27 +4,86 @@ import { ThemeContext } from '../context/ThemeContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { UserContext } from "../context/UserContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const PrivacySettingsScreen = () => {
+import * as Location from 'expo-location';
+const PrivacySettingsScreen = ({navigation}) => {
   const { locationPermissions, updateLocationPermission, toggleLocation } = useContext(UserContext);
   const { theme } = useContext(ThemeContext); 
-  console.log('privacy', locationPermissions)
+  
   const [location, setLocation] = useState(false);
   
-  // Combine both useEffect hooks into one to track locationPermissions
   useEffect(() => {
     setLocation(locationPermissions === 'yes');
   }, [locationPermissions]);
   
   const [dataAccessEnabled, setDataAccessEnabled] = useState(true);
   
-  const handleToggleLocationSharing = (newValue) => {
-    setLocation(newValue);
-    const newPermission = newValue ? 'yes' : 'no';
-    updateLocationPermission(newPermission);
-    Alert.alert("Location permission Changed", `Location sharing is now ${newPermission === 'yes' ? 'enabled' : 'disabled'}`);
+  const handleToggleLocationSharing = async (newValue) => {
+    try {
+      let { status } = await Location.getForegroundPermissionsAsync();  
+      
+      if (status === 'denied' || status === 'blocked') {
+        Alert.alert(
+          "Permission Required",
+          "Location sharing is disabled. To enable it, go to your phone's Settings > Privacy > Location Services and set it to 'While Using the App' or 'Ask Next Time'.",
+          [
+            { text: 'Cancel', style: 'cancel' },
+            {
+              text: 'Open Settings',
+              onPress: () => Linking.openSettings(),
+            },
+          ]
+        );
+        setLocation(false);
+        updateLocationPermission('no');  
+      } 
+      else if (status === 'granted') {
+        if (!newValue) {
+          Alert.alert(
+            "Disable Location Sharing",
+            "To disable location sharing, please go to your phone's Settings > Privacy > Location Services and set it to 'Never'.",
+            [
+              { text: 'Cancel', style: 'cancel' },
+              {
+                text: 'Open Settings',
+                onPress: () => Linking.openSettings(),  
+              },
+            ]
+          );
+        } else {
+          setLocation(true);
+          updateLocationPermission('no');
+        }
+      } 
+      else if (status === 'undetermined') {
+        let { status: newStatus } = await Location.requestForegroundPermissionsAsync();
+        
+        if (newStatus === 'granted') {
+          
+          setLocation(newValue);
+          const newPermission = newValue ? 'yes' : 'no';
+          updateLocationPermission(newPermission);
+        } else {
+          Alert.alert(
+            "Permission Denied",
+            "Location sharing is disabled. You can enable it in your phone's Settings > Privacy > Location Services.",
+            [
+              { text: 'Cancel', style: 'cancel' },
+              {
+                text: 'Open Settings',
+                onPress: () => Linking.openSettings(),
+              },
+            ]
+          );
+          setLocation(false);
+          updateLocationPermission('no');
+        }
+      }
+    } catch (error) {
+      console.error('Error requesting location permissions:', error);
+      Alert.alert("Error", "Failed to request location permission.");
+    }
   };
-
+  
   const handleToggleTheme = () => {
     toggleTheme(); 
     Alert.alert(
@@ -38,11 +97,12 @@ const PrivacySettingsScreen = () => {
   };
 
   const handlePrivacyPolicyPress = () => {
-    Linking.openURL('https://your-privacy-policy-url.com'); // Replace with your actual privacy policy URL
+    Linking.openURL('https://your-privacy-policy-url.com'); 
   };
 
   const handleSaveSettings = () => {
     Alert.alert("Settings Saved", "Your privacy preferences have been saved.");
+    navigation.navigate('Welcome')
   };
 
   return (

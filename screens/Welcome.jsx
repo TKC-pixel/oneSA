@@ -22,7 +22,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { db, auth } from "../FIrebaseConfig";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useFocusEffect } from "@react-navigation/native";
-import * as Location from "expo-location";
+import * as Location from 'expo-location';
 import axios from "axios";
 import { ThemeContext } from "../context/ThemeContext";
 import { UserContext } from "../context/UserContext";
@@ -44,10 +44,9 @@ export default function Welcome({ navigation }) {
   const [scrapedData, setScrapedData] = useState({ links: [] });
   const [provinceDepartments, setProvinceDepartments] = useState([]);
   const { theme } = useContext(ThemeContext);
-  const { userData, updateLocationPermission, locationPermissions } = useContext(UserContext);
+  const { userData, updateLocationPermission, locationPermissions, setUserData } = useContext(UserContext);
   const [deptCodes, setDeptCodes] = useState([]);
   
-
   const apiKey = "36706c5aeb736ac9e572db7569b9380bd996dee5";
   const targetURL =
     "https://provincialgovernment.co.za/units/type/1/departments";
@@ -81,32 +80,39 @@ export default function Welcome({ navigation }) {
           ...doc.data(),
         }));
         setInfo(userData);
+        setUserData(userData);
       } catch (error) {
         console.log("Error fetching user data: ", error);
         Alert.alert("Error", "Failed to fetch user data.");
       }
     }
   };
-  console.log("User location: ", locationPermissions)
   //Location
   const getLocation = async () => {
     try {
       let { status } = await Location.requestForegroundPermissionsAsync();
+      
       if (status !== "granted") {
         throw new Error("Permission to access location was denied.");
       }
+  
       const newPermission = 'yes'; 
       updateLocationPermission(newPermission);
       await AsyncStorage.setItem('location', newPermission);
-
-      if (locationPermissions === 'yes') {
+  
+      if (newPermission === 'yes') {
         try {
-          
           let location = await Location.getCurrentPositionAsync();
+          // console.log("User location:", location);
+  
           const address = await Location.reverseGeocodeAsync(location.coords);
+          // console.log("Address:", address);
+          
           setLocationData(address[0]?.city || null);
+  
         } catch (error) {
           console.error("Error fetching location:", error);
+          throw new Error("Failed to get current location.");
         }
       }
     } catch (error) {
@@ -114,8 +120,6 @@ export default function Welcome({ navigation }) {
       Alert.alert("Error", error.message);
     }
   };
-  
-
   // Scraped data
   const fetchScrapedData = async () => {
     try {
@@ -249,9 +253,9 @@ export default function Welcome({ navigation }) {
 
 useEffect(() => {
   if (locationData) {
-    console.log("Location data available: ", locationData);
+    // console.log("Location data available: ", locationData);
     const currentProvince = getProvinceFromCity(locationData)?.toLowerCase();
-    console.log("Current province: ", currentProvince);
+    // console.log("Current province: ", currentProvince);
     if (currentProvince) {
       filterDepartmentsByProvince(currentProvince);
     }
@@ -276,7 +280,7 @@ useEffect(() => {
     ]);
     return true;
   };
-  console.log("codes", deptCodes);
+  // console.log("codes", deptCodes);
   useFocusEffect(
     React.useCallback(() => {
       BackHandler.addEventListener("hardwareBackPress", handleBackPress);
@@ -298,13 +302,17 @@ useEffect(() => {
     setDisp((prevDisp) => (prevDisp === "none" ? "block" : "none"));
   };
 
-  const currentProvince =
-    getProvinceFromCity(locationData)?.toLowerCase() || "checking location permissions";
-
+  const currentProvince = getProvinceFromCity(locationData)?.toLowerCase() || "checking location permissions";
+  let userInfo;
+  if (Array.isArray(userData) && userData.length < 1) {
+    userInfo = { info }; 
+  } else {
+    userInfo = userData[0];
+  }
   return (
     <SafeAreaView style={theme == "light" ? styles.safeArea : darkModeStyles.safeArea}>
-  <ScrollView>
-    <NavBar userInfo={info} />
+    <ScrollView>
+    <NavBar userInfo={userInfo} />
 
     <Text style={theme == "light" ? styles.welcomeText : darkModeStyles.welcomeText}>
       Hello{" "}
@@ -313,7 +321,7 @@ useEffect(() => {
         : "User"}
     </Text>
     <Text style={theme == "light" ? styles.cardText : darkModeStyles.cardText}>
-      Current Province based on location:{" "}
+      Current Province:{" "}
       {currentProvince
         ? currentProvince.toUpperCase()
         : "Loading Location..."}
@@ -388,14 +396,18 @@ useEffect(() => {
     </View>
 
     <View style={theme == "light" ? styles.budgetInfoContainer : darkModeStyles.budgetInfoContainer}>
-      <TouchableOpacity
+    <TouchableOpacity
         style={theme == "light" ? styles.budgetCard : darkModeStyles.budgetCard}
         onPress={() => {
-          navigation.navigate("Budget", {
-            dept: provinceDepartments,
-            id: deptCodes,
-            prov: currentProvince,
-          });
+          if (deptCodes.length > 0) {  
+            navigation.navigate("Budget", {
+              dept: provinceDepartments,
+              id: deptCodes,
+              prov: currentProvince,
+            });
+          } else {
+            alert('Check for location permissions.');
+          }
         }}
       >
         <View style={theme == "light" ? styles.cardInfo : darkModeStyles.cardInfo}>

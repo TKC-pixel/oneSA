@@ -112,15 +112,15 @@ const SignUpForm = () => {
           coverPic: null,
           email,
           phone,
-          isMinister, 
+          isMinister,
           favorites: [],
           isVerified: false,
-          reports: [
-          ],
+          reports: [],
           ...(isMinister && { ministerID }),
         });
 
         alert("Registration successful");
+        await AsyncStorage.setItem("isLoggedIn", "true");
         navigation.navigate("Home");
       } catch (error) {
         alert("Registration failed! Try again.");
@@ -253,7 +253,7 @@ const SignUpForm = () => {
                 uncheckedIcon="checkbox-blank-outline"
                 checkedColor="#B7C42E"
               />
-              
+
               <Text style={styles.checkboxText}>
                 I agree to the Terms & Conditions and Privacy Policy.
               </Text>
@@ -275,7 +275,6 @@ const SignUpForm = () => {
             >
               <Text style={styles.loginText}>Sign Up</Text>
             </Pressable>
-            
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -317,7 +316,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginLeft: -50,
   },
-  checkboxContainerMinister:{
+  checkboxContainerMinister: {
     flexDirection: "row",
     alignItems: "center",
     marginLeft: -240,
