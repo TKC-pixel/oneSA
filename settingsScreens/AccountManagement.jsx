@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  SafeAreaView
 } from "react-native";
 import { ThemeContext } from "../context/ThemeContext"; // Adjust the import path as needed
 
@@ -17,7 +18,9 @@ const AccountManagementScreen = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={[styles.container, theme === 'dark' ? styles.darkBackground : styles.lightBackground]}>
+    <SafeAreaView style={[styles.container, theme === 'dark' ? styles.darkBackground : styles.lightBackground]}>
+      <View style={{padding: 15}}>
+      
       <Text style={[styles.title, theme === 'dark' ? styles.darkText : styles.lightText]}>
         Account Management
       </Text>
@@ -61,7 +64,9 @@ const AccountManagementScreen = () => {
       <Text style={[styles.footer, theme === 'dark' ? styles.darkText : styles.lightText]}>
         Please choose an option above to manage your account settings.
       </Text>
-    </ScrollView>
+    
+      </View>
+    </SafeAreaView>
   );
 };
 
