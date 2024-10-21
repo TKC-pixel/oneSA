@@ -9,7 +9,7 @@ import {
   VictoryContainer,
   VictoryGroup,
   VictoryLegend,
-  VictoryArea
+  VictoryArea,
 } from "victory-native";
 
 export default function Graphs({
@@ -99,10 +99,7 @@ export default function Graphs({
             domain={[0, 100000]}
             tickFormat={(x) => `${x / 1000}k`}
           />
-          <VictoryGroup
-            offset={15}
-            colorScale={["#0DB85C", "#EDE700", "#07008C"]}
-          >
+          <VictoryGroup offset={15} colorScale={["#0DB85C", "#EDE700", "#07008C"]}>
             <VictoryBar
               data={employeeCompensation}
               x="year"
@@ -167,6 +164,7 @@ const styles = StyleSheet.create({
   },
   chartContainer: {
     marginBottom: 20,
+    marginLeft: 20, 
   },
   title: {
     fontSize: 20,
