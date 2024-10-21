@@ -17,7 +17,7 @@ const Profile = () => {
   const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  
   const loadFonts = async () => {
     await Font.loadAsync({
       "Poppins-Regular": require("../assets/fonts/Poppins-Regular.ttf"),
@@ -59,11 +59,11 @@ const Profile = () => {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme === "light" ? "white" : "#1e1e1e" }]}>
-     <TouchableOpacity onPress={() => handleImagePress(userData.coverImageUrl)}>
+     <TouchableOpacity onPress={() => handleImagePress(userData[0].coverImageUrl)}>
         <Image
           source={{
-            uri: userData.coverImageUrl
-              ? userData.coverImageUrl
+            uri: userData[0].coverImageUrl
+              ? userData[0].coverImageUrl
               : "https://iconerecife.com.br/wp-content/plugins/uix-page-builder/uixpb_templates/images/UixPageBuilderTmpl/default-cover-5.jpg",
           }}
           style={{ width: "100%", height: 160 }}
@@ -77,11 +77,11 @@ const Profile = () => {
         <Ionicons name="pencil-outline" color={theme === "light" ? "black" : "black"} />
       </TouchableOpacity>
       
-      <TouchableOpacity style={{marginBottom: 10}} onPress={() => handleImagePress(userData.profileImageUrl)}>
+      <TouchableOpacity style={{marginBottom: 10}} onPress={() => handleImagePress(userData[0].profileImageUrl)}>
         <Image
           source={{
-            uri: userData.profileImageUrl
-              ? userData.profileImageUrl
+            uri: userData[0].profileImageUrl
+              ? userData[0].profileImageUrl
               : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
           }}
           style={[
@@ -94,18 +94,18 @@ const Profile = () => {
       </TouchableOpacity>
       <View style={styles.nameContainer}>
         <Text style={[styles.labelName, { color: theme === "light" ? "black" : "white" }]}>
-          {userData.name} {userData.surname}
+          {userData[0].name} {userData[0].surname}
         </Text>
         {userData && (
           <>
-            {userData.isMinister ? (
+            {userData[0].isMinister ? (
               <Ionicons
                 name="checkmark-circle"
                 size={20}
                 color="green"
                 style={styles.verifiedIcon}
               />
-            ) : userData.isVerified ? (
+            ) : userData[0].isVerified ? (
               <Ionicons
                 name="checkmark-circle"
                 size={20}
@@ -118,12 +118,12 @@ const Profile = () => {
       </View>
 
       <Text style={[styles.labelBio, { color: theme === "light" ? "black" : "white" }]}>
-        {userData.bio || "N/A"}
+        {userData[0].bio || "N/A"}
       </Text>
       <Text style={[styles.label, { color: theme === "light" ? "black" : "white", paddingHorizontal: 18}]}>Your Reports</Text>
       <FlatList
       horizontal
-        data={userData.reports}
+        data={userData[0].reports}
         keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}  
         renderItem={({ item }) => (
           <View style={{paddingHorizontal: 15}}>
@@ -142,7 +142,7 @@ const Profile = () => {
         ListEmptyComponent={<Text style={{ color: theme === "light" ? "black" : "white" }}>No reports available</Text>}
       />
 
-      {console.log(userData)}
+      
       <Modal visible={modalVisible} transparent={true} animationType="slide">
         <View style={styles.modalContainer}>
           <TouchableOpacity

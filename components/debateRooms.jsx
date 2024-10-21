@@ -17,6 +17,7 @@ import { TouchableOpacity } from "react-native";
 import { Dimensions } from "react-native";
 import { app, db } from "../FIrebaseConfig";
 import { ThemeContext } from "../context/ThemeContext";
+import { UserContext } from "../context/UserContext";
 import {
   collection,
   addDoc,
@@ -38,6 +39,8 @@ export default function DebateRooms() {
   const [department, setDepartment] = useState("");
   const [groupID, setGroupID] = useState("");
   const { theme } = useContext(ThemeContext);
+  const { userData } = useContext(UserContext);
+  
   const handleAdd = () => {
     setAdd(true);
   };
@@ -113,18 +116,19 @@ export default function DebateRooms() {
 
   const FilledDebatesRoom = () => {
     return (
-      <View style={styles.container}>
-        <NavBar />
-        <ScrollView style={styles.content}>
+      <View style={theme=='light' ? styles.container : darkModeStyles.container}>
+        <NavBar userInfo={userData}/>
+        <ScrollView style={theme== 'light' ? styles.content : darkModeStyles.content}>
           {debates.map((debate, i) => (
             <Pressable
               onPress={() =>
-                navigation.navigate("Chat", { groupID: debate.groupID })
+                navigation.navigate("Chat", { groupID: debate.groupID, debatename: debate.title })
               }
               key={i}
+              
             >
-              <View key={i} style={styles.debateItem}>
-                <Text style={styles.debateTitle}>{debate.title}</Text>
+              <View key={i} style={theme == 'light' ? styles.debateItem: darkModeStyles.debateItem}>
+                <Text style={theme=='light'? styles.debateTitle: darkModeStyles.debateTitle}>{debate.title}</Text>
                 <Text style={styles.debateDepartment}>{debate.department}</Text>
               </View>
             </Pressable>
@@ -180,7 +184,7 @@ export default function DebateRooms() {
   }, []);
 
   return (
-    <View style={styles.safeArea}>
+    <View style={theme=='light' ? styles.safeArea : darkModeStyles.safeArea}>
       <CustomKeyboardView>
         {debates.length !== 0 ? <FilledDebatesRoom /> : <EmptyDebatesRoom />}
         {/* <EmptyDebatesRoom /> */}
@@ -309,162 +313,40 @@ const styles = StyleSheet.create({
   },
 });
 const darkModeStyles = StyleSheet.create({
+  content: {
+    flex: 1,
+    backgroundColor: 'black',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+    
+  },
   safeArea: {
     flex: 1,
-    backgroundColor: "#121212", // Dark background
     paddingHorizontal: 18,
+    backgroundColor: "black"
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#121212", // Dark background
-  },
-  welcomeText: {
-    fontSize: 24,
-    fontFamily: "Poppins-Bold",
-    color: "#FFFFFF", // Light text color
-    marginTop: 15,
-  },
-  searchContainer: {
-    margin: 8,
-    borderRadius: 20,
-    padding: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#1E1E1E", // Darker background for input
-  },
-  menuIconContainer: {
-    marginRight: 10,
-  },
-  icon: {
-    width: 30,
-    height: 30,
-  },
-  textInput: {
-    width: 250,
-    height: 30,
-    marginRight: 15,
-    fontFamily: "Poppins-Regular",
-    color: "#FFFFFF", // Light text for input
-  },
-  dropdown: {
-    backgroundColor: "rgba(255, 255, 255, 0.1)", // Light translucent effect for dropdown
-    padding: 16,
+  debateItem: {
+    backgroundColor: "#333",
     borderRadius: 10,
-  },
-  dropdownItem: {
-    marginBottom: 10,
-  },
-  dropdownText: {
-    fontFamily: "Poppins-Regular",
-    color: "#FFFFFF", // Light text for dropdown items
-  },
-  infoContainer: {
-    flexDirection: "row",
-    alignSelf: "center",
-  },
-  budgetInfoContainer: {},
-  departmentTitle: {
-    fontFamily: "Poppins-Bold",
-    color: "#FFFFFF", // Light text color
-    marginBottom: 20,
-  },
-  card: {
+    padding: 15,
+    marginVertical: 10,
+    marginHorizontal: 2,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 5,
-    height: 120,
-    width: "45%",
-    marginBottom: 1,
-    backgroundColor: "#1E1E1E", // Dark card background
-    padding: 16,
-    borderRadius: 20,
-    margin: 10,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 3,
   },
-  budgetCard: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 5,
-    height: 120,
-    marginBottom: 11,
-    marginTop: 20,
-    backgroundColor: "#1E1E1E", // Dark card background
-    padding: 16,
-    borderRadius: 20,
-    margin: 10,
+  debateTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "white",
   },
-  cardText: {
-    fontFamily: "Poppins-Bold",
-    color: "#FFFFFF", // Light text for card content
-  },
-  buttonContainer: {
-    borderWidth: 1,
-    borderColor: "#4D4D4D", // Darker border
-    margin: 10,
-    borderRadius: 99,
-    padding: 5,
-    flexDirection: "row",
-    marginTop: 20,
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  button: {
-    justifyContent: "center",
-    backgroundColor: "#1F1F1F", // Dark button background
-    padding: 8,
-    borderRadius: 99,
-    alignItems: "center",
-  },
-  reportButton: {
-    backgroundColor: "#333333", // Lighter dark background
-    padding: 8,
-    borderRadius: 99,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#FFFFFF", // Light text for buttons
-    fontSize: 16,
-    fontFamily: "Poppins-Bold",
-  },
-  buttonTextReport: {
-    color: "#FFFFFF", // Light text for report button
-    fontSize: 16,
-    fontFamily: "Poppins-Bold",
-  },
-  favouritesTitle: {
-    fontFamily: "Poppins-Bold",
-    marginTop: 20,
-    color: "#FFFFFF", // Light text
-  },
-  cardInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  cardIconOne: {
-    backgroundColor: "#B7C42E",
-    padding: 6,
-    borderRadius: 99,
-    marginRight: 5,
-  },
-  cardIconTwo: {
-    backgroundColor: "#000",
-    padding: 6,
-    borderRadius: 99,
-    marginRight: 5,
-  },
-  cardIconThree: {
-    backgroundColor: "rgba(255, 255, 255, 0.4)", // Adjusted opacity for dark theme
-    padding: 6,
-    borderRadius: 99,
-    marginRight: 5,
-  },
-  buttonItem: {
-    justifyContent: "center",
-    width: 160,
+  debateDepartment: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 5,
   },
 });
