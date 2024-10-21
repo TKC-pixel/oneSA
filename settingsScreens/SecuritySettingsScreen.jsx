@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, StyleSheet, Switch, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, Switch, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
 import { ThemeContext } from '../context/ThemeContext'; // Adjust the import path as needed
 
 const SecuritySettingsScreen = () => {
@@ -26,7 +26,8 @@ const SecuritySettingsScreen = () => {
   };
 
   return (
-    <View style={[styles.container, theme === 'dark' ? styles.darkBackground : styles.lightBackground]}>
+    <SafeAreaView style={[styles.container, theme === 'dark' ? styles.darkBackground : styles.lightBackground]}>
+      <View style={{padding : 15}}>
       <Text style={[styles.title, theme === 'dark' ? styles.darkText : styles.lightText]}>
         Security Settings
       </Text>
@@ -52,7 +53,8 @@ const SecuritySettingsScreen = () => {
       <TouchableOpacity style={[styles.button, { backgroundColor: theme === 'dark' ? '#0056b3' : '#007bff' }]} onPress={handleSaveSettings}>
         <Text style={styles.buttonText}>Save Settings</Text>
       </TouchableOpacity>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 };
 

@@ -1,19 +1,24 @@
 import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { ThemeContext } from '../context/ThemeContext'; // Adjust the import path as needed
-
+import { ThemeContext } from '../context/ThemeContext'; 
+import { auth } from "../FIrebaseConfig";
 const LogoutConfirmationScreen = ({ navigation }) => {
-  const { theme } = useContext(ThemeContext); // Get the current theme from context
-
-  const handleLogout = () => {
-    // Logic to log out the user goes here
-    Alert.alert("Logged Out", "You have successfully logged out.");
-    navigation.navigate('Login'); // Navigate to login or home screen after logging out
+  const { theme } = useContext(ThemeContext); 
+  const handleLogout = async () => {
+    try {
+      console.log("Auth object:", auth); 
+      await auth.signOut(); 
+      Alert.alert("Logged Out", "You have successfully logged out.");
+      navigation.navigate('Home'); 
+    } catch (error) {
+      console.error('Error logging out:', error);
+      Alert.alert("Logout Error", "An error occurred while logging out. Please try again.");
+    }
   };
 
   const handleCancel = () => {
-    navigation.goBack(); // Go back to the previous screen
-  };
+    navigation.goBack(); 
+  };  
 
   return (
     <View style={[styles.container, theme === 'dark' ? styles.darkBackground : styles.lightBackground]}>
