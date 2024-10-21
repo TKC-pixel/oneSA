@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
 import { ThemeContext } from '../context/ThemeContext'; // Adjust the import path as needed
 
 const DebateRoomSettingsScreen = () => {
@@ -21,9 +21,10 @@ const DebateRoomSettingsScreen = () => {
   };
 
   return (
-    <ScrollView 
-      contentContainerStyle={[styles.container, theme === 'dark' ? styles.darkBackground : styles.lightBackground]}
+    <SafeAreaView 
+      style={[styles.container, theme === 'dark' ? styles.darkBackground : styles.lightBackground]}
     >
+      <View style={{padding: 15}}>
       <Text style={[styles.title, theme === 'dark' ? styles.darkText : styles.lightText]}>
         Debate Room Settings
       </Text>
@@ -55,7 +56,8 @@ const DebateRoomSettingsScreen = () => {
       <Text style={[styles.footer, theme === 'dark' ? styles.darkText : styles.lightText]}>
         Adjust your settings for a better debate experience.
       </Text>
-    </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 };
 

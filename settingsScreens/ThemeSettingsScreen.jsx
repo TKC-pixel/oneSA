@@ -43,7 +43,7 @@ const ThemeSettingsScreen = () => {
         <Switch
           value={theme === "dark"}
           onValueChange={handleToggleTheme}
-          trackColor={{ false: "black", true: "#81b0ff" }}
+          
           thumbColor={theme === "dark" ? "#f4f3f4" : "#f4f3f4"}
         />
       </View>

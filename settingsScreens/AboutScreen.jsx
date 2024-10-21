@@ -1,12 +1,13 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
 import { ThemeContext } from '../context/ThemeContext'; // Adjust the import path as needed
 
 const AboutScreen = () => {
   const { theme } = useContext(ThemeContext);
 
   return (
-    <ScrollView contentContainerStyle={[styles.container, theme === 'dark' ? styles.darkBackground : styles.lightBackground]}>
+    <SafeAreaView style={[styles.container, theme === 'dark' ? styles.darkBackground : styles.lightBackground]}>
+      <View style={{padding: 15}}>
       <Text style={[styles.title, theme === 'dark' ? styles.darkText : styles.lightText]}>About OneSA</Text>
       <Text style={[styles.description, theme === 'dark' ? styles.darkText : styles.lightText]}>
         OneSA is an innovative application designed to promote transparency and accountability in government fund usage. 
@@ -38,7 +39,8 @@ const AboutScreen = () => {
       <Text style={[styles.footer, theme === 'dark' ? styles.darkText : styles.lightText]}>
         Thank you for being part of our mission to create a transparent and accountable government!
       </Text>
-    </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 };
 

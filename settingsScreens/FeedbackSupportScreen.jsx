@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Linking } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Linking, SafeAreaView } from 'react-native';
 import { ThemeContext } from '../context/ThemeContext'; // Adjust the import path as needed
 
 const FeedbackSupportScreen = () => {
@@ -18,9 +18,10 @@ const FeedbackSupportScreen = () => {
   };
 
   return (
-    <ScrollView 
-      contentContainerStyle={[styles.container, theme === 'dark' ? styles.darkBackground : styles.lightBackground]}
+    <SafeAreaView 
+      style={[styles.container, theme === 'dark' ? styles.darkBackground : styles.lightBackground]}
     >
+      <View style={{padding: 15}}>
       <Text style={[styles.title, theme === 'dark' ? styles.darkText : styles.lightText]}>
         Feedback and Support
       </Text>
@@ -49,7 +50,8 @@ const FeedbackSupportScreen = () => {
       <Text style={[styles.footer, theme === 'dark' ? styles.darkText : styles.lightText]}>
         We appreciate your input and are here to help!
       </Text>
-    </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 };
 

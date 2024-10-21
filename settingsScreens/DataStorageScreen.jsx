@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
 import { ThemeContext } from '../context/ThemeContext'; // Adjust the import path as needed
 
 const DataStorageScreen = () => {
@@ -17,9 +17,10 @@ const DataStorageScreen = () => {
   };
 
   return (
-    <ScrollView 
-      contentContainerStyle={[styles.container, theme === 'dark' ? styles.darkBackground : styles.lightBackground]}
+    <SafeAreaView 
+      style={[styles.container, theme === 'dark' ? styles.darkBackground : styles.lightBackground]}
     >
+      <View style={{padding: 15}}>
       <Text style={[styles.title, theme === 'dark' ? styles.darkText : styles.lightText]}>
         Data and Storage Management
       </Text>
@@ -46,7 +47,8 @@ const DataStorageScreen = () => {
       <Text style={[styles.footer, theme === 'dark' ? styles.darkText : styles.lightText]}>
         Please manage your data responsibly to ensure optimal app performance.
       </Text>
-    </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 };
 

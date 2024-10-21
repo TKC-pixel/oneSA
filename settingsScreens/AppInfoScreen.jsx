@@ -1,14 +1,15 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
 import { ThemeContext } from '../context/ThemeContext'; // Adjust the import path as needed
 
 const AppInfoScreen = () => {
   const { theme } = useContext(ThemeContext); // Get the current theme from context
 
   return (
-    <ScrollView 
-      contentContainerStyle={[styles.container, theme === 'dark' ? styles.darkBackground : styles.lightBackground]}
+    <SafeAreaView 
+      style={[styles.container, theme === 'dark' ? styles.darkBackground : styles.lightBackground]}
     >
+      <View style={{padding: 15}}>
       <Text style={[styles.title, theme === 'dark' ? styles.darkText : styles.lightText]}>
         App Information
       </Text>
@@ -40,7 +41,8 @@ const AppInfoScreen = () => {
       <Text style={[styles.footer, theme === 'dark' ? styles.darkText : styles.lightText]}>
         Thank you for using OneSA!
       </Text>
-    </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 };
 
