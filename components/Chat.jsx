@@ -33,8 +33,8 @@ export default function Chat({ route }) {
         message: message.text,
         senderId: userID,
         timestamp: serverTimestamp(),
-        senderName: userData.name,
-        senderAvatar: userData.profilePic,
+        senderName: userData.name, 
+        senderAvatar: userData.profileImageUrl,
       });
       console.log("Message sent successfully", `user: ${userData.name}`);
     } catch (error) {
@@ -168,7 +168,7 @@ export default function Chat({ route }) {
         onSend={(newMessages) => onSend(newMessages)}
         user={{
           _id: userID,
-          avatar: userData.profilePic,
+          avatar: userData.profileImageUrl,
         }}
         renderBubble={renderBubble}
         renderInputToolbar={renderInputToolbar}

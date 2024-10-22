@@ -14,7 +14,7 @@ export default function CustomKeyboardView({ children }) {
     <KeyboardAvoidingView
       behavior={ios ? "padding" : "height"}
       style={styles.container}
-      keyboardVerticalOffset={-70}
+      keyboardVerticalOffset={-20}
     >
       <ScrollView
         style={styles.scrollView}
