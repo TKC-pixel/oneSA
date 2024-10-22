@@ -5,16 +5,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { UserContext } from "../context/UserContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
+
 const PrivacySettingsScreen = ({navigation}) => {
   const { locationPermissions, updateLocationPermission, toggleLocation, dataAccess, updateDataAccess } = useContext(UserContext);
-  const { theme } = useContext(ThemeContext); 
+  const { theme, toggleTheme } = useContext(ThemeContext); 
   
   const [location, setLocation] = useState(false);
   
   useEffect(() => {
     setLocation(locationPermissions === 'yes');
   }, [locationPermissions]);
-  
   
   const handleToggleLocationSharing = async (newValue) => {
     try {
@@ -34,8 +34,7 @@ const PrivacySettingsScreen = ({navigation}) => {
         );
         setLocation(false);
         updateLocationPermission('no');  
-      } 
-      else if (status === 'granted') {
+      } else if (status === 'granted') {
         if (!newValue) {
           Alert.alert(
             "Disable Location Sharing",
@@ -50,14 +49,12 @@ const PrivacySettingsScreen = ({navigation}) => {
           );
         } else {
           setLocation(true);
-          updateLocationPermission('no');
+          updateLocationPermission('yes');
         }
-      } 
-      else if (status === 'undetermined') {
+      } else if (status === 'undetermined') {
         let { status: newStatus } = await Location.requestForegroundPermissionsAsync();
         
         if (newStatus === 'granted') {
-          
           setLocation(newValue);
           const newPermission = newValue ? 'yes' : 'no';
           updateLocationPermission(newPermission);
@@ -90,6 +87,7 @@ const PrivacySettingsScreen = ({navigation}) => {
       `The theme has been changed to ${theme === "light" ? "Dark" : "Light"}.`
     );
   };
+
   useEffect(() => {
     const loadDataAccess = async () => {
       try {
@@ -109,23 +107,18 @@ const PrivacySettingsScreen = ({navigation}) => {
       const newAccess = newDataAccess.toString();  
       await AsyncStorage.setItem('dataAccess', newAccess);
       updateDataAccess(newDataAccess);  
-      // console.log('Data Access updated to:', newDataAccess);
     } catch (error) {
       console.error('Error saving data access:', error);
     }
   };
   
-
   const handlePrivacyPolicyPress = () => {
     Linking.openURL('https://onesa.netlify.app/'); 
   };
 
   const handleSaveSettings = () => {
     Alert.alert("Settings Saved", "Your privacy preferences have been saved.");
-    navigation.navigate('Welcome')
-  };
-  const stringToBoolean = (str) => {
-    return str === 'true';  
+    navigation.navigate('Welcome');
   };
 
   return (
@@ -151,9 +144,8 @@ const PrivacySettingsScreen = ({navigation}) => {
           </Text>
           <Switch
             value={dataAccess}  
-            onValueChange={(newValue) => handleToggleDataAccess(newValue)}
+            onValueChange={handleToggleDataAccess}
           />
-
         </View>
 
         <TouchableOpacity style={[styles.button, { backgroundColor: theme === 'dark' ? '#0056b3' : '#007bff' }]} onPress={handlePrivacyPolicyPress}>
@@ -167,6 +159,7 @@ const PrivacySettingsScreen = ({navigation}) => {
     </SafeAreaView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -180,9 +173,10 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
+    fontFamily: "Poppins-Bold"
   },
   settingItem: {
     flexDirection: 'row',
@@ -195,6 +189,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     fontWeight: '600',
+    fontFamily: "Poppins-SemiBold"
   },
   button: {
     padding: 15,
@@ -202,9 +197,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   buttonText: {
-    color: '#fff',
+    color: '#ffffff',
     fontSize: 18,
     textAlign: 'center',
+    fontFamily: "Poppins-SemiBold"
   },
   darkText: {
     color: '#ffffff', // Light text color for dark mode

@@ -47,7 +47,7 @@ export default function Welcome({ navigation }) {
   const { userData, updateLocationPermission, locationPermissions, setUserData, dataAccess } = useContext(UserContext);
   const [deptCodes, setDeptCodes] = useState([]);
 
-  const apiKey = "1232de8bee06751cfdd2b48d0b8157e289d320fb";
+  const apiKey = "e4a5f7fae9a8479a1897ea2e74f6c32668c5955a";
   const targetURL =
     "https://provincialgovernment.co.za/units/type/1/departments";
   const cssExtractor =
@@ -302,12 +302,11 @@ export default function Welcome({ navigation }) {
   const currentProvince =
     getProvinceFromCity(locationData)?.toLowerCase() ||
     "checking location permissions";
-  let userInfo;
-  if (Array.isArray(userData) && userData.length < 1) {
-    userInfo = { info };
-  } else {
-    userInfo = userData[0];
-  }
+    let userInfo = null; // Initialize userInfo to null
+    if (Array.isArray(userData) && userData.length > 0) {
+        userInfo = userData[0]; // Assign the first element if the array is not empty
+    }
+    
   return (
     <SafeAreaView
       style={theme == "light" ? styles.safeArea : darkModeStyles.safeArea}

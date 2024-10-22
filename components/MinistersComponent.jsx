@@ -16,6 +16,7 @@ import { ThemeContext } from "../context/ThemeContext";
 import * as Font from "expo-font";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LoadingScreen from "./LoadingScreen";
+import { UserContext } from "../context/UserContext";
 
 const MinistersComponent = () => {
   const [ministers, setMinisters] = useState([]);
@@ -23,7 +24,7 @@ const MinistersComponent = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
-
+  const {userData} = useContext(UserContext)
   // Load custom fonts
   const loadFonts = async () => {
     await Font.loadAsync({
@@ -117,7 +118,7 @@ const MinistersComponent = () => {
         styles.fullWidth,
       ]}
     >
-      <NavBar />
+      <NavBar userInfo={userData}/>
       <FlatList
         data={ministers}
         keyExtractor={(item) => item.ministerID}

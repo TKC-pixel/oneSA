@@ -20,7 +20,6 @@ export default function Graphs({
 }) {
   return (
     <SafeAreaView style={styles.container}>
-      
       <View style={styles.card}>
         <Text style={styles.title}>Annual Appropriation</Text>
         <VictoryChart
@@ -34,18 +33,38 @@ export default function Graphs({
           <VictoryAxis
             label="Year"
             style={{
-              axisLabel: { padding: 30, fontSize: 16, fill: "#333" },
+              axisLabel: {
+                padding: 30,
+                fontSize: 16,
+                fill: "#333",
+                fontFamily: "Poppins-SemiBold",
+              },
               ticks: { stroke: "#B0B0B0" },
-              tickLabels: { angle: -45, fontSize: 12, fill: "#555" },
+              tickLabels: {
+                angle: -45,
+                fontSize: 12,
+                fill: "#555",
+                fontFamily: "Poppins-SemiBold",
+              },
             }}
           />
           <VictoryAxis
             dependentAxis
             label="Amount Rands (divided by 10)"
             style={{
-              axisLabel: { padding: 37, fontSize: 16, fill: "#333" },
+              axisLabel: {
+                padding: 37,
+                fontSize: 16,
+                fill: "#333",
+                fontFamily: "Poppins-SemiBold",
+              },
               ticks: { stroke: "#B0B0B0" },
-              tickLabels: { fontSize: 12, padding: 1, fill: "#555" },
+              tickLabels: {
+                fontSize: 12,
+                padding: 1,
+                fill: "#555",
+                fontFamily: "Poppins-SemiBold",
+              },
             }}
             domain={[0, 120000]}
             tickFormat={(x) => `${x / 1000}k`}
@@ -56,12 +75,15 @@ export default function Graphs({
             y="amount"
             style={{
               data: {
-                fill: "#1dd3b0", 
+                fill: "#1dd3b0",
                 width: 30,
                 opacity: 0.95,
+                cornerRadius: { top: 10 },
+                borderRadius: 10,
               },
               labels: {
                 fontSize: 12,
+                fontFamily: "Poppins-SemiBold",
               },
             }}
             labels={({ datum }) => `${datum.amount.toFixed(2)}k`}
@@ -70,7 +92,6 @@ export default function Graphs({
         </VictoryChart>
       </View>
 
-     
       <View style={styles.card}>
         <Text style={styles.title}>Expenditure Categories</Text>
         <VictoryChart
@@ -84,9 +105,19 @@ export default function Graphs({
           <VictoryAxis
             label="Year"
             style={{
-              axisLabel: { padding: 30, fontSize: 16, fill: "#333" },
+              axisLabel: {
+                padding: 30,
+                fontSize: 110,
+                fill: "#333",
+                fontFamily: "Poppins-SemiBold",
+              },
               ticks: { stroke: "#B0B0B0" },
-              tickLabels: { angle: -45, fontSize: 12, fill: "#555" },
+              tickLabels: {
+                angle: -45,
+                fontSize: 12,
+                fill: "#555",
+                fontFamily: "Poppins-SemiBold",
+              },
             }}
           />
           <VictoryAxis
@@ -102,7 +133,7 @@ export default function Graphs({
           />
           <VictoryGroup
             offset={15}
-            colorScale={["#072ac8", "#1e96fc", "#1a659e"]} 
+            colorScale={["#072ac8", "#1e96fc", "#1a659e"]}
           >
             <VictoryBar
               data={employeeCompensation}
@@ -112,6 +143,7 @@ export default function Graphs({
                 data: {
                   width: 15,
                   opacity: 0.95,
+                  cornerRadius: { top: 10 },
                 },
               }}
               labels={({ datum }) => `${datum.amount.toFixed(2)}k`}
@@ -125,6 +157,7 @@ export default function Graphs({
                 data: {
                   width: 15,
                   opacity: 0.95,
+                  cornerRadius: { top: 10 },
                 },
               }}
               labels={({ datum }) => `${datum.amount.toFixed(2)}k`}
@@ -138,6 +171,7 @@ export default function Graphs({
                 data: {
                   width: 15,
                   opacity: 0.95,
+                  cornerRadius: { top: 10 },
                 },
               }}
               labels={({ datum }) => `${datum.amount.toFixed(2)}k`}
@@ -146,11 +180,19 @@ export default function Graphs({
           </VictoryGroup>
         </VictoryChart>
         <VictoryLegend
-          x={0}
+          x={5}
           y={0}
           orientation="vertical"
           gutter={20}
-          style={{ border: { stroke: "transparent" } }}
+          style={{
+            border: { stroke: "transparent" },
+            borderRadius: 15,
+            labels: {
+              fontSize: 12,
+              fill: "#333",
+              fontFamily: "Poppins-SemiBold",
+            },
+          }}
           data={[
             { name: "Employee Compensation", symbol: { fill: "#072ac8" } },
             { name: "Goods and Services", symbol: { fill: "#1e96fc" } },
@@ -165,23 +207,29 @@ export default function Graphs({
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    backgroundColor: "#f4f4f4", 
+    backgroundColor: "#fff",
   },
   card: {
-    backgroundColor: "#fff", 
+    backgroundColor: "#ffffff",
     borderRadius: 10,
     padding: 15,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 6,
     marginBottom: 20,
   },
   title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: "#2c3e50", 
+    fontSize: 20,
+    marginBottom: 15,
+    color: "#34495e",
+    fontFamily: "Poppins-Bold",
+  },
+  axisLabel: {
+    fontFamily: "Poppins-SemiBold",
+  },
+  tickLabel: {
+    fontFamily: "Poppins-SemiBold",
   },
 });

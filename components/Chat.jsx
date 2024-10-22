@@ -1,4 +1,11 @@
-import { View, Text, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import React, { useEffect, useState, useCallback, useContext } from "react";
 import {
   collection,
@@ -7,16 +14,22 @@ import {
   onSnapshot,
   where,
   query,
-  getDocs,
   orderBy,
 } from "firebase/firestore";
 import { auth, db } from "../FIrebaseConfig";
-import { GiftedChat, Bubble, InputToolbar, MessageText, Avatar } from "react-native-gifted-chat";
+import {
+  GiftedChat,
+  Bubble,
+  InputToolbar,
+  MessageText,
+  Avatar,
+} from "react-native-gifted-chat";
 import { useNavigation } from "@react-navigation/native";
 import { UserContext } from "../context/UserContext";
 import { ThemeContext } from "../context/ThemeContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
+
 export default function Chat({ route }) {
   const { userData } = useContext(UserContext);
   const navigation = useNavigation();
@@ -25,6 +38,7 @@ export default function Chat({ route }) {
   const [messages, setMessages] = useState([]);
   const [showInput, setShowInput] = useState(true);
   const { theme } = useContext(ThemeContext);
+
   const onSend = useCallback(async (newMessages = []) => {
     const message = newMessages[0];
     try {
@@ -33,7 +47,7 @@ export default function Chat({ route }) {
         message: message.text,
         senderId: userID,
         timestamp: serverTimestamp(),
-        senderName: userData.name, 
+        senderName: userData.name,
         senderAvatar: userData.profileImageUrl,
       });
       console.log("Message sent successfully", `user: ${userData.name}`);
@@ -42,46 +56,42 @@ export default function Chat({ route }) {
     }
   }, []);
 
-  const renderBubble = (props) => {
-    return (
-      <Bubble
-        {...props}
-        wrapperStyle={{
-          left: {
-            backgroundColor: '#e0e0e0',
-            borderRadius: 10,
-          },
-          right: {
-            backgroundColor: '#B7C42E',
-            borderRadius: 10,
-          },
-        }}
-        textStyle={{
-          left: {
-            color: 'black',
-          },
-          right: {
-            color: 'white',
-          },
-        }}
-      />
-    );
-  };
+  const renderBubble = (props) => (
+    <Bubble
+      {...props}
+      wrapperStyle={{
+        left: {
+          backgroundColor: "#e0e0e0",
+          borderRadius: 10,
+        },
+        right: {
+          backgroundColor: "#B7C42E",
+          borderRadius: 10,
+        },
+      }}
+      textStyle={{
+        left: {
+          color: "black",
+        },
+        right: {
+          color: "white",
+        },
+      }}
+    />
+  );
 
   const renderInputToolbar = (props) => {
-    if (!showInput) {
-      return null;
-    }
+    if (!showInput) return null;
     return (
       <InputToolbar
         {...props}
         containerStyle={{
-          backgroundColor: theme === 'light' ? 'white' : '#333',
+          backgroundColor: theme === "light" ? "white" : "#333",
           borderWidth: 0.5,
-          borderColor: theme === 'light' ? '#cccccc' : 'white',
+          borderColor: theme === "light" ? "#cccccc" : "white",
           paddingVertical: 3,
           borderRadius: 20,
-          color: theme === 'light' ? 'black' : 'white',
+          color: theme === "light" ? "black" : "white",
         }}
       />
     );
@@ -92,35 +102,34 @@ export default function Chat({ route }) {
     const isCurrentUser = currentMessage.user._id === userID;
     return (
       <View>
-         <Text
+        <Text
           style={{
-            color: 'grey',
-            fontStyle: 'italic',
+            color: "grey",
+            fontStyle: "italic",
             marginLeft: 10,
+            fontFamily: "Poppins-Regular"
           }}
         >
-          {isCurrentUser ? 'You' : currentMessage.user.name} 
+          {isCurrentUser ? "You" : currentMessage.user.name}
         </Text>
         <MessageText
           {...props}
-          
           textStyle={{
-            left: { color: 'black' },
-            right: { color: 'white' },
+            left: { color: "black" },
+            right: { color: "white" },
+         
           }}
         />
       </View>
-      
     );
   };
 
-  // Updated renderAvatar function to correctly receive props
   const renderAvatar = (props) => {
-    const { currentMessage } = props; // Get current message from props
+    const { currentMessage } = props;
     return (
       <Avatar
         {...props}
-        source={{ uri: currentMessage.user.avatar }} // Use the avatar from currentMessage
+        source={{ uri: currentMessage.user.avatar }}
       />
     );
   };
@@ -156,13 +165,38 @@ export default function Chat({ route }) {
   }, [groupID]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme === 'light' ? 'white' : 'black' }}>
-      <View style={{flexDirection: 'row', height: 40}}>
-        <Pressable>
-          <Ionicons name="arrow-back" size={24} color={theme=='light' ? 'black': 'white'} />
-        </Pressable>
-        <Text style={{ color: theme === 'light' ? 'black' : 'white', fontSize: 17, marginTop: 3 }}>{debatename}</Text>
-      </View>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: theme === "light" ? "white" : "#121212",
+      }}
+    >
+      <SafeAreaView>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity
+            style={[styles.backBtn, {backgroundColor: theme === "light" ? "#D3D3D3" : "black"}]}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons
+              name="arrow-back"
+              size={24}
+              color={theme === "light" ? "black" : "white"}
+            />
+          </TouchableOpacity>
+          <ScrollView>
+          <Text
+            style={{
+              color: theme === "light" ? "black" : "white",
+              fontSize: 18,
+              // fontWeight: "bold",
+              fontFamily: "Poppins-SemiBold"
+            }}
+          >
+            {debatename}
+          </Text>
+          </ScrollView>
+        </View>
+      </SafeAreaView>
       <GiftedChat
         messages={messages}
         onSend={(newMessages) => onSend(newMessages)}
@@ -173,8 +207,27 @@ export default function Chat({ route }) {
         renderBubble={renderBubble}
         renderInputToolbar={renderInputToolbar}
         renderMessageText={renderMessageText}
-        renderAvatar={renderAvatar} 
+        renderAvatar={renderAvatar}
       />
-    </SafeAreaView>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ddd",
+  },
+  backBtn: {
+    width: 40,
+    height: 40,
+
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
+  },
+});

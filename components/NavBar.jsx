@@ -25,7 +25,8 @@ const NavBar = ({ userInfo }) => {
   const [notificationVisible, setNotificationVisible] = useState(false);
   const navigation = useNavigation();
 
-  const userArray = Array.isArray(userInfo) ? userInfo : [userInfo];
+  const userArray = Array.isArray(userInfo) ? userInfo : [userInfo || {}];
+
   
   
   const { theme, toggleTheme } = useContext(ThemeContext);
@@ -196,7 +197,7 @@ const NavBar = ({ userInfo }) => {
               Rate The App
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={theme=='light' ? styles.dropdownItem : darkModeStyles.dropdownItem} onPress={handleRateApp}>
+          <TouchableOpacity style={theme=='light' ? styles.dropdownItem : darkModeStyles.dropdownItem} onPress={() => navigation.navigate("UpgradeMembership")}>
             <Ionicons name="card-outline" color={theme=='light' ? 'black': 'white'}/>
             <Text
               style={[theme=='light' ? styles.dropdownText : darkModeStyles.dropdownText, { fontFamily: "Poppins-Regular" }]}

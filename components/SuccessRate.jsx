@@ -32,7 +32,7 @@ const SuccessRate = ({ dept, id, prov }) => {
   const [scrapedData2, setScrapedData2] = useState({ links: [] });
   const cssExtractor =
     "%7B%22tables%22%3A%22table%22%2C%20%22rows%22%3A%22tr%22%2C%20%22cells%22%3A%22td%22%2C%20%22headers%22%3A%22th%22%7D";
-  const apiKey = "1232de8bee06751cfdd2b48d0b8157e289d320fb";
+  const apiKey = "e4a5f7fae9a8479a1897ea2e74f6c32668c5955a";
   const targetURL = `https://provincialgovernment.co.za/units/financial/${id[code]}/${current}/${department}`;
   const [disp, setDisp] = useState("none");
   const [disp2, setDisp2] = useState("none");
@@ -413,7 +413,6 @@ const SuccessRate = ({ dept, id, prov }) => {
         </View>
       </Pressable>
       <ScrollView showsVerticalScrollIndicator={false} style={{ width: width }}>
-        <Text>SuccessRate</Text>
         <View
           style={[
             theme == "light" ? styles.dropdown : darkModeStyles.dropdown,
@@ -490,7 +489,7 @@ const styles = StyleSheet.create({
   },
   headings: {
     fontFamily: "Poppins-Bold",
-    fontWeight: "bold",
+    // fontWeight: "bold",
     fontSize: "20px",
     color: "grey",
   },
@@ -525,16 +524,19 @@ const styles = StyleSheet.create({
   dropdownText: {
     color: "#333333", // Dark text for dropdown items
     fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
   },
   headerText: {
     fontSize: 22,
     color: "#333333", // Dark text for header
     marginVertical: 10,
+    fontFamily: "Poppins-Bold",
   },
   departmentText: {
     fontSize: 20,
     color: "#333333", // Dark text for department name
     marginBottom: 12,
+    fontFamily: "Poppins-SemiBold",
   },
   dataText: {
     fontSize: 16,
@@ -544,6 +546,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9f9f9", // Slightly darker background for data output
     borderRadius: 8,
     marginBottom: 20,
+    fontFamily: "Poppins-SemiBold",
   },
   budget: {
     fontSize: 16,
@@ -556,6 +559,7 @@ const darkModeStyles = StyleSheet.create({
   dropdownText: {
     color: "white", // Dark text for dropdown items
     fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
   },
   pressable: {
     flexDirection: "row",
@@ -570,7 +574,7 @@ const darkModeStyles = StyleSheet.create({
   },
   headings: {
     fontFamily: "Poppins-Bold",
-    fontWeight: "bold",
+    // fontWeight: "bold",
     color: "grey",
     fontSize: "18px",
   },
@@ -584,17 +588,20 @@ const darkModeStyles = StyleSheet.create({
     fontSize: 22,
     color: "white",
     marginVertical: 10,
+    fontFamily: "Poppins-Bold",
   },
   departmentText: {
     fontSize: 20,
     color: "grey", // Dark text for department name
     marginBottom: 12,
+    fontFamily: "Poppins-SemiBold",
   },
   dropdown: {
     backgroundColor: "grey",
     borderRadius: 6,
     marginBottom: 9,
     padding: 4,
+    fontFamily: "Poppins-Regular",
     // Light border
   },
 });
