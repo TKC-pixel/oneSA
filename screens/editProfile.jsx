@@ -18,9 +18,12 @@ import uuid from "react-native-uuid";
 import * as Font from "expo-font";
 import { TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ThemeContext } from "../context/ThemeContext";
 
 const EditProfile = () => {
-  const { userData, setUserData } = useContext(UserContext);
+  const { userData, setUserData, dataAccess } = useContext(UserContext);
+  
+  const { theme } = useContext(ThemeContext); 
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [formData, setFormData] = useState({
     name: userData?.name || "",
@@ -120,12 +123,17 @@ const EditProfile = () => {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={theme == 'light'? styles.safeArea: darkModeStyles.safeArea}>
       <ScrollView style={styles.container}>
         <View style={styles.coverContainer}>
           <TouchableOpacity
             onPress={() =>
+            {if(dataAccess){
               handleImagePick(setCoverImage, "coverImages", "coverImageUrl")
+            }
+            else{
+              alert("OneSA app does not have access to your devices data.\nCheck application privacy settings")
+            }}
             }
           >
             <Text style={styles.buttonText}>Pick Cover Image</Text>
@@ -137,10 +145,15 @@ const EditProfile = () => {
 
         <View style={styles.profileContainer}>
           <TouchableOpacity
-            onPress={() =>
-              handleImagePick(setImage, "profileImages", "profileImageUrl")
-            }
-          >
+             onPress={() =>
+              {if(dataAccess){
+                handleImagePick(setImage, "profileImages", "profileImageUrl")
+              }
+              else{
+                alert("OneSA app does not have access to your devices data.\nCheck application privacy settings")
+              }}
+              }
+            >
             <Text style={styles.buttonText}>Pick Profile Image</Text>
           </TouchableOpacity>
           {image && <Image source={{ uri: image }} style={styles.image} />}
@@ -252,3 +265,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
+const darkModeStyles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: "black",
+  },
+});
+
