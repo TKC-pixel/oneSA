@@ -8,6 +8,7 @@ export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [locationPermissions, setLocationPermissions] = useState('no');
+  const [dataAccess, setDataAccess] = useState('true');
   const [userData, setUserData] = useState({
     email: null,
     name: null,
@@ -27,21 +28,31 @@ export const UserProvider = ({ children }) => {
     try {
       await AsyncStorage.setItem('locationPermission', newPermission);
       setLocationPermissions(newPermission);
-      console.log("Location permission updated to:", newPermission); // Debug log
+      
     } catch (error) {
       console.error("Error updating location permissions", error);
     }
   };
+  const updateDataAccess = async (newAccess) => {
+    try {
+      await AsyncStorage.setItem('DataAccess', newAccess.toString());
+      setDataAccess(newAccess);
+      // console.log("Data Access updated to:", newAccess); 
+    } catch (error) {
+      console.error("Error updating data access permissions", error);
+    }
+  };
+  
   
   const toggleLocation = async () => {
     const newLocation = locationPermissions === 'yes' ? 'no' : 'yes';
-    await updateLocationPermission(newLocation); // Call this to update both AsyncStorage and state
+    await updateLocationPermission(newLocation); 
   };
 
   useEffect(() => {
     const loadLocationPermissions = async () => {
       try {
-        const storedLocation = await AsyncStorage.getItem('locationPermission'); // Check for 'locationPermission'
+        const storedLocation = await AsyncStorage.getItem('locationPermission'); 
         if (storedLocation) {
           setLocationPermissions(storedLocation); 
         } else {
@@ -58,15 +69,15 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log("User logged in:", user);
-        console.log("User UID:", user.uid);
+        // console.log("User logged in:", user);
+        // console.log("User UID:", user.uid);
 
         const userRef = doc(db, "Users", user.uid);
 
         const unsubscribeSnapshot = onSnapshot(userRef, (userSnap) => {
           if (userSnap.exists()) {
             const data = userSnap.data();
-            console.log("Fetched user data (real-time):", data);
+            // console.log("Fetched user data (real-time):", data);
 
             setUserData((prevUserData) => ({
               ...prevUserData,
@@ -100,7 +111,7 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ userData, setUserData, updateLocationPermission, toggleLocation, locationPermissions }}>
+    <UserContext.Provider value={{ userData, setUserData, updateLocationPermission, toggleLocation, locationPermissions, dataAccess, updateDataAccess }}>
       {children}
     </UserContext.Provider>
   );

@@ -6,7 +6,7 @@ import { UserContext } from "../context/UserContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 const PrivacySettingsScreen = ({navigation}) => {
-  const { locationPermissions, updateLocationPermission, toggleLocation } = useContext(UserContext);
+  const { locationPermissions, updateLocationPermission, toggleLocation, dataAccess, updateDataAccess } = useContext(UserContext);
   const { theme } = useContext(ThemeContext); 
   
   const [location, setLocation] = useState(false);
@@ -15,7 +15,6 @@ const PrivacySettingsScreen = ({navigation}) => {
     setLocation(locationPermissions === 'yes');
   }, [locationPermissions]);
   
-  const [dataAccessEnabled, setDataAccessEnabled] = useState(true);
   
   const handleToggleLocationSharing = async (newValue) => {
     try {
@@ -91,18 +90,42 @@ const PrivacySettingsScreen = ({navigation}) => {
       `The theme has been changed to ${theme === "light" ? "Dark" : "Light"}.`
     );
   };
+  useEffect(() => {
+    const loadDataAccess = async () => {
+      try {
+        const storedDataAccess = await AsyncStorage.getItem('dataAccess');
+        if (storedDataAccess !== null) {
+          updateDataAccess(storedDataAccess === 'true');  
+        }
+      } catch (error) {
+        console.error('Error loading data access from AsyncStorage:', error);
+      }
+    };
+    loadDataAccess();
+  }, []);
   
-  const handleToggleDataAccess = () => {
-    setDataAccessEnabled(previousState => !previousState);
+  const handleToggleDataAccess = async (newDataAccess) => {
+    try {
+      const newAccess = newDataAccess.toString();  
+      await AsyncStorage.setItem('dataAccess', newAccess);
+      updateDataAccess(newDataAccess);  
+      // console.log('Data Access updated to:', newDataAccess);
+    } catch (error) {
+      console.error('Error saving data access:', error);
+    }
   };
+  
 
   const handlePrivacyPolicyPress = () => {
-    Linking.openURL('https://your-privacy-policy-url.com'); 
+    Linking.openURL('https://onesa.netlify.app/'); 
   };
 
   const handleSaveSettings = () => {
     Alert.alert("Settings Saved", "Your privacy preferences have been saved.");
     navigation.navigate('Welcome')
+  };
+  const stringToBoolean = (str) => {
+    return str === 'true';  
   };
 
   return (
@@ -127,9 +150,10 @@ const PrivacySettingsScreen = ({navigation}) => {
             Allow Data Access:
           </Text>
           <Switch
-            value={dataAccessEnabled}
-            onValueChange={handleToggleDataAccess}
+            value={dataAccess}  
+            onValueChange={(newValue) => handleToggleDataAccess(newValue)}
           />
+
         </View>
 
         <TouchableOpacity style={[styles.button, { backgroundColor: theme === 'dark' ? '#0056b3' : '#007bff' }]} onPress={handlePrivacyPolicyPress}>
