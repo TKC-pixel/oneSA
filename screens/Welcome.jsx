@@ -46,8 +46,8 @@ export default function Welcome({ navigation }) {
   const { theme } = useContext(ThemeContext);
   const { userData, updateLocationPermission, locationPermissions, setUserData, dataAccess } = useContext(UserContext);
   const [deptCodes, setDeptCodes] = useState([]);
-  
-  const apiKey = "36706c5aeb736ac9e572db7569b9380bd996dee5";
+
+  const apiKey = "1232de8bee06751cfdd2b48d0b8157e289d320fb";
   const targetURL =
     "https://provincialgovernment.co.za/units/type/1/departments";
   const cssExtractor =
@@ -132,7 +132,7 @@ export default function Welcome({ navigation }) {
       console.error("Error fetching data:", error.message);
     }
   };
-  // console.log('d', dataAccess)
+
   const getProvinceFromCity = (city) => {
     const cityToProvinceMap = {
       Johannesburg: "Gauteng",
