@@ -25,15 +25,18 @@ const SuccessRate = ({ dept, id, prov }) => {
   const [loading, setLoading] = useState(true);
   const [current, setCurrent] = useState(prov);
   const [code, setCode] = useState(0);
+  const [newCodes, setNewCodes] = useState([id]);
   const [department, setDepartment] = useState(dept[0]);
+  const [departmentData, setDepartmentData] = useState(dept);
   const [scrapedData, setScrapedData] = useState([]);
+  const [scrapedData2, setScrapedData2] = useState({ links: [] });
   const cssExtractor =
     "%7B%22tables%22%3A%22table%22%2C%20%22rows%22%3A%22tr%22%2C%20%22cells%22%3A%22td%22%2C%20%22headers%22%3A%22th%22%7D";
   const apiKey = "1232de8bee06751cfdd2b48d0b8157e289d320fb";
   const targetURL = `https://provincialgovernment.co.za/units/financial/${id[code]}/${current}/${department}`;
   const [disp, setDisp] = useState("none");
   const [disp2, setDisp2] = useState("none");
-  const {width} = Dimensions.get('window');
+  const { width } = Dimensions.get("window");
 
   //my state to store data for the graphs
   const [finalAppropriation, setFinalApproapriation] = useState([]);
@@ -73,6 +76,95 @@ const SuccessRate = ({ dept, id, prov }) => {
       console.log("Error fetching data:", error.message);
     }
   };
+
+  useEffect(() => {
+    const fetchScrapedData2 = async () => {
+      const targetURL2 =
+        "https://provincialgovernment.co.za/units/type/1/departments";
+      const cssExtractor2 =
+        "%7B%22links%22%3A%22a%20%40href%22%2C%20%22images%22%3A%22img%20%40src%22%7D";
+
+      try {
+        const response = await axios.get(
+          `https://api.zenrows.com/v1/?apikey=${apiKey}&url=${targetURL2}&css_extractor=${cssExtractor2}`,
+          { timeout: 70000 }
+        );
+        console.log(
+          "fetching:",
+          `https://api.zenrows.com/v1/?apikey=${apiKey}&url=${targetURL2}&css_extractor=${cssExtractor2}`
+        );
+        if (response.data && response.data.links) {
+          setScrapedData2({ links: response.data.links });
+        } else {
+          console.warn("No valid links found in the response.");
+          setScrapedData2({ links: [] });
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error.message);
+      }
+    };
+
+    fetchScrapedData2();
+  }, []);
+
+  const filterDepartmentsByProvince = (current) => {
+    console.log("Filtering departments for province:", current);
+    const provinceMap = {};
+    const codesMap = {};
+
+    if (scrapedData2.links.length > 0) {
+      scrapedData2.links.forEach((link) => {
+        if (link.startsWith("/units/view/")) {
+          const parts = link.split("/");
+          if (parts.length >= 6) {
+            const provinceName = parts[4].replace(/-/g, " ").toLowerCase();
+            const departmentName = parts[5];
+            const departmentCode = parts[3];
+            if (!provinceMap[provinceName]) {
+              provinceMap[provinceName] = [];
+              codesMap[provinceName] = [];
+            }
+            provinceMap[provinceName].push(departmentName);
+            codesMap[provinceName].push(departmentCode);
+          }
+        }
+      });
+
+      const normalizedCurrent = current.toLowerCase().replace(/-/g, " ");
+      const departments = provinceMap[normalizedCurrent] || [];
+      console.log("Departments for", current, ":", departments);
+      setDepartmentData(departments);
+
+      const codes = codesMap[normalizedCurrent] || [];
+      if (departments.length > 0) {
+        setDepartment(departments[0]);
+        setNewCodes(codes);
+      } else {
+        setDepartmentData(["No departments found"]);
+        setDepartment("No departments found");
+        setNewCodes([]);
+      }
+    } else {
+      console.error("No links available to filter.");
+      setDepartmentData(["No departments found"]);
+      setDepartment("No departments found");
+      setNewCodes([]);
+    }
+  };
+
+  useEffect(() => {
+    if (scrapedData2.links.length > 0) {
+      filterDepartmentsByProvince(current);
+    }
+  }, [scrapedData2, current]);
+
+  useEffect(() => {
+    if (newCodes.length > 0 && department !== "No departments found") {
+      setLoading(true);
+      const targetURL = `https://provincialgovernment.co.za/units/financial/${newCodes[code]}/${current}/${department}`;
+      fetchScrapedData(targetURL);
+    }
+  }, [newCodes, department, current, code]);
   const loadFonts = async () => {
     await Font.loadAsync({
       "Poppins-Regular": require("../assets/fonts/Poppins-Regular.ttf"),
@@ -137,47 +229,107 @@ const SuccessRate = ({ dept, id, prov }) => {
           switch (headings[label]) {
             case "Total Final Appropriation":
               localFinalAppropriation.push(
-                { year: "18/19", amount: parseInt(y5.replace(/\s+/g, ""))/10 },
-                { year: "19/20", amount: parseInt(y4.replace(/\s+/g, ""))/10 },
-                { year: "20/21", amount: parseInt(y3.replace(/\s+/g, ""))/10 },
-                { year: "21/22", amount: parseInt(y2.replace(/\s+/g, ""))/10 },
-                { year: "22/23", amount: parseInt(y1.replace(/\s+/g, ""))/10 }
+                {
+                  year: "18/19",
+                  amount: parseInt(y5.replace(/\s+/g, "")) / 10,
+                },
+                {
+                  year: "19/20",
+                  amount: parseInt(y4.replace(/\s+/g, "")) / 10,
+                },
+                {
+                  year: "20/21",
+                  amount: parseInt(y3.replace(/\s+/g, "")) / 10,
+                },
+                {
+                  year: "21/22",
+                  amount: parseInt(y2.replace(/\s+/g, "")) / 10,
+                },
+                { year: "22/23", amount: parseInt(y1.replace(/\s+/g, "")) / 10 }
               );
               break;
             case "Actual Expenditure":
               localActualExpenditure.push(
-                { year: "18/19", amount: parseInt(y5.replace(/\s+/g, ""))/10 },
-                { year: "19/20", amount: parseInt(y4.replace(/\s+/g, ""))/10 },
-                { year: "20/21", amount: parseInt(y3.replace(/\s+/g, ""))/10 },
-                { year: "21/22", amount: parseInt(y2.replace(/\s+/g, ""))/10 },
-                { year: "22/23", amount: parseInt(y1.replace(/\s+/g, ""))/10 }
+                {
+                  year: "18/19",
+                  amount: parseInt(y5.replace(/\s+/g, "")) / 10,
+                },
+                {
+                  year: "19/20",
+                  amount: parseInt(y4.replace(/\s+/g, "")) / 10,
+                },
+                {
+                  year: "20/21",
+                  amount: parseInt(y3.replace(/\s+/g, "")) / 10,
+                },
+                {
+                  year: "21/22",
+                  amount: parseInt(y2.replace(/\s+/g, "")) / 10,
+                },
+                { year: "22/23", amount: parseInt(y1.replace(/\s+/g, "")) / 10 }
               );
               break;
             case "Employee Compensation":
               localEmployeeCompensation.push(
-                { year: "18/19", amount: parseInt(y5.replace(/\s+/g, ""))/10 },
-                { year: "19/20", amount: parseInt(y4.replace(/\s+/g, ""))/10 },
-                { year: "20/21", amount: parseInt(y3.replace(/\s+/g, ""))/10 },
-                { year: "21/22", amount: parseInt(y2.replace(/\s+/g, ""))/10 },
-                { year: "22/23", amount: parseInt(y1.replace(/\s+/g, ""))/10 }
+                {
+                  year: "18/19",
+                  amount: parseInt(y5.replace(/\s+/g, "")) / 10,
+                },
+                {
+                  year: "19/20",
+                  amount: parseInt(y4.replace(/\s+/g, "")) / 10,
+                },
+                {
+                  year: "20/21",
+                  amount: parseInt(y3.replace(/\s+/g, "")) / 10,
+                },
+                {
+                  year: "21/22",
+                  amount: parseInt(y2.replace(/\s+/g, "")) / 10,
+                },
+                { year: "22/23", amount: parseInt(y1.replace(/\s+/g, "")) / 10 }
               );
               break;
             case "Goods and Services":
               localGoodsAndServices.push(
-                { year: "18/19", amount: parseInt(y5.replace(/\s+/g, ""))/10 },
-                { year: "19/20", amount: parseInt(y4.replace(/\s+/g, ""))/10 },
-                { year: "20/21", amount: parseInt(y3.replace(/\s+/g, ""))/10 },
-                { year: "21/22", amount: parseInt(y2.replace(/\s+/g, ""))/10 },
-                { year: "22/23", amount: parseInt(y1.replace(/\s+/g, ""))/10 }
+                {
+                  year: "18/19",
+                  amount: parseInt(y5.replace(/\s+/g, "")) / 10,
+                },
+                {
+                  year: "19/20",
+                  amount: parseInt(y4.replace(/\s+/g, "")) / 10,
+                },
+                {
+                  year: "20/21",
+                  amount: parseInt(y3.replace(/\s+/g, "")) / 10,
+                },
+                {
+                  year: "21/22",
+                  amount: parseInt(y2.replace(/\s+/g, "")) / 10,
+                },
+                { year: "22/23", amount: parseInt(y1.replace(/\s+/g, "")) / 10 }
               );
               break;
             case "Capital Assets":
               localCapitalAssets.push(
-                { year: "18/19", amount: parseInt(y5.replace(/\s+/g, ""))/10 },
-                { year: "19/20", amount: parseInt(y4.replace(/\s+/g, ""))/10 },
-                { year: "20/21", amount: parseInt(y3.replace(/\s+/g, ""))/10 },
-                { year: "21/22", amount: parseInt(y2.replace(/\s+/g, ""))/10 },
-                { year: "22/23", amount: parseInt(y1.replace(/\s+/g, ""))/10 }
+                {
+                  year: "18/19",
+                  amount: parseInt(y5.replace(/\s+/g, "")) / 10,
+                },
+                {
+                  year: "19/20",
+                  amount: parseInt(y4.replace(/\s+/g, "")) / 10,
+                },
+                {
+                  year: "20/21",
+                  amount: parseInt(y3.replace(/\s+/g, "")) / 10,
+                },
+                {
+                  year: "21/22",
+                  amount: parseInt(y2.replace(/\s+/g, "")) / 10,
+                },
+                { year: "22/23", amount: parseInt(y1.replace(/\s+/g, "")) / 10 }
               );
               break;
             default:
@@ -231,37 +383,37 @@ const SuccessRate = ({ dept, id, prov }) => {
   }
   return (
     <>
-      <NavBar userInfo={userArray}/>
-      <ScrollView showsVerticalScrollIndicator={false} style={{width:width}}>
+      <NavBar userInfo={userArray} />
+      <Pressable>
+        <View style={styles.buttonContainer}>
+          <Pressable
+            onPress={() => {
+              toggleDisplay2();
+              setDisp("none");
+            }}
+            style={
+              theme == "light" ? styles.pressable : darkModeStyles.pressable
+            }
+          >
+            <Ionicons name="menu-outline" size={30} />
+            <Text style={styles.buttonText}>Select province</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => {
+              toggleDisplay();
+              setDisp2("none");
+            }}
+            style={
+              theme == "light" ? styles.pressable : darkModeStyles.pressable
+            }
+          >
+            <Ionicons name="menu-outline" size={30} />
+            <Text style={styles.buttonText}>Select department</Text>
+          </Pressable>
+        </View>
+      </Pressable>
+      <ScrollView showsVerticalScrollIndicator={false} style={{ width: width }}>
         <Text>SuccessRate</Text>
-        <Pressable>
-          <View style={styles.buttonContainer}>
-            <Pressable
-              onPress={() => {
-                toggleDisplay2();
-                setDisp("none");
-              }}
-              style={
-                theme == "light" ? styles.pressable : darkModeStyles.pressable
-              }
-            >
-              <Ionicons name="menu-outline" size={30} />
-              <Text style={styles.buttonText}>Select province</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                toggleDisplay();
-                setDisp2("none");
-              }}
-              style={
-                theme == "light" ? styles.pressable : darkModeStyles.pressable
-              }
-            >
-              <Ionicons name="menu-outline" size={30} />
-              <Text style={styles.buttonText}>Select department</Text>
-            </Pressable>
-          </View>
-        </Pressable>
         <View
           style={[
             theme == "light" ? styles.dropdown : darkModeStyles.dropdown,
@@ -317,7 +469,13 @@ const SuccessRate = ({ dept, id, prov }) => {
             </Pressable>
           ))}
         </View>
-        <Graphs finalAppropriation={finalAppropriation} actualExpenditure={actualExpenditure} capitalAssets={capitalAssets} employeeCompensation={employeeCompensation} goodsAndServices={goodsAndServices}/>
+        <Graphs
+          finalAppropriation={finalAppropriation}
+          actualExpenditure={actualExpenditure}
+          capitalAssets={capitalAssets}
+          employeeCompensation={employeeCompensation}
+          goodsAndServices={goodsAndServices}
+        />
       </ScrollView>
     </>
   );
@@ -328,118 +486,115 @@ export default SuccessRate;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-     // Light mode background
+    // Light mode background
   },
   headings: {
     fontFamily: "Poppins-Bold",
-    fontWeight: 'bold',
-    fontSize: '20px',
-    color: 'grey'
+    fontWeight: "bold",
+    fontSize: "20px",
+    color: "grey",
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     marginBottom: 10,
-    marginTop: 8
+    marginTop: 8,
   },
   pressable: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0', 
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f0f0f0",
     borderRadius: 8,
     padding: 10,
     elevation: 3,
   },
   buttonText: {
     marginLeft: 8,
-    color: '#333333',
+    color: "#333333",
     fontSize: 16,
   },
   dropdown: {
-    backgroundColor: '#f0f0f0', 
+    backgroundColor: "#f0f0f0",
     borderRadius: 6,
     marginBottom: 9,
     padding: 4,
-    
   },
   dropdownItem: {
     padding: 10,
-    
   },
   dropdownText: {
-    color: '#333333', // Dark text for dropdown items
+    color: "#333333", // Dark text for dropdown items
     fontSize: 16,
   },
   headerText: {
     fontSize: 22,
-    color: '#333333', // Dark text for header
+    color: "#333333", // Dark text for header
     marginVertical: 10,
   },
   departmentText: {
     fontSize: 20,
-    color: '#333333', // Dark text for department name
+    color: "#333333", // Dark text for department name
     marginBottom: 12,
   },
   dataText: {
     fontSize: 16,
-    color: '#333333', // Dark text for data output
+    color: "#333333", // Dark text for data output
     lineHeight: 24,
     padding: 12,
-    backgroundColor: '#f9f9f9', // Slightly darker background for data output
+    backgroundColor: "#f9f9f9", // Slightly darker background for data output
     borderRadius: 8,
     marginBottom: 20,
   },
-  budget:{
+  budget: {
     fontSize: 16,
-    color: 'black', 
+    color: "black",
     lineHeight: 24,
     fontFamily: "Poppins-Regular",
-  }
+  },
 });
 const darkModeStyles = StyleSheet.create({
   dropdownText: {
-    color: 'white', // Dark text for dropdown items
+    color: "white", // Dark text for dropdown items
     fontSize: 16,
   },
   pressable: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'grey', 
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "grey",
     borderRadius: 8,
     padding: 10,
     elevation: 3,
   },
   container: {
     flex: 1,
-    
   },
   headings: {
     fontFamily: "Poppins-Bold",
-    fontWeight: 'bold',
-    color: 'grey',
-    fontSize: '18px',
+    fontWeight: "bold",
+    color: "grey",
+    fontSize: "18px",
   },
-  budget:{
+  budget: {
     fontSize: 16,
-    color: 'white', 
+    color: "white",
     lineHeight: 24,
     fontFamily: "Poppins-Regular",
   },
   headerText: {
     fontSize: 22,
-    color: 'white', 
+    color: "white",
     marginVertical: 10,
   },
   departmentText: {
     fontSize: 20,
-    color: 'grey', // Dark text for department name
+    color: "grey", // Dark text for department name
     marginBottom: 12,
   },
   dropdown: {
-    backgroundColor: 'grey', 
+    backgroundColor: "grey",
     borderRadius: 6,
     marginBottom: 9,
     padding: 4,
-     // Light border
+    // Light border
   },
 });
