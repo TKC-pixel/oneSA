@@ -1,6 +1,8 @@
 import React, { useContext } from "react";
-import { View, Text, StyleSheet, Switch, Alert, SafeAreaView } from "react-native";
+import { View, Text, StyleSheet, Switch, Alert } from "react-native";
 import { ThemeContext } from "../context/ThemeContext";
+import { SafeAreaView } from "react-native-safe-area-context";
+
 // Adjust the import path as needed
 
 const ThemeSettingsScreen = () => {

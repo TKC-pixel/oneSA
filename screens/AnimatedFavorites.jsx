@@ -53,7 +53,7 @@ const AnimatedFlatList = () => {
   console.log(favorites);
   const renderItem = ({ item }) => {
     const onPress = () => {
-      navigation.navigate("FavoriteDetails", { item });
+      navigation.navigate("ProjectDetails", { item });
     };
     return (
       <AnimatedListItem
@@ -84,14 +84,14 @@ const AnimatedFlatList = () => {
 
   return (
     <FlatList
-      style={{ height: 110 }}
+      style={{ height: 220 }}
       data={favorites}
       renderItem={renderItem}
       keyExtractor={(item) =>
         item.id ? item.id.toString() : `key-${Math.random()}`
       }
       showsVerticalScrollIndicator={false}
-      snapToInterval={100} // Match this with the item height
+      snapToInterval={220} // Match this with the item height
       snapToAlignment="start" // Ensures snapping to the start of the item
       decelerationRate="fast" // Adjusts the deceleration speed
     />
@@ -100,16 +100,16 @@ const AnimatedFlatList = () => {
 
 const styles = StyleSheet.create({
   animatedView: {
-    height: 100, // Ensure this matches your snapToInterval
-    // backgroundColor: "lightblue",
+    height: 220, // Ensure this matches your snapToInterval
     marginVertical: 5,
     borderRadius: 10,
     justifyContent: "center",
     paddingHorizontal: 15,
+    // You can adjust this if needed
+
   },
   projectName: {
     fontSize: 34,
-    // fontWeight: "bold",
     color: "#333",
     fontFamily: "Poppins-Bold",
   },
@@ -117,16 +117,25 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    
   },
   emptyText: {
     fontSize: 18,
     color: "#888",
   },
   imageBackground: {
-    height: 100,
+    height: 150,
     alignItems: "center",
     justifyContent: "center",
+    borderRadius: 10,
+    overflow: "hidden", 
+    shadowColor: "#000", // Shadow properties for iOS
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 5, // Shadow for Android// Ensure the image fits within the rounded corners
   },
 });
+
 
 export default AnimatedFlatList;

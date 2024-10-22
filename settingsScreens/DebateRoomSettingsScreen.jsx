@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Switch, TouchableOpacity, Alert } from 'react-native';
 import { ThemeContext } from '../context/ThemeContext'; // Adjust the import path as needed
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const DebateRoomSettingsScreen = () => {
   const { theme } = useContext(ThemeContext); // Get the current theme from context

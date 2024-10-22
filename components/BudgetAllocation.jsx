@@ -22,7 +22,7 @@ const BudgetAllocation = ({ dept, id, prov }) => {
   const [scrapedData, setScrapedData] = useState([]); 
   const [scrapedData2, setScrapedData2] = useState({ links: [] });
   const cssExtractor = "%7B%22tables%22%3A%22table%22%2C%20%22rows%22%3A%22tr%22%2C%20%22cells%22%3A%22td%22%2C%20%22headers%22%3A%22th%22%7D";
-  const apiKey = "1232de8bee06751cfdd2b48d0b8157e289d320fb";
+  const apiKey = "e4a5f7fae9a8479a1897ea2e74f6c32668c5955a";
   const [disp, setDisp] = useState("none");
   const [disp2, setDisp2] = useState("none");
   const provinces = ["Eastern Cape", "Free State", "Gauteng", "KwaZulu-Natal", "Limpopo", "Mpumalanga", "Northern Cape", "North West", "Western Cape"];

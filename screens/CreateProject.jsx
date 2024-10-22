@@ -186,7 +186,7 @@ const CreateProject = () => {
               source={{
                 uri: image
                   ? image
-                  : "https://w7.pngwing.com/pngs/230/819/png-transparent-cloud-upload-uploading-upload-arrow-upload-cloud-cloud-data-3d-icon-thumbnail.png",
+                  : "https://repository-images.githubusercontent.com/229240000/2b1bba00-eae1-11ea-8b31-ea57fe8a3f95",
               }}
             />
           </TouchableOpacity>

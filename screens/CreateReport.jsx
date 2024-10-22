@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -27,9 +27,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import analyzeSentiment from "../components/sentimentUtil";
 import containsProfanity from "../components/profanityFilter";
+import { ThemeContext } from "../context/ThemeContext";
 const Nominatim_API_URL = "https://nominatim.openstreetmap.org/search";
+const Photon_API_URL = "https://photon.komoot.io/api/";
 
-const CreateReport = ({ navigation }) => {
+const CreateReport = ({ navigation, route }) => {
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
   const [department, setDepartment] = useState("");
@@ -37,9 +39,24 @@ const CreateReport = ({ navigation }) => {
   const [additionalComments, setAdditionalComments] = useState("");
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState(null);
-  const [location, setLocation] = useState("");
-  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [location, setLocation] = useState({
+    name: "",
+    latitude: null,
+    longitude: null,
+  });
 
+  const { theme } = useContext(ThemeContext);
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const { item } = route.params || {};
+  console.log(item);
+  useEffect(() => {
+    if (item) {
+      setName(item.projectName || "");
+      setDepartment(item.projectDepartment || "");
+      setStatus(item.projectCompletionStatus || "");
+      setDepartment(item.projectDepartment || "");
+    }
+  }, [item]);
   const departments = [
     { label: "Department of Health", value: "health" },
     { label: "Department of Education", value: "education" },
@@ -67,7 +84,9 @@ const CreateReport = ({ navigation }) => {
     try {
       // Check for profanity in the description
       if (containsProfanity(description)) {
-        alert("Your description contains inappropriate language. Please revise.");
+        alert(
+          "Your description contains inappropriate language. Please revise."
+        );
         return; // Exit the function if profanity is found
       }
 
@@ -87,7 +106,10 @@ const CreateReport = ({ navigation }) => {
         department,
         status,
         additionalComments,
-        location,
+        location: location.name, // Store the selected location name
+        latitude: location.latitude, // Add latitude
+        longitude: location.longitude, // Add longitude
+        projectImage: imageUrl,
         projectImage: imageUrl,
         userId, // Add the userId for reference
         timestamp: new Date(), // Add a timestamp
@@ -131,31 +153,47 @@ const CreateReport = ({ navigation }) => {
 
     try {
       const response = await fetch(
-        `${Nominatim_API_URL}?q=${encodeURIComponent(
+        `${Photon_API_URL}?q=${encodeURIComponent(
           query
-        )}&format=json&addressdetails=1&limit=5&countrycodes=ZA`
+        )}&limit=5&bbox=16.2817,-34.8333,32.8917,-22.1250`
       );
       const data = await response.json();
-      setLocationSuggestions(data);
+      setLocationSuggestions(data.features); // Photon returns features array
     } catch (error) {
       console.error("Error fetching location suggestions: ", error);
     }
   };
 
   const handleLocationSelect = (location) => {
-    setLocation(location.display_name);
-    setLocationSuggestions([]);
+    const { coordinates } = location.geometry; // Photon stores [lon, lat] in geometry.coordinates
+    const longitude = coordinates[0]; // Extract longitude
+    const latitude = coordinates[1]; // Extract latitude
+
+    // Save the location name, longitude, and latitude
+    setLocation({
+      name: location.properties.name, // Set the location name in state
+      longitude,
+      latitude,
+    });
+
+    setLocationSuggestions([]); // Clear suggestions once a location is selected
   };
 
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : null}
-      keyboardVerticalOffset={100} 
+      keyboardVerticalOffset={100}
     >
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-        <SafeAreaView style={styles.container}>
-          <Text style={styles.title}>File a Report</Text>
+        <SafeAreaView
+          style={
+            theme === "light" ? styles.container : darkModeStyles.container
+          }
+        >
+          <Text style={theme === "light" ? styles.title : darkModeStyles.title}>
+            File a Report
+          </Text>
 
           <TouchableOpacity style={styles.uploadImage} onPress={pickImage}>
             <Image
@@ -163,7 +201,7 @@ const CreateReport = ({ navigation }) => {
                 image
                   ? { uri: image }
                   : {
-                      uri: "https://w7.pngwing.com/pngs/230/819/png-transparent-cloud-upload-uploading-upload-arrow-upload-cloud-cloud-data-3d-icon-thumbnail.png",
+                      uri: "https://repository-images.githubusercontent.com/229240000/2b1bba00-eae1-11ea-8b31-ea57fe8a3f95",
                     }
               }
               style={styles.imageBackground}
@@ -174,28 +212,30 @@ const CreateReport = ({ navigation }) => {
             placeholder="Title"
             value={title}
             onChangeText={setTitle}
-            style={styles.input}
+            style={theme === "light" ? styles.input : darkModeStyles.input}
           />
 
           <TextInput
             placeholder="Name"
             value={name}
             onChangeText={setName}
-            style={styles.input}
+            style={theme === "light" ? styles.input : darkModeStyles.input}
           />
 
           <TextInput
             placeholder="Description"
             value={description}
             onChangeText={setDescription}
-            style={styles.input}
+            style={theme === "light" ? styles.input : darkModeStyles.input}
           />
 
-          <Text style={styles.label}>Relevant Department</Text>
+          <Text style={theme === "light" ? styles.label : darkModeStyles.label}>
+            Relevant Department
+          </Text>
           <Picker
             selectedValue={department}
             onValueChange={(itemValue) => setDepartment(itemValue)}
-            style={styles.picker}
+            style={theme === "light" ? styles.picker : darkModeStyles.picker}
           >
             <Picker.Item label="Select a department" value="" />
             {departments.map((dept, index) => (
@@ -203,11 +243,13 @@ const CreateReport = ({ navigation }) => {
             ))}
           </Picker>
 
-          <Text style={styles.label}>Project Status</Text>
+          <Text style={theme === "light" ? styles.label : darkModeStyles.label}>
+            Project Status
+          </Text>
           <Picker
             selectedValue={status}
             onValueChange={(itemValue) => setStatus(itemValue)}
-            style={styles.picker}
+            style={theme === "light" ? styles.picker : darkModeStyles.picker}
           >
             <Picker.Item label="Select a status" value="" />
             {statuses.map((statusItem, index) => (
@@ -221,12 +263,12 @@ const CreateReport = ({ navigation }) => {
 
           <TextInput
             placeholder="Location"
-            value={location}
+            value={location.name} // Display the selected location's name
             onChangeText={(text) => {
-              setLocation(text);
-              fetchLocationSuggestions(text);
+              setLocation({ ...location, name: text }); // Update the location name in state as user types
+              fetchLocationSuggestions(text); // Fetch suggestions while typing
             }}
-            style={styles.input}
+            style={theme === "light" ? styles.input : darkModeStyles.input}
           />
 
           {locationSuggestions.length > 0 && (
@@ -244,10 +286,13 @@ const CreateReport = ({ navigation }) => {
                       name="location-outline"
                       size={20}
                       color="#333"
-                      style={styles.icon}
+                      style={
+                        theme === "light" ? styles.icon : darkModeStyles.icon
+                      }
                     />
                     <Text style={styles.suggestionText}>
-                      {item.display_name}
+                      {item.properties.name}, {item.properties.city},{" "}
+                      {item.properties.country}
                     </Text>
                   </View>
                 </TouchableHighlight>
@@ -259,13 +304,17 @@ const CreateReport = ({ navigation }) => {
             placeholder="Additional Comments"
             value={additionalComments}
             onChangeText={setAdditionalComments}
-            style={styles.input}
+            style={theme === "light" ? styles.input : darkModeStyles.input}
             multiline
             numberOfLines={4}
           />
 
           <TouchableOpacity
-            style={styles.buttonPublish}
+            style={
+              theme === "light"
+                ? styles.buttonPublish
+                : darkModeStyles.buttonPublish
+            }
             onPress={handleCreateReport}
           >
             <Text style={styles.buttonText}>Submit Report</Text>
@@ -378,6 +427,116 @@ const styles = StyleSheet.create({
   suggestionText: {
     fontSize: 16,
     color: "#333",
+    fontFamily: "Poppins-Bold",
+  },
+});
+
+const darkModeStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    backgroundColor: "#1e1e1e", // Dark background
+  },
+  title: {
+    fontSize: 32,
+    marginBottom: 20,
+    fontFamily: "Poppins-Bold",
+    color: "#fff", // White text for contrast
+  },
+  uploadImage: {
+    width: 280,
+    height: 280,
+    borderRadius: 25,
+    alignSelf: "center",
+    marginBottom: 10,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    elevation: 5,
+  },
+  imageBackground: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  label: {
+    fontFamily: "Poppins-Regular",
+    fontSize: 16,
+    marginBottom: 2,
+    color: "#fff", // White text
+  },
+  input: {
+    height: 40,
+    borderColor: "#555", // Darker border for input fields
+    borderWidth: 1,
+    borderRadius: 5,
+    marginVertical: 5,
+    paddingHorizontal: 10,
+    fontFamily: "Poppins-Regular",
+    backgroundColor: "#333", // Dark input background
+    color: "#fff", // White text for input
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  picker: {
+    height: 50,
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "#555", // Darker border for picker
+    borderRadius: 5,
+    marginVertical: 5,
+    backgroundColor: "#333", // Dark picker background
+    color: "#fff", // White text for picker
+  },
+  buttonPublish: {
+    width: 150,
+    height: 40,
+    backgroundColor: "#B7C42E", // Accent color for publish button
+    alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    elevation: 5,
+    marginTop: 20,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 18,
+    textAlign: "center",
+    fontFamily: "Poppins-Bold",
+  },
+  suggestionItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "#2a2a2a", // Dark background for suggestion items
+    borderBottomWidth: 1,
+    borderBottomColor: "#555", // Darker border for suggestion items
+  },
+  icon: {
+    marginRight: 10,
+    color: "#B7C42E", // Accent color for icons
+  },
+  suggestionText: {
+    fontSize: 16,
+    color: "#fff", // White text for suggestions
     fontFamily: "Poppins-Bold",
   },
 });
