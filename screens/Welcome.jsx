@@ -44,12 +44,7 @@ export default function Welcome({ navigation }) {
   const [scrapedData, setScrapedData] = useState({ links: [] });
   const [provinceDepartments, setProvinceDepartments] = useState([]);
   const { theme } = useContext(ThemeContext);
-  const {
-    userData,
-    updateLocationPermission,
-    locationPermissions,
-    setUserData,
-  } = useContext(UserContext);
+  const { userData, updateLocationPermission, locationPermissions, setUserData, dataAccess } = useContext(UserContext);
   const [deptCodes, setDeptCodes] = useState([]);
 
   const apiKey = "1232de8bee06751cfdd2b48d0b8157e289d320fb";
@@ -456,14 +451,14 @@ export default function Welcome({ navigation }) {
               theme == "light" ? styles.budgetCard : darkModeStyles.budgetCard
             }
             onPress={() => {
-              if (deptCodes.length > 0) {
+              if (deptCodes.length > 0) {  
                 navigation.navigate("Budget", {
                   dept: provinceDepartments,
                   id: deptCodes,
                   prov: currentProvince,
                 });
               } else {
-                alert("Check for location permissions.");
+                alert('Check for location permissions.');
               }
             }}
           >
