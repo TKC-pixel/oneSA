@@ -144,7 +144,10 @@ const BudgetAllocation = ({ dept, id, prov }) => {
   }, []);
 
   const displayData = () => {
-    if (!scrapedData.length) return "Loading"; 
+    if (loading) return <Text>Loading...</Text>; 
+    if (!scrapedData || !Array.isArray(scrapedData) || scrapedData.length === 0) {
+        return <Text>No data available</Text>;
+    }
     
     let outputHeading = "\n";
     let output = "";
