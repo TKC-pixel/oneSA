@@ -154,9 +154,10 @@ const NavBar = ({ userInfo }) => {
             />
 
             <Text style={[theme == "light" ? styles.userName: darkModeStyles.userName, { fontFamily: "Poppins-Bold" }]}>
-              {userArray && userArray.length > 0
-                ? `${userArray[0].name} ${userArray[0].surname}`
-                : "User"}
+            {Array.isArray(userArray) && userArray.length > 0
+    ? `${userArray[0].name} ${userArray[0].surname}`
+    : "User"}
+
             </Text>
           </TouchableOpacity>
           <TouchableOpacity

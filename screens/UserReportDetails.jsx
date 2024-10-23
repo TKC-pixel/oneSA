@@ -17,7 +17,7 @@ import MapView, { Marker } from "react-native-maps";
 import { TouchableOpacity } from "react-native";
 
 const UserReportDetails = ({ route, navigation }) => {
-  const { item } = route.params; // Access the passed item data
+  const { item , isEditable} = route.params; // Access the passed item data
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const { theme } = useContext(ThemeContext);
   console.log(item);
@@ -106,6 +106,14 @@ const UserReportDetails = ({ route, navigation }) => {
           color={theme === "light" ? "#000" : "#fff"}
         />
       </TouchableOpacity>
+      {isEditable && (
+          <TouchableOpacity
+            style={theme === "light" ? styles.editProjectBtn : darkModeStyles.editProjectBtn}
+            onPress={() => navigation.navigate("EditProject", { item })} // Navigate to the Edit screen
+          >
+            <Ionicons name="pencil-outline" size={24} color={theme === "light" ? "#000" : "#fff"} />
+          </TouchableOpacity>
+        )}
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <Text
           style={[
@@ -291,6 +299,17 @@ const styles = StyleSheet.create({
     // Shadow for Android
     elevation: 5,
   },
+  editProjectBtn:{
+    position: "absolute",
+    width: 50,
+    height: 50,
+    backgroundColor: "#D3D3D3",
+    borderRadius: 25,
+    top: 400,
+    right: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   map: {
     ...StyleSheet.absoluteFillObject, // Fill the parent container
   },
@@ -340,4 +359,15 @@ const darkModeStyles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
     color: "#ccc",
   },
+    editProjectBtn:{
+    position: "absolute",
+    width: 50,
+    height: 50,
+    backgroundColor: "#000",
+    borderRadius: 25,
+    top: 400,
+    right: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  }
 });

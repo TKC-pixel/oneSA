@@ -28,11 +28,12 @@ const InfoRow = ({ label, info, labelStyle, infoStyle }) => {
 };
 
 const ProjectDetails = ({ route }) => {
-  const { item } = route.params;
+  const { item, isEditable } = route.params;
   const { theme } = useContext(ThemeContext);
   const navigation = useNavigation();
   const { userData, setUserData } = useContext(UserContext); 
   const [comments, setComments] = useState([]);
+  
   const [newComment, setNewComment] = useState("");
 
   const imageStyle = StyleSheet.create({
@@ -113,6 +114,14 @@ const ProjectDetails = ({ route }) => {
           color="red"
         />
       </TouchableOpacity>
+      {isEditable && (
+          <TouchableOpacity
+            style={theme === "light" ? styles.editProjectBtn : darkModeStyles.editProjectBtn}
+            onPress={() => navigation.navigate("EditProject", { item })} // Navigate to the Edit screen
+          >
+            <Ionicons name="pencil-outline" size={24} color={theme === "light" ? "#000" : "#fff"} />
+          </TouchableOpacity>
+        )}
       <ScrollView style={styles.textContainer}>
         <Text
           style={
@@ -295,6 +304,17 @@ const styles = StyleSheet.create({
   textContainer: {
     paddingHorizontal: 18,
   },
+  editProjectBtn:{
+    position: "absolute",
+    width: 50,
+    height: 50,
+    backgroundColor: "#D3D3D3",
+    borderRadius: 25,
+    top: 400,
+    right: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  }
 });
 
 const darkModeStyles = StyleSheet.create({
@@ -341,4 +361,15 @@ const darkModeStyles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
     color: "#ccc",
   },
+  editProjectBtn:{
+    position: "absolute",
+    width: 50,
+    height: 50,
+    backgroundColor: "#000",
+    borderRadius: 25,
+    top: 400,
+    right: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  }
 });

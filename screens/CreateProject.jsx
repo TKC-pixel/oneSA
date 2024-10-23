@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   FlatList,
   Platform,
+  Alert,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -20,8 +21,10 @@ import { arrayUnion, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db } from "../FIrebaseConfig";
 import { ThemeContext } from "../context/ThemeContext";
+
 import { TouchableHighlight } from "react-native";
 const Nominatim_API_URL = "https://nominatim.openstreetmap.org/search";
+const Photon_API_URL = "https://photon.komoot.io/api/";
 import { Ionicons } from "@expo/vector-icons";
 const CreateProject = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -33,12 +36,13 @@ const CreateProject = () => {
   const [startDate, setStartDate] = useState("");
   const { userData } = useContext(UserContext);
   const { theme } = useContext(ThemeContext);
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState({ name: "", latitude: null, longitude: null });
+
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
 
-  console.log(userData.ministerID);
+  console.log(userData[0].ministerID);
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -68,62 +72,79 @@ const CreateProject = () => {
 
   const handlePublishProject = async () => {
     const projectData = {
-      projectBudgetAllocation: parseFloat(budget), // Ensure budget is a number
-      projectCompletionStatus: "Ongoing", // Adjust as necessary
-      projectDepartment: department,
-      projectName,
-      projectStartDate: startDate,
-      projectTenderCompany: tenderCompany,
-      location: {
-        latitude: latitude,
-        longitude: longitude,
-      },
+        projectBudgetAllocation: parseFloat(budget), // Ensure budget is a number
+        projectCompletionStatus: "Ongoing", // Adjust as necessary
+        projectDepartment: department,
+        projectName,
+        projectStartDate: startDate,
+        projectTenderCompany: tenderCompany,
+        location: {
+            latitude: latitude,
+            longitude: longitude,
+        },
     };
 
     // Get the minister ID from context
-    const ministerID = userData.isMinister ? userData.ministerID : null;
+    const ministerID = userData[0].isMinister ? userData[0].ministerID : null;
 
     if (!ministerID) {
-      console.error("User is not a minister or minister ID is not available");
-      return;
+        console.error("User is not a minister or minister ID is not available");
+        return;
     }
 
     try {
-      // Upload image to Firebase Storage
-      const storage = getStorage(); // Initialize Firebase Storage
-      const imageName = `${ministerID}/${Date.now()}`; // Create a unique name for the image
-      const storageRef = ref(storage, `projectImages/${imageName}`); // Create a reference in Storage
+        // Upload image to Firebase Storage
+        const storage = getStorage(); // Initialize Firebase Storage
+        const imageName = `${ministerID}/${Date.now()}`; // Create a unique name for the image
+        const storageRef = ref(storage, `projectImages/${imageName}`); // Create a reference in Storage
 
-      // Upload the image
-      const response = await fetch(image);
-      const blob = await response.blob(); // Convert image URI to a Blob
-      await uploadBytes(storageRef, blob); // Upload the Blob
+        // Upload the image
+        const response = await fetch(image);
+        const blob = await response.blob(); // Convert image URI to a Blob
+        await uploadBytes(storageRef, blob); // Upload the Blob
 
-      // Get the download URL
-      const imageUrl = await getDownloadURL(storageRef);
+        // Get the download URL
+        const imageUrl = await getDownloadURL(storageRef);
 
-      // Add image URL to the project data
-      projectData.imageUrl = imageUrl;
+        // Add image URL to the project data
+        projectData.imageUrl = imageUrl;
 
-      // Get the current minister's document data
-      const ministerRef = doc(db, "ministers", ministerID);
-      const ministerSnap = await getDoc(ministerRef);
+        // Send the project data to the Flask API
+      //   const apiResponse = await fetch('http://192.168.1.100:5000/predict', { // Use your local IP
+      //     method: 'POST',
+      //     headers: {
+      //         'Content-Type': 'application/json',
+      //     },
+      //     body: JSON.stringify(projectData),
+      // });
 
-      if (!ministerSnap.exists()) {
-        console.error("Minister document does not exist");
-        return;
-      }
+      // if (!apiResponse.ok) {
+      //     throw new Error(`API call failed: ${apiResponse.statusText}`);
+      // }
 
-      // Update the minister's document by directly pushing the new project to the existing projects array
-      await updateDoc(ministerRef, {
-        "ministerDepartment.projects": arrayUnion(projectData), // Use arrayUnion to add the new project
-      });
+      // const apiData = await apiResponse.json(); // Parse the JSON response
+      // console.log("API Response: ", apiData); // Log the response from the API
 
-      console.log("Project successfully added!");
+        // Get the current minister's document data
+        const ministerRef = doc(db, "ministers", ministerID);
+        const ministerSnap = await getDoc(ministerRef);
+
+        if (!ministerSnap.exists()) {
+            console.error("Minister document does not exist");
+            return;
+        }
+
+        // Update the minister's document by directly pushing the new project to the existing projects array
+        await updateDoc(ministerRef, {
+            "ministerDepartment.projects": arrayUnion(projectData), // Use arrayUnion to add the new project
+        });
+
+        console.log("Project successfully added!");
     } catch (error) {
-      console.error("Error adding project: ", error);
+        console.error("Error adding project: ", error);
     }
-  };
+};
+
 
   if (!fontsLoaded) {
     return null; // or a loading spinner
@@ -134,25 +155,32 @@ const CreateProject = () => {
       setLocationSuggestions([]);
       return;
     }
-
+  
     try {
+      // Add bbox for South Africa: [minLon, minLat, maxLon, maxLat]
       const response = await fetch(
-        `${Nominatim_API_URL}?q=${encodeURIComponent(
-          query
-        )}&format=json&addressdetails=1&limit=5&countrycodes=ZA`
+        `${Photon_API_URL}?q=${encodeURIComponent(query)}&limit=5&bbox=16.2817,-34.8333,32.8917,-22.1250`
       );
       const data = await response.json();
-      setLocationSuggestions(data);
+      setLocationSuggestions(data.features); // Photon returns features array
     } catch (error) {
       console.error("Error fetching location suggestions: ", error);
     }
   };
 
   const handleLocationSelect = (location) => {
-    setLocation(location.display_name);
-    setLocationSuggestions([]);
-    setLatitude(location.lat); // Set the latitude
-    setLongitude(location.lon); // Set the longitude
+    const { coordinates } = location.geometry;
+    const longitude = coordinates[0];
+    const latitude = coordinates[1];
+  
+    // Save the selected location's name, longitude, and latitude
+    setLocation({
+      name: location.properties.name, // Set the location name in state
+      longitude,
+      latitude,
+    });
+  
+    setLocationSuggestions([]); // Clear the suggestions after selection
   };
 
   return (
@@ -170,7 +198,7 @@ const CreateProject = () => {
       > */}
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <Text
-          style={[styles.title, { color: theme === "light" ? "#000" : "#fff" }]}
+          style={[styles.title, { color: theme === "light" ? "#000" : "#fff" , marginTop: 50}]}
         >
           Create a Project
         </Text>
@@ -251,41 +279,40 @@ const CreateProject = () => {
               value={startDate}
               onChangeText={setStartDate}
             />
-            <TextInput
-              placeholder="Location"
-              value={location}
-              onChangeText={(text) => {
-                setLocation(text);
-                fetchLocationSuggestions(text);
-              }}
-              style={styles.input}
-            />
+      <TextInput
+  placeholder="Location"
+  value={location.name} // Bind the TextInput value to the location's name
+  onChangeText={(text) => {
+    setLocation({ ...location, name: text }); // Update location name on typing
+    fetchLocationSuggestions(text); // Fetch suggestions while typing
+  }}
+  style={theme === "light" ? styles.input : darkmodeStyles.input}
+/>
 
-            {locationSuggestions.length > 0 && (
-              <FlatList
-                data={locationSuggestions}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => (
-                  <TouchableHighlight
-                    onPress={() => handleLocationSelect(item)}
-                    underlayColor="#ddd"
-                  >
-                    <View style={styles.suggestionItem}>
-                      {/* Ionicons Location Icon */}
-                      <Ionicons
-                        name="location-outline"
-                        size={20}
-                        color="#333"
-                        style={styles.icon}
-                      />
-                      <Text style={styles.suggestionText}>
-                        {item.display_name}
-                      </Text>
-                    </View>
-                  </TouchableHighlight>
-                )}
-              />
-            )}
+{locationSuggestions.length > 0 && (
+  <FlatList
+    data={locationSuggestions}
+    keyExtractor={(item, index) => index.toString()}
+    renderItem={({ item }) => (
+      <TouchableHighlight
+        onPress={() => handleLocationSelect(item)}
+        underlayColor="#ddd"
+      >
+        <View style={styles.suggestionItem}>
+          <Ionicons
+            name="location-outline"
+            size={20}
+            color="#333"
+            style={styles.icon}
+          />
+          <Text style={styles.suggestionText}>
+            {item.properties.name}
+          </Text>
+        </View>
+      </TouchableHighlight>
+    )}
+  />
+)}
             <TouchableOpacity
               style={styles.buttonPublish}
               onPress={handlePublishProject}
