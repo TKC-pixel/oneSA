@@ -1,5 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
-import { StyleSheet, Text, View, Button, Image, FlatList, ActivityIndicator, Modal, Pressable } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  Image,
+  FlatList,
+  ActivityIndicator,
+  Modal,
+  Pressable,
+} from "react-native";
 import { UserContext } from "../context/UserContext";
 import { useNavigation } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -8,6 +18,8 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Font from "expo-font";
 import { ThemeContext } from "../context/ThemeContext"; // Import ThemeContext
 import LoadingScreen from "../components/LoadingScreen";
+import { db } from "../FIrebaseConfig";
+import { getDoc, doc, collection } from "firebase/firestore";
 
 const Profile = () => {
   const { userData } = useContext(UserContext);
@@ -17,7 +29,43 @@ const Profile = () => {
   const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+  const [projects, setProjects] = useState([]);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (userData.length > 0) {
+      const ministerID = userData[0].ministerID; // Get ministerID from userData
+      const fetchMinisterProjects = async () => {
+        try {
+          // Reference to the minister's document
+          const ministerRef = doc(collection(db, "ministers"), ministerID);
+          const ministerDoc = await getDoc(ministerRef); // Fetch the document using getDoc
+
+          if (ministerDoc.exists()) {
+            const ministerData = ministerDoc.data();
+
+            // Check if the minister has any projects (or reports)
+            if (ministerData?.ministerDepartment?.projects) {
+              setProjects(ministerData.ministerDepartment.projects); // Set the fetched projects
+            } else {
+              setProjects([]); // If no projects are found, set an empty array
+            }
+          } else {
+            console.log("No such minister document found!");
+            setProjects([]); // If no document is found, set an empty array
+          }
+        } catch (err) {
+          console.error("Error fetching minister's projects:", err);
+          setError("Error loading projects."); // Set error state if there's an issue
+        } finally {
+          setLoading(false); // Ensure loading state is set to false after the fetch
+        }
+      };
+
+      fetchMinisterProjects(); // Trigger the fetch when userData is available
+    }
+  }, [userData]);
+
   const loadFonts = async () => {
     await Font.loadAsync({
       "Poppins-Regular": require("../assets/fonts/Poppins-Regular.ttf"),
@@ -32,9 +80,7 @@ const Profile = () => {
   }, []);
 
   if (!fontsLoaded) {
-    return (
-      <LoadingScreen/>
-    );
+    return <LoadingScreen />;
   }
 
   if (!userData) {
@@ -50,7 +96,7 @@ const Profile = () => {
   }
 
   const handlePress = (item) => {
-    navigation.navigate('UserReportDetails', { item });
+    navigation.navigate("UserReportDetails", { item });
   };
   const handleImagePress = (imageUrl) => {
     setSelectedImage(imageUrl);
@@ -58,8 +104,15 @@ const Profile = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme === "light" ? "white" : "#1e1e1e" }]}>
-     <TouchableOpacity onPress={() => handleImagePress(userData[0].coverImageUrl)}>
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: theme === "light" ? "white" : "#1e1e1e" },
+      ]}
+    >
+      <TouchableOpacity
+        onPress={() => handleImagePress(userData[0].coverImageUrl)}
+      >
         <Image
           source={{
             uri: userData[0].coverImageUrl
@@ -69,15 +122,21 @@ const Profile = () => {
           style={{ width: "100%", height: 160 }}
         />
       </TouchableOpacity>
-      
+
       <TouchableOpacity
         style={styles.editButton}
         onPress={() => navigation.navigate("EditProfile")}
       >
-        <Ionicons name="pencil-outline" color={theme === "light" ? "black" : "black"} />
+        <Ionicons
+          name="pencil-outline"
+          color={theme === "light" ? "black" : "black"}
+        />
       </TouchableOpacity>
-      
-      <TouchableOpacity style={{marginBottom: 10}} onPress={() => handleImagePress(userData[0].profileImageUrl)}>
+
+      <TouchableOpacity
+        style={{ marginBottom: 10 }}
+        onPress={() => handleImagePress(userData[0].profileImageUrl)}
+      >
         <Image
           source={{
             uri: userData[0].profileImageUrl
@@ -87,13 +146,18 @@ const Profile = () => {
           style={[
             styles.profileImage,
             {
-              borderColor: theme === "light" ? '#fff' : '#1E1D1E'  
-            }
+              borderColor: theme === "light" ? "#fff" : "#1E1D1E",
+            },
           ]}
         />
       </TouchableOpacity>
       <View style={styles.nameContainer}>
-        <Text style={[styles.labelName, { color: theme === "light" ? "black" : "white" }]}>
+        <Text
+          style={[
+            styles.labelName,
+            { color: theme === "light" ? "black" : "white" },
+          ]}
+        >
           {userData[0].name} {userData[0].surname}
         </Text>
         {userData && (
@@ -117,32 +181,116 @@ const Profile = () => {
         )}
       </View>
 
-      <Text style={[styles.labelBio, { color: theme === "light" ? "black" : "white" }]}>
+      <Text
+        style={[
+          styles.labelBio,
+          { color: theme === "light" ? "black" : "white" },
+        ]}
+      >
         {userData[0].bio || "N/A"}
       </Text>
-      <Text style={[styles.label, { color: theme === "light" ? "black" : "white", paddingHorizontal: 18}]}>Your Reports</Text>
-      <FlatList
-      horizontal
-        data={userData[0].reports}
-        keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}  
-        renderItem={({ item }) => (
-          <View style={{paddingHorizontal: 15}}>
-            {item.projectImage ? (
-              <TouchableOpacity onPress={() => handlePress(item)}>
-                <Image
-                  source={{ uri: item.projectImage }}
-                  style={styles.reportImage}
-                />
-              </TouchableOpacity>
-            ) : (
-              <Text>No Image Available</Text>
-            )}
-          </View>
-        )}
-        ListEmptyComponent={<Text style={{ color: theme === "light" ? "black" : "white" }}>No reports available</Text>}
-      />
+      {userData.length > 0 && userData[0].ministerID ? (
+        <View>
+          <Text
+            style={[
+              styles.label,
+              {
+                color: theme === "light" ? "black" : "white",
+                paddingHorizontal: 18,
+              },
+            ]}
+          >
+            Ministerial Projects
+          </Text>
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={projects}
+            keyExtractor={(item, index) =>
+              item.id ? item.id.toString() : index.toString()
+            }
+            renderItem={({ item }) => (
+              <View style={{ paddingHorizontal: 15, justifyContent: "center" }}>
+                {console.log(item)}
 
-      
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("ProjectDetails", {
+                      item,
+                      isEditable: true,
+                    })
+                  }
+                >
+                  <Image
+                    source={{
+                      uri: item.imageUrl
+                        ? item.imageUrl
+                        : "https://img.freepik.com/premium-vector/flag-south-africa-all-country-flag_1177305-50.jpg?semt=ais_hybrid", // default image URL
+                    }}
+                    style={styles.reportImage}
+                  />
+                  <Text
+                    style={{
+                      color: theme === "light" ? "#000" : "#fff",
+                      fontFamily: "Poppins-SemiBold",
+                      width: 150,
+                      textAlign: "center",
+                    }}
+                  >
+                    {item.projectName}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            ListEmptyComponent={
+              <Text style={{ color: theme === "light" ? "black" : "white" }}>
+                No reports available
+              </Text>
+            }
+          />
+        </View>
+      ) : (
+        <>
+          <Text
+            style={[
+              styles.label,
+              {
+                color: theme === "light" ? "black" : "white",
+                paddingHorizontal: 18,
+              },
+            ]}
+          >
+            Your Reports
+          </Text>
+          <FlatList
+            horizontal
+            data={userData.length > 0 ? userData[0].reports : []} // Ensure data is passed correctly
+            keyExtractor={(item, index) =>
+              item.id ? item.id.toString() : index.toString()
+            }
+            renderItem={({ item }) => (
+              <View style={{ paddingHorizontal: 15 }}>
+                {item.projectImage ? (
+                  <TouchableOpacity onPress={() => handlePress(item)}>
+                    <Image
+                      source={{ uri: item.projectImage }}
+                      style={styles.reportImage}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <Text>No Image Available</Text>
+                )}
+              </View>
+            )}
+            ListEmptyComponent={
+              <Text style={{ color: theme === "light" ? "black" : "white" }}>
+                No reports available
+              </Text>
+            }
+          />
+        </>
+      )}
+
       <Modal visible={modalVisible} transparent={true} animationType="slide">
         <View style={styles.modalContainer}>
           <TouchableOpacity
@@ -239,7 +387,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     borderRadius: 10,
     // iOS shadow properties
-    shadowColor: '#000', // Shadow color
+    shadowColor: "#000", // Shadow color
     shadowOffset: {
       width: 0, // Horizontal offset
       height: 2, // Vertical offset
@@ -249,7 +397,7 @@ const styles = StyleSheet.create({
     // Android elevation
     elevation: 5, // Elevation level
   },
-  
+
   backBtn: {
     position: "absolute",
     width: 50,

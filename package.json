@@ -26,6 +26,7 @@
     "axios": "^1.7.7",
     "card-validator": "^10.0.0",
     "expo": "~51.0.28",
+    "expo-constants": "^16.0.2",
     "expo-font": "~12.0.10",
     "expo-image-picker": "~15.0.7",
     "expo-location": "~17.0.1",
@@ -50,6 +51,7 @@
     "react-native-svg": "^15.2.0",
     "react-native-uuid": "^2.0.2",
     "react-native-vector-icons": "^10.2.0",
+    "react-native-webview": "13.8.6",
     "sentiment": "^5.0.2",
     "victory-native": "^37.1.2"
   },
