@@ -72,18 +72,18 @@ const CreateProject = () => {
 
   const handlePublishProject = async () => {
     const projectData = {
-        projectBudgetAllocation: parseFloat(budget), // Ensure budget is a number
-        projectCompletionStatus: "Ongoing", // Adjust as necessary
-        projectDepartment: department,
-        projectName,
-        projectStartDate: startDate,
-        projectTenderCompany: tenderCompany,
-        location: {
-            latitude: latitude,
-            longitude: longitude,
-        },
-    };
-
+      projectBudgetAllocation: parseFloat(budget),
+      projectCompletionStatus: "Ongoing",
+      projectDepartment: department,
+      projectName,
+      projectStartDate: startDate,
+      projectTenderCompany: tenderCompany,
+      location: {
+          latitude: location.latitude,
+          longitude: location.longitude,
+      },
+  };
+  
     // Get the minister ID from context
     const ministerID = userData[0].isMinister ? userData[0].ministerID : null;
 
