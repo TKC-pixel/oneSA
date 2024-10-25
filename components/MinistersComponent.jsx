@@ -25,6 +25,10 @@ const MinistersComponent = () => {
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
   const {userData} = useContext(UserContext)
+
+
+// Specify distance threshold (in kilometers)
+const distanceThreshold = 1;
   // Load custom fonts
   const loadFonts = async () => {
     await Font.loadAsync({
