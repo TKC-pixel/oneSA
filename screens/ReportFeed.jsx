@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
     fontSize: 15
   },
   lightBackground: {
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#fff",
   },
   darkBackground: {
     backgroundColor: "#1c1c1e",

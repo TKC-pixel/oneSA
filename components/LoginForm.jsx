@@ -87,10 +87,10 @@ const LoginForm = () => {
       if (userDoc.exists) {
         const userData = { ...userDoc.data(), uid: user.uid };
         console.log("User data fetched from Firestore: ", userData);
-
         await AsyncStorage.setItem("isLoggedIn", "true");
       }
-
+      
+      setError("");
       navigation.navigate("Welcome");
     } catch (error) {
       switch (error.code) {

@@ -10,10 +10,7 @@ const ThemeSettingsScreen = () => {
 
   const handleToggleTheme = () => {
     toggleTheme(); // Toggle between light and dark theme
-    Alert.alert(
-      "Theme Changed",
-      `The theme has been changed to ${theme === "light" ? "Dark" : "Light"}.`
-    );
+   
   };
 
   return (
@@ -67,9 +64,10 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    // fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
+    fontFamily: "Poppins-Bold"
   },
   settingItem: {
     flexDirection: "row",
@@ -82,6 +80,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     fontWeight: "600",
+    fontFamily: "Poppins-SemiBold"
   },
   darkText: {
     color: "#ffffff", // Light text color for dark mode

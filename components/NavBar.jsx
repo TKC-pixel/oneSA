@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   useWindowDimensions,
+  FlatList,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState, useEffect, useContext } from "react";
@@ -15,20 +16,122 @@ import * as Font from "expo-font";
 import { useNavigation } from "@react-navigation/native";
 import { auth } from "../FIrebaseConfig";
 import { signOut } from "firebase/auth";
-
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../FIrebaseConfig"; // Correct import
+import * as Location from "expo-location";
 import { ThemeContext } from "../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import * as Notifications from "expo-notifications";
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; // Radius of the Earth in km
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) *
+      Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c; // Distance in km
+};
 const NavBar = ({ userInfo }) => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [notificationVisible, setNotificationVisible] = useState(false);
   const navigation = useNavigation();
-
+  const [projects, setProjects] = useState([]);
+  const [nearbyProjects, setNearbyProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentLocation, setCurrentLocation] = useState(null);
   const userArray = Array.isArray(userInfo) ? userInfo : [userInfo || {}];
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "ministers"));
+        const projectsData = querySnapshot.docs.flatMap(
+          (doc) => doc.data().ministerDepartment.projects || []
+        );
+        setProjects(projectsData);
+        console.log("Fetched projects: ", projectsData);
+      } catch (error) {
+        console.error("Error fetching projects: ", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  
-  
+    const fetchLocation = async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") return;
+
+      const { coords } = await Location.getCurrentPositionAsync({});
+      setCurrentLocation(coords);
+      console.log("Current Location: ", coords);
+    };
+
+    fetchProjects();
+    fetchLocation();
+  }, []);
+  const requestNotificationPermission = async () => {
+    const { status } = await Notifications.getPermissionsAsync();
+    if (status !== "granted") {
+      const { status: newStatus } =
+        await Notifications.requestPermissionsAsync();
+      return newStatus === "granted";
+    }
+    return true;
+  };
+  useEffect(() => {
+    const checkPermissions = async () => {
+      await requestNotificationPermission();
+    };
+    checkPermissions();
+  }, []);
+
+  useEffect(() => {
+    const sendNotifications = async (nearbyProjects) => {
+      for (const project of nearbyProjects) {
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: "Nearby Project Alert!",
+            body: `You're near the project: ${project.projectName}`,
+            data: { projectId: project.id }, // Additional data
+          },
+          trigger: null, // Sends immediately
+        });
+      }
+    };
+
+    if (currentLocation && projects.length > 0) {
+      const { latitude, longitude } = currentLocation;
+
+      const nearby = projects.filter((project) => {
+        if (project.location) {
+          // Ensure location exists
+          const distance = calculateDistance(
+            latitude,
+            longitude,
+            parseFloat(project.location.latitude),
+            parseFloat(project.location.longitude)
+          );
+
+          console.log(
+            `Checking project: ${project.projectName}, Distance: ${distance} km`
+          );
+
+          return distance <= 5; // Adjust distance threshold
+        }
+        return false; // Ignore projects without location
+      });
+
+      if (nearby.length > 0) {
+        setNearbyProjects(nearby); // Update nearby projects
+        sendNotifications(nearby); // Send notifications for nearby projects
+      }
+    }
+  }, [currentLocation, projects]);
+
   const { theme, toggleTheme } = useContext(ThemeContext);
 
   const loadFonts = async () => {
@@ -88,27 +191,26 @@ const NavBar = ({ userInfo }) => {
   const handleSignOut = async () => {
     try {
       console.log("Attempting to sign out...");
-      
+
       // Sign out the user
       await signOut(auth);
       console.log("User signed out!");
-  
+
       // Update AsyncStorage to reflect the logged-out state
       await AsyncStorage.setItem("isLoggedIn", "false");
-  
+
       // Reset the navigation to the SignUp screen
       navigation.reset({
         index: 0,
         routes: [{ name: "SignUp" }],
       });
-  
+
       // Close the dropdown or any other UI element
       setDropdownVisible(false);
     } catch (error) {
       console.error("Error signing out: ", error);
     }
   };
-  
 
   return (
     <SafeAreaView style={[styles.NavTop, { position: "relative" }]}>
@@ -138,10 +240,18 @@ const NavBar = ({ userInfo }) => {
       </View>
 
       {dropdownVisible && (
-        <View style={theme == "light" ? styles.dropdownMenu : darkModeStyles.dropdownMenu}>
+        <View
+          style={
+            theme == "light" ? styles.dropdownMenu : darkModeStyles.dropdownMenu
+          }
+        >
           <TouchableOpacity
             onPress={handleProfile}
-            style={theme=='light' ? styles.userContainer : darkModeStyles.userContainer}
+            style={
+              theme == "light"
+                ? styles.userContainer
+                : darkModeStyles.userContainer
+            }
           >
             <Image
               style={styles.favIcon}
@@ -153,62 +263,151 @@ const NavBar = ({ userInfo }) => {
               }}
             />
 
-            <Text style={[theme == "light" ? styles.userName: darkModeStyles.userName, { fontFamily: "Poppins-Bold" }]}>
-              {userArray && userArray.length > 0
+            <Text
+              style={[
+                theme == "light" ? styles.userName : darkModeStyles.userName,
+                { fontFamily: "Poppins-Bold" },
+              ]}
+            >
+              {Array.isArray(userArray) && userArray.length > 0
                 ? `${userArray[0].name} ${userArray[0].surname}`
                 : "User"}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={theme=='light' ? styles.dropdownItem : darkModeStyles.dropdownItem}
+            style={
+              theme == "light"
+                ? styles.dropdownItem
+                : darkModeStyles.dropdownItem
+            }
             onPress={handleSettings}
           >
-            <Ionicons name="settings-outline" color={theme=='light' ? 'black': 'white'}/>
+            <Ionicons
+              name="settings-outline"
+              color={theme == "light" ? "black" : "white"}
+            />
             <Text
-              style={[theme=='light' ? styles.dropdownText : darkModeStyles.dropdownText, { fontFamily: "Poppins-Regular" }]}
+              style={[
+                theme == "light"
+                  ? styles.dropdownText
+                  : darkModeStyles.dropdownText,
+                { fontFamily: "Poppins-Regular" },
+              ]}
             >
               Settings
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={theme=='light' ? styles.dropdownItem : darkModeStyles.dropdownItem}
+            style={
+              theme == "light"
+                ? styles.dropdownItem
+                : darkModeStyles.dropdownItem
+            }
             onPress={handleHelpCenter}
           >
-            <Ionicons name="help-circle-outline" color={theme=='light' ? 'black': 'white'}/>
+            <Ionicons
+              name="help-circle-outline"
+              color={theme == "light" ? "black" : "white"}
+            />
             <Text
-              style={[theme=='light' ? styles.dropdownText : darkModeStyles.dropdownText, { fontFamily: "Poppins-Regular" }]}
+              style={[
+                theme == "light"
+                  ? styles.dropdownText
+                  : darkModeStyles.dropdownText,
+                { fontFamily: "Poppins-Regular" },
+              ]}
             >
               Help Center
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={theme=='light' ? styles.dropdownItem : darkModeStyles.dropdownItem} onPress={handleAppInfo}>
-            <Ionicons name="information-circle-outline" color={theme=='light' ? 'black': 'white'}/>
+          <TouchableOpacity
+            style={
+              theme == "light"
+                ? styles.dropdownItem
+                : darkModeStyles.dropdownItem
+            }
+            onPress={handleAppInfo}
+          >
+            <Ionicons
+              name="information-circle-outline"
+              color={theme == "light" ? "black" : "white"}
+            />
             <Text
-              style={[theme=='light' ? styles.dropdownText : darkModeStyles.dropdownText, { fontFamily: "Poppins-Regular" }]}
+              style={[
+                theme == "light"
+                  ? styles.dropdownText
+                  : darkModeStyles.dropdownText,
+                { fontFamily: "Poppins-Regular" },
+              ]}
             >
               App Information
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={theme=='light' ? styles.dropdownItem : darkModeStyles.dropdownItem} onPress={handleRateApp}>
-            <Ionicons name="star-half-outline" color={theme=='light' ? 'black': 'white'}/>
+          <TouchableOpacity
+            style={
+              theme == "light"
+                ? styles.dropdownItem
+                : darkModeStyles.dropdownItem
+            }
+            onPress={handleRateApp}
+          >
+            <Ionicons
+              name="star-half-outline"
+              color={theme == "light" ? "black" : "white"}
+            />
             <Text
-              style={[theme=='light' ? styles.dropdownText : darkModeStyles.dropdownText, { fontFamily: "Poppins-Regular" }]}
+              style={[
+                theme == "light"
+                  ? styles.dropdownText
+                  : darkModeStyles.dropdownText,
+                { fontFamily: "Poppins-Regular" },
+              ]}
             >
               Rate The App
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={theme=='light' ? styles.dropdownItem : darkModeStyles.dropdownItem} onPress={() => navigation.navigate("UpgradeMembership")}>
-            <Ionicons name="card-outline" color={theme=='light' ? 'black': 'white'}/>
+          <TouchableOpacity
+            style={
+              theme == "light"
+                ? styles.dropdownItem
+                : darkModeStyles.dropdownItem
+            }
+            onPress={() => navigation.navigate("UpgradeMembership")}
+          >
+            <Ionicons
+              name="card-outline"
+              color={theme == "light" ? "black" : "white"}
+            />
             <Text
-              style={[theme=='light' ? styles.dropdownText : darkModeStyles.dropdownText, { fontFamily: "Poppins-Regular" }]}
+              style={[
+                theme == "light"
+                  ? styles.dropdownText
+                  : darkModeStyles.dropdownText,
+                { fontFamily: "Poppins-Regular" },
+              ]}
             >
               Upgrade Your Membership
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={theme=='light' ? styles.dropdownItem : darkModeStyles.dropdownItem} onPress={handleSignOut}>
-            <Ionicons name="log-out-outline" color={theme=='light' ? 'black': 'white'}/>
+          <TouchableOpacity
+            style={
+              theme == "light"
+                ? styles.dropdownItem
+                : darkModeStyles.dropdownItem
+            }
+            onPress={handleSignOut}
+          >
+            <Ionicons
+              name="log-out-outline"
+              color={theme == "light" ? "black" : "white"}
+            />
             <Text
-              style={[theme=='light' ? styles.dropdownText : darkModeStyles.dropdownText, { fontFamily: "Poppins-Regular" }]}
+              style={[
+                theme == "light"
+                  ? styles.dropdownText
+                  : darkModeStyles.dropdownText,
+                { fontFamily: "Poppins-Regular" },
+              ]}
             >
               Log Out
             </Text>
@@ -217,29 +416,81 @@ const NavBar = ({ userInfo }) => {
       )}
 
       {notificationVisible && (
-        <View style={theme == "light" ? styles.dropdownMenu : darkModeStyles.dropdownMenu}>
-          <TouchableOpacity style={styles.dropdownItem}>
-            <Ionicons name="notifications-outline" />
-            <Text
-              style={[styles.dropdownText, { fontFamily: "Poppins-Regular" }]}
-            >
-              Notifications
+        <View
+          style={
+            theme == "light" ? styles.dropdownMenu : darkModeStyles.dropdownMenu
+          }
+        >
+          {nearbyProjects.length > 0 ? (
+            <FlatList
+              data={nearbyProjects}
+              keyExtractor={(item) =>
+                item.id ? item.id : Math.random().toString(36).substr(2, 9)
+              }
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={
+                    theme == "light"
+                      ? styles.dropdownItem
+                      : darkModeStyles.dropdownItem
+                  }
+                  onPress={() => navigation.navigate("CreateReport", { item })}
+                >
+                  <Ionicons
+                    name="notifications-outline"
+                    size={24}
+                    color={theme === "light" ? "black" : "white"}
+                    style={{ marginRight: 10 }}
+                  />
+                  <View style={{ width: 250 }}>
+                    <Text
+                      style={{
+                        color: theme === "light" ? "black" : "white",
+                        fontFamily: "Poppins-Bold",
+                      }}
+                    >
+                      You're near the project site:
+                    </Text>
+                    <Text
+                      style={{
+                        color: "#B7C42E",
+                        fontFamily: "Poppins-Bold",
+                      }}
+                    >
+                      {item.projectName}
+                    </Text>
+
+                    <Text
+                      style={{
+                        color: theme === "light" ? "black" : "white",
+                        fontFamily: "Poppins-SemiBold",
+                      }}
+                    >
+                      Do you want to file a report?
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+            />
+          ) : (
+            <Text style={{ color: theme === "light" ? "black" : "white" }}>
+              No nearby projects found.
             </Text>
-          </TouchableOpacity>
+          )}
         </View>
       )}
     </SafeAreaView>
   );
 };
 export default NavBar;
-const darkModeStyles= StyleSheet.create({
+const darkModeStyles = StyleSheet.create({
   dropdownMenu: {
     marginTop: 40,
     position: "absolute",
     top: 70,
     padding: 18,
     right: 10,
-    width: 250,
+    width: 300,
     backgroundColor: "#121212",
     borderRadius: 8,
     shadowColor: "#000",
@@ -256,7 +507,7 @@ const darkModeStyles= StyleSheet.create({
     fontSize: 16,
     marginLeft: 10,
     fontFamily: "Poppins-Bold",
-    color: 'white',
+    color: "white",
   },
   userContainer: {
     flexDirection: "row",
@@ -293,9 +544,9 @@ const darkModeStyles= StyleSheet.create({
   dropdownText: {
     fontSize: 16,
     marginLeft: 10,
-    color: 'white',
+    color: "white",
   },
-})
+});
 const styles = StyleSheet.create({
   NavTop: {
     flexDirection: "row",
@@ -328,7 +579,7 @@ const styles = StyleSheet.create({
     top: 70,
     padding: 18,
     right: 10,
-    width: 250,
+    width: 300,
     backgroundColor: "#ffffff",
     borderRadius: 8,
     shadowColor: "#000",

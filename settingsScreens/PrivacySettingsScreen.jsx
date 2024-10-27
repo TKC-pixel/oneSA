@@ -148,11 +148,11 @@ const PrivacySettingsScreen = ({navigation}) => {
           />
         </View>
 
-        <TouchableOpacity style={[styles.button, { backgroundColor: theme === 'dark' ? '#0056b3' : '#007bff' }]} onPress={handlePrivacyPolicyPress}>
+        <TouchableOpacity style={[styles.button, { backgroundColor: theme === 'dark' ? '#B7C42E' : '#B7C42E' }]} onPress={handlePrivacyPolicyPress}>
           <Text style={styles.buttonText}>View Privacy Policy</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.button, { backgroundColor: theme === 'dark' ? '#0056b3' : '#007bff' }]} onPress={handleSaveSettings}>
+        <TouchableOpacity style={[styles.button, { backgroundColor: theme === 'dark' ? '#B7C42E' : '#B7C42E' }]} onPress={handleSaveSettings}>
           <Text style={styles.buttonText}>Save Settings</Text>
         </TouchableOpacity>
       </View>
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 18,
     textAlign: 'center',
-    fontFamily: "Poppins-SemiBold"
+    fontFamily: "Poppins-Bold"
   },
   darkText: {
     color: '#ffffff', // Light text color for dark mode
