@@ -35,6 +35,7 @@ import * as settingScreens from "./settingsScreens/exportSettings";
 import LoadingScreen from "./components/LoadingScreen";
 import DebateRoom from "./screens/DebateRoom";
 import UpgradeMembership from "./screens/UpgradeMembership";
+import InChatViewFile from "./components/inChatViewFile";
 
 
 const Stack = createNativeStackNavigator();
@@ -310,6 +311,11 @@ export default function App() {
                 name="UpgradeMembership"
                 options={{ headerShown: false }}
                 component={UpgradeMembership}
+              />
+              <Stack.Screen
+                name="InChatViewFile"
+                options={{ headerShown: false }}
+                component={InChatViewFile}
               />
             </Stack.Navigator>
           </NavigationContainer>

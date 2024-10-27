@@ -107,7 +107,7 @@ export default function Graphs({
             style={{
               axisLabel: {
                 padding: 30,
-                fontSize: 110,
+                fontSize: 17,
                 fill: "#333",
                 fontFamily: "Poppins-SemiBold",
               },
@@ -124,9 +124,19 @@ export default function Graphs({
             dependentAxis
             label="Amount Rands (divided by 10)"
             style={{
-              axisLabel: { padding: 37, fontSize: 16, fill: "#333" },
+              axisLabel: {
+                padding: 37,
+                fontSize: 16,
+                fill: "#333",
+                fontFamily: "Poppins-SemiBold",
+              },
               ticks: { stroke: "#B0B0B0" },
-              tickLabels: { fontSize: 12, padding: 1, fill: "#555" },
+              tickLabels: {
+                fontSize: 12,
+                padding: 1,
+                fill: "#555",
+                fontFamily: "Poppins-SemiBold",
+              },
             }}
             domain={[0, 100000]}
             tickFormat={(x) => `${x / 1000}k`}
@@ -181,7 +191,7 @@ export default function Graphs({
         </VictoryChart>
         <VictoryLegend
           x={5}
-          y={0}
+          y={20}
           orientation="vertical"
           gutter={20}
           style={{
