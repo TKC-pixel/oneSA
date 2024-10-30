@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, SafeAreaView } from "react-native";
-import React from "react";
+import React, { useContext } from "react";
 import {
   VictoryChart,
   VictoryBar,
@@ -10,6 +10,7 @@ import {
   VictoryGroup,
   VictoryLegend,
 } from "victory-native";
+import { ThemeContext } from "../context/ThemeContext";
 
 export default function Graphs({
   finalAppropriation,
@@ -18,10 +19,17 @@ export default function Graphs({
   employeeCompensation,
   goodsAndServices,
 }) {
+  const { theme } = useContext(ThemeContext);
+  const isDarkMode = theme === "dark";
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.card}>
-        <Text style={styles.title}>Annual Appropriation</Text>
+    <SafeAreaView
+      style={[styles.container, isDarkMode && darkModeStyles.container]}
+    >
+      <View style={[styles.card, isDarkMode && darkModeStyles.card]}>
+        <Text style={[styles.title, isDarkMode && darkModeStyles.title]}>
+          Annual Appropriation
+        </Text>
         <VictoryChart
           animate={{ duration: 1000 }}
           theme={VictoryTheme.material}
@@ -36,14 +44,14 @@ export default function Graphs({
               axisLabel: {
                 padding: 30,
                 fontSize: 16,
-                fill: "#333",
+                fill: isDarkMode ? "#ddd" : "#333",
                 fontFamily: "Poppins-SemiBold",
               },
-              ticks: { stroke: "#B0B0B0" },
+              ticks: { stroke: isDarkMode ? "#aaa" : "#B0B0B0" },
               tickLabels: {
                 angle: -45,
                 fontSize: 12,
-                fill: "#555",
+                fill: isDarkMode ? "#ddd" : "#555",
                 fontFamily: "Poppins-SemiBold",
               },
             }}
@@ -55,14 +63,14 @@ export default function Graphs({
               axisLabel: {
                 padding: 37,
                 fontSize: 16,
-                fill: "#333",
+                fill: isDarkMode ? "#ddd" : "#333",
                 fontFamily: "Poppins-SemiBold",
               },
-              ticks: { stroke: "#B0B0B0" },
+              ticks: { stroke: isDarkMode ? "#aaa" : "#B0B0B0" },
               tickLabels: {
                 fontSize: 12,
                 padding: 1,
-                fill: "#555",
+                fill: isDarkMode ? "#ddd" : "#555",
                 fontFamily: "Poppins-SemiBold",
               },
             }}
@@ -84,6 +92,7 @@ export default function Graphs({
               labels: {
                 fontSize: 12,
                 fontFamily: "Poppins-SemiBold",
+                fill: isDarkMode ? "#ddd" : "#333",
               },
             }}
             labels={({ datum }) => `${datum.amount.toFixed(2)}k`}
@@ -92,8 +101,10 @@ export default function Graphs({
         </VictoryChart>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.title}>Expenditure Categories</Text>
+      <View style={[styles.card, isDarkMode && darkModeStyles.card]}>
+        <Text style={[styles.title, isDarkMode && darkModeStyles.title]}>
+          Expenditure Categories
+        </Text>
         <VictoryChart
           animate={{ duration: 1000 }}
           theme={VictoryTheme.material}
@@ -107,15 +118,15 @@ export default function Graphs({
             style={{
               axisLabel: {
                 padding: 30,
-                fontSize: 110,
-                fill: "#333",
+                fontSize: 17,
+                fill: isDarkMode ? "#ddd" : "#333",
                 fontFamily: "Poppins-SemiBold",
               },
-              ticks: { stroke: "#B0B0B0" },
+              ticks: { stroke: isDarkMode ? "#aaa" : "#B0B0B0" },
               tickLabels: {
                 angle: -45,
                 fontSize: 12,
-                fill: "#555",
+                fill: isDarkMode ? "#ddd" : "#555",
                 fontFamily: "Poppins-SemiBold",
               },
             }}
@@ -124,9 +135,19 @@ export default function Graphs({
             dependentAxis
             label="Amount Rands (divided by 10)"
             style={{
-              axisLabel: { padding: 37, fontSize: 16, fill: "#333" },
-              ticks: { stroke: "#B0B0B0" },
-              tickLabels: { fontSize: 12, padding: 1, fill: "#555" },
+              axisLabel: {
+                padding: 37,
+                fontSize: 16,
+                fill: isDarkMode ? "#ddd" : "#333",
+                fontFamily: "Poppins-SemiBold",
+              },
+              ticks: { stroke: isDarkMode ? "#aaa" : "#B0B0B0" },
+              tickLabels: {
+                fontSize: 12,
+                padding: 1,
+                fill: isDarkMode ? "#ddd" : "#555",
+                fontFamily: "Poppins-SemiBold",
+              },
             }}
             domain={[0, 100000]}
             tickFormat={(x) => `${x / 1000}k`}
@@ -181,15 +202,14 @@ export default function Graphs({
         </VictoryChart>
         <VictoryLegend
           x={5}
-          y={0}
+          y={20}
           orientation="vertical"
           gutter={20}
           style={{
             border: { stroke: "transparent" },
-            borderRadius: 15,
             labels: {
               fontSize: 12,
-              fill: "#333",
+              fill: isDarkMode ? "#ddd" : "#333",
               fontFamily: "Poppins-SemiBold",
             },
           }}
@@ -226,10 +246,17 @@ const styles = StyleSheet.create({
     color: "#34495e",
     fontFamily: "Poppins-Bold",
   },
-  axisLabel: {
-    fontFamily: "Poppins-SemiBold",
+});
+
+const darkModeStyles = StyleSheet.create({
+  container: {
+    backgroundColor: "#121212",
   },
-  tickLabel: {
-    fontFamily: "Poppins-SemiBold",
+  card: {
+    backgroundColor: "#1e1e1e",
+    shadowColor: "#fff",
+  },
+  title: {
+    color: "#ffffff",
   },
 });

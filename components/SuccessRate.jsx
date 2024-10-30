@@ -382,7 +382,14 @@ const SuccessRate = ({ dept, id, prov }) => {
     );
   }
   return (
-    <>
+    <SafeAreaView
+      style={{
+        backgroundColor: theme == "light" ? "white" : "black",
+        flex: 1,
+        width: "111.5%",
+        marginLeft: "-6%",
+      }}
+    >
       <NavBar userInfo={userArray} />
       <Pressable>
         <View style={styles.buttonContainer}>
@@ -476,7 +483,7 @@ const SuccessRate = ({ dept, id, prov }) => {
           goodsAndServices={goodsAndServices}
         />
       </ScrollView>
-    </>
+    </SafeAreaView>
   );
 };
 

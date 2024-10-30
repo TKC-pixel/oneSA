@@ -15,7 +15,7 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TouchableOpacity } from "react-native";
 import { Dimensions } from "react-native";
-import { app, db } from "../FIrebaseConfig";
+import { app, db, auth, storage } from "../FIrebaseConfig";
 import { ThemeContext } from "../context/ThemeContext";
 import { UserContext } from "../context/UserContext";
 import {
@@ -26,10 +26,15 @@ import {
   getDocs,
   onSnapshot,
   query,
+  writeBatch,
+  deleteDoc,
+  where,
 } from "firebase/firestore";
 import CustomKeyboardView from "./Keyboard";
 import { useNavigation } from "@react-navigation/native";
 const { width, height } = Dimensions.get("window");
+import { Icon } from "react-native-elements";
+import { ref, listAll, deleteObject } from "firebase/storage";
 
 export default function DebateRooms() {
   const navigation = useNavigation();
@@ -41,11 +46,84 @@ export default function DebateRooms() {
   const { theme } = useContext(ThemeContext);
   const { userData } = useContext(UserContext);
 
+  const userID = auth.currentUser.uid;
+
   const handleAdd = () => {
     setAdd(true);
   };
   const handleClose = () => {
     setAdd(false);
+  };
+
+  const deleteMessages = async (id) => {
+    const q = query(collection(db, "messages"), where("groupID", "==", id));
+
+    //creating a batch to delete docs in small sizes to make the performance better
+    let batch = writeBatch(db);
+    let batchSize = 500;
+    let count = 0;
+
+    const querySnapshot = await getDocs(q);
+
+    for (const doc of querySnapshot.docs) {
+      batch.delete(doc.ref);
+      count++;
+
+      if (count === batchSize) {
+        await batch.commit();
+        batch = writeBatch(db);
+        count = 0;
+      }
+    }
+
+    if (count > 0) {
+      await batch.commit();
+    }
+    console.log("messages are deleted for group", id);
+  };
+
+  const deleteImages = async (id) => {
+    console.log(id, "from delete image function");
+    const mediaRef = ref(storage, `messageImages/${id}`);
+    console.log(mediaRef);
+    const batchSize = 10;
+    const listResponse = await listAll(mediaRef);
+    console.log(`Found ${listResponse.items.length} files`);
+    const files = listResponse.items;
+    if (files.length === 0) {
+      console.log("No files to delete");
+      return;
+    }
+
+    for (let i = 0; i < files.length; i += batchSize) {
+      // Create a batch of deletions
+      const promises = files
+        .slice(i, i + batchSize)
+        .map((file) => deleteObject(file));
+
+      try {
+        // Wait for the current batch of deletions to finish
+        await Promise.all(promises);
+        console.log(`Deleted image batch ${Math.floor(i / batchSize) + 1}`);
+      } catch (error) {
+        console.error("Error deleting files:", error);
+      }
+    }
+  };
+
+  const handleDelete = async (id, user_id) => {
+    console.log(id);
+    if (userID === user_id) {
+      try {
+        // await deleteImages(id);
+        await deleteMessages(id);
+        await deleteDoc(doc(db, "Groups", `${id}`));
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      Alert.alert("Only the creator of the group can delete the group");
+    }
   };
 
   const createDebate = async (name, departmentName) => {
@@ -55,6 +133,7 @@ export default function DebateRooms() {
           title: name,
           createdAt: serverTimestamp(),
           department: departmentName,
+          creatorID: userID,
         });
         console.log("Group chat created with ID:", groupChatRef.id);
         setGroupID(groupChatRef.id);
@@ -130,23 +209,42 @@ export default function DebateRooms() {
               key={i}
             >
               <View
-                key={i}
                 style={
                   theme == "light"
                     ? styles.debateItem
                     : darkModeStyles.debateItem
                 }
               >
-                <Text
-                  style={
-                    theme == "light"
-                      ? styles.debateTitle
-                      : darkModeStyles.debateTitle
-                  }
-                >
-                  {debate.title}
-                </Text>
-                <Text style={styles.debateDepartment}>{debate.department}</Text>
+                <View style={styles.debateItemContent}>
+                  <View style={styles.debateTextContainer}>
+                    <Text
+                      style={
+                        theme == "light"
+                          ? styles.debateTitle
+                          : darkModeStyles.debateTitle
+                      }
+                    >
+                      {debate.title}
+                    </Text>
+                    <Text style={styles.debateDepartment}>
+                      {debate.department}
+                    </Text>
+                  </View>
+                  <Pressable
+                    style={styles.deleteButton}
+                    onPress={(event) => {
+                      event.stopPropagation();
+                      handleDelete(debate.groupID, debate.creatorID);
+                    }}
+                  >
+                    <Icon
+                      type="font-awesome"
+                      name="trash"
+                      size={25}
+                      color="white"
+                    />
+                  </Pressable>
+                </View>
               </View>
             </Pressable>
           ))}
@@ -187,6 +285,7 @@ export default function DebateRooms() {
           title: doc.data().title,
           department: doc.data().department,
           groupID: doc.id,
+          creatorID: doc.data().creatorID,
         });
       });
       setDebates(groups);
@@ -225,7 +324,7 @@ const styles = StyleSheet.create({
   floatingButton: {
     position: "absolute",
     right: 5,
-    bottom: -170,
+    bottom: 100,
     width: 50,
     height: 50,
     alignItems: "center",
@@ -255,13 +354,26 @@ const styles = StyleSheet.create({
     fontSize: 18,
     // fontWeight: "bold",
     color: "#333",
-    fontFamily: "Poppins-SemiBold"
+    fontFamily: "Poppins-SemiBold",
   },
   debateDepartment: {
     fontSize: 14,
     color: "#666",
     marginTop: 5,
-      fontFamily: "Poppins-Regular"
+    fontFamily: "Poppins-Regular",
+  },
+  deleteButton: {
+    backgroundColor: "#ff4d4d",
+    borderRadius: 5,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    marginTop: 10,
+    alignSelf: "flex-end",
+  },
+  deleteButtonText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "bold",
   },
   backgroundContainer: {
     position: "relative",
@@ -361,12 +473,12 @@ const darkModeStyles = StyleSheet.create({
     fontSize: 18,
     // fontWeight: "bold",
     color: "white",
-    fontFamily: "Poppins-SemiBold"
+    fontFamily: "Poppins-SemiBold",
   },
   debateDepartment: {
     fontSize: 14,
     color: "#666",
     marginTop: 5,
-     fontFamily: "Poppins-Regular"
+    fontFamily: "Poppins-Regular",
   },
 });
