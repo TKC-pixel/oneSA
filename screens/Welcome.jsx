@@ -13,6 +13,7 @@ import {
   Pressable,
   SafeAreaView,
   LogBox,
+  Platform
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useState, useEffect, useContext } from "react";
@@ -308,7 +309,7 @@ export default function Welcome({ navigation }) {
     }
     
   return (
-    <SafeAreaView
+    <View
       style={theme == "light" ? styles.safeArea : darkModeStyles.safeArea}
     >
       <ScrollView>
@@ -541,7 +542,7 @@ export default function Welcome({ navigation }) {
           <AnimatedFlatList />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 const styles = StyleSheet.create({

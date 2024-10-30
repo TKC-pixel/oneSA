@@ -11,8 +11,9 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Modal,
+  Pressable,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import { auth, db, storage } from "../FIrebaseConfig"; // Firebase setup
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -24,11 +25,9 @@ import {
   addDoc,
 } from "firebase/firestore";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
 import analyzeSentiment from "../components/sentimentUtil";
 import containsProfanity from "../components/profanityFilter";
 import { ThemeContext } from "../context/ThemeContext";
-const Nominatim_API_URL = "https://nominatim.openstreetmap.org/search";
 const Photon_API_URL = "https://photon.komoot.io/api/";
 
 const CreateReport = ({ navigation, route }) => {
@@ -47,8 +46,11 @@ const CreateReport = ({ navigation, route }) => {
 
   const { theme } = useContext(ThemeContext);
   const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [showDepartmentModal, setShowDepartmentModal] = useState(false);
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  
   const { item } = route.params || {};
-  console.log(item);
+  
   useEffect(() => {
     if (item) {
       setName(item.projectName || "");
@@ -57,6 +59,7 @@ const CreateReport = ({ navigation, route }) => {
       setDepartment(item.projectDepartment || "");
     }
   }, [item]);
+
   const departments = [
     { label: "Department of Health", value: "health" },
     { label: "Department of Education", value: "education" },
@@ -109,7 +112,6 @@ const CreateReport = ({ navigation, route }) => {
         location: location.name, // Store the selected location name
         latitude: location.latitude, // Add latitude
         longitude: location.longitude, // Add longitude
-        projectImage: imageUrl,
         projectImage: imageUrl,
         userId, // Add the userId for reference
         timestamp: new Date(), // Add a timestamp
@@ -232,41 +234,33 @@ const CreateReport = ({ navigation, route }) => {
           <Text style={theme === "light" ? styles.label : darkModeStyles.label}>
             Relevant Department
           </Text>
-          <Picker
-            selectedValue={department}
-            onValueChange={(itemValue) => setDepartment(itemValue)}
-            style={theme === "light" ? styles.picker : darkModeStyles.picker}
+          <TouchableOpacity
+            style={styles.picker}
+            onPress={() => setShowDepartmentModal(true)}
           >
-            <Picker.Item label="Select a department" value="" />
-            {departments.map((dept, index) => (
-              <Picker.Item key={index} label={dept.label} value={dept.value} />
-            ))}
-          </Picker>
+            <Text style={styles.pickerText}>
+              {department ? departments.find((d) => d.value === department)?.label : "Select a department"}
+            </Text>
+          </TouchableOpacity>
 
           <Text style={theme === "light" ? styles.label : darkModeStyles.label}>
             Project Status
           </Text>
-          <Picker
-            selectedValue={status}
-            onValueChange={(itemValue) => setStatus(itemValue)}
-            style={theme === "light" ? styles.picker : darkModeStyles.picker}
+          <TouchableOpacity
+            style={styles.picker}
+            onPress={() => setShowStatusModal(true)}
           >
-            <Picker.Item label="Select a status" value="" />
-            {statuses.map((statusItem, index) => (
-              <Picker.Item
-                key={index}
-                label={statusItem.label}
-                value={statusItem.value}
-              />
-            ))}
-          </Picker>
+            <Text style={styles.pickerText}>
+              {status ? statuses.find((s) => s.value === status)?.label : "Select a status"}
+            </Text>
+          </TouchableOpacity>
 
           <TextInput
             placeholder="Location"
             value={location.name} // Display the selected location's name
             onChangeText={(text) => {
-              setLocation({ ...location, name: text }); // Update the location name in state as user types
-              fetchLocationSuggestions(text); // Fetch suggestions while typing
+              setLocation({ name: text, latitude: null, longitude: null });
+              fetchLocationSuggestions(text);
             }}
             style={theme === "light" ? styles.input : darkModeStyles.input}
           />
@@ -274,29 +268,17 @@ const CreateReport = ({ navigation, route }) => {
           {locationSuggestions.length > 0 && (
             <FlatList
               data={locationSuggestions}
-              keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => (
                 <TouchableHighlight
                   onPress={() => handleLocationSelect(item)}
-                  underlayColor="#ddd"
                 >
-                  <View style={styles.suggestionItem}>
-                    {/* Ionicons Location Icon */}
-                    <Ionicons
-                      name="location-outline"
-                      size={20}
-                      color="#333"
-                      style={
-                        theme === "light" ? styles.icon : darkModeStyles.icon
-                      }
-                    />
-                    <Text style={styles.suggestionText}>
-                      {item.properties.name}, {item.properties.city},{" "}
-                      {item.properties.country}
-                    </Text>
-                  </View>
+                  <Text style={styles.suggestionText}>
+                    {item.properties.name}
+                  </Text>
                 </TouchableHighlight>
               )}
+              keyExtractor={(item) => item.properties.id} // Assuming each item has a unique id
+              style={styles.suggestionList}
             />
           )}
 
@@ -305,238 +287,247 @@ const CreateReport = ({ navigation, route }) => {
             value={additionalComments}
             onChangeText={setAdditionalComments}
             style={theme === "light" ? styles.input : darkModeStyles.input}
-            multiline
-            numberOfLines={4}
           />
 
           <TouchableOpacity
-            style={
-              theme === "light"
-                ? styles.buttonPublish
-                : darkModeStyles.buttonPublish
-            }
+            style={styles.submitButton}
             onPress={handleCreateReport}
           >
-            <Text style={styles.buttonText}>Submit Report</Text>
+            <Text style={styles.submitButtonText}>Submit Report</Text>
           </TouchableOpacity>
+
+          {/* Modal for Department Selection */}
+          <Modal
+            transparent={true}
+            animationType="slide"
+            visible={showDepartmentModal}
+            onRequestClose={() => setShowDepartmentModal(false)}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Select Department</Text>
+                <FlatList
+                  data={departments}
+                  renderItem={({ item }) => (
+                    <Pressable
+                      onPress={() => {
+                        setDepartment(item.value);
+                        setShowDepartmentModal(false);
+                      }}
+                    >
+                      <Text style={styles.modalItem}>{item.label}</Text>
+                    </Pressable>
+                  )}
+                  keyExtractor={(item) => item.value}
+                />
+                <TouchableOpacity
+                  style={styles.modalCloseButton}
+                  onPress={() => setShowDepartmentModal(false)}
+                >
+                  <Text style={styles.modalCloseText}>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+
+          {/* Modal for Status Selection */}
+          <Modal
+            transparent={true}
+            animationType="slide"
+            visible={showStatusModal}
+            onRequestClose={() => setShowStatusModal(false)}
+          >
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Select Status</Text>
+                <FlatList
+                  data={statuses}
+                  renderItem={({ item }) => (
+                    <Pressable
+                      onPress={() => {
+                        setStatus(item.value);
+                        setShowStatusModal(false);
+                      }}
+                    >
+                      <Text style={styles.modalItem}>{item.label}</Text>
+                    </Pressable>
+                  )}
+                  keyExtractor={(item) => item.value}
+                />
+                <TouchableOpacity
+                  style={styles.modalCloseButton}
+                  onPress={() => setShowStatusModal(false)}
+                >
+                  <Text style={styles.modalCloseText}>Close</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
         </SafeAreaView>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
 
-export default CreateReport;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-    backgroundColor: "white",
+    padding: 16,
+    backgroundColor: "#ffffff",
   },
   title: {
-    fontSize: 32,
-    marginBottom: 20,
-    fontFamily: "Poppins-Bold",
-  },
-  uploadImage: {
-    width: 280,
-    height: 280,
-    borderRadius: 25,
-    alignSelf: "center",
-    marginBottom: 10,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.5,
-    elevation: 5,
-  },
-  imageBackground: {
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  label: {
-    fontFamily: "Poppins-Regular",
-    fontSize: 16,
-    marginBottom: 2,
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 16,
+    textAlign: 'center',
   },
   input: {
-    height: 40,
+    height: 50,
     borderColor: "gray",
     borderWidth: 1,
     borderRadius: 5,
+    paddingLeft: 10,
     marginVertical: 5,
-    paddingHorizontal: 10,
-    fontFamily: "Poppins-Regular",
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 2,
+  },
+  uploadImage: {
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  imageBackground: {
+    width: 300,
+    height: 300,
+    borderRadius: 10,
+  },
+  label: {
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: "600",
   },
   picker: {
     height: 50,
-    width: "100%",
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 5,
+    marginVertical: 5,
+    backgroundColor: "#ffffff",
+    justifyContent: "center",
+    paddingHorizontal: 10,
+  },
+  pickerText: {
+    fontSize: 16,
+  },
+  submitButton: {
+    backgroundColor: "#007BFF",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    marginVertical: 20,
+  },
+  submitButtonText: {
+    color: "#ffffff",
+    fontWeight: "bold",
+  },
+  suggestionList: {
+    position: "absolute",
+    top: 170, // Adjust based on your layout
+    left: 16,
+    right: 16,
+    backgroundColor: "#ffffff",
     borderWidth: 1,
     borderColor: "gray",
     borderRadius: 5,
-    marginVertical: 5,
-  },
-  buttonPublish: {
-    width: 150,
-    height: 40,
-    backgroundColor: "#B7C42E",
-    alignSelf: "center",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.5,
-    elevation: 5,
-    marginTop: 20,
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 18,
-    textAlign: "center",
-    fontFamily: "Poppins-Bold",
-  },
-  suggestionItem: {
-    flexDirection: "row", // Align icon and text in a row
-    alignItems: "center",
-    padding: 10,
-    backgroundColor: "#f9f9f9",
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-  },
-  icon: {
-    marginRight: 10, // Space between icon and text
+    zIndex: 10, // Ensure suggestions are above other elements
   },
   suggestionText: {
+    padding: 10,
     fontSize: 16,
-    color: "#333",
-    fontFamily: "Poppins-Bold",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+  },
+  modalContent: {
+    width: "80%",
+    backgroundColor: "#ffffff",
+    borderRadius: 10,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  modalItem: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#cccccc",
+  },
+  modalCloseButton: {
+    marginTop: 10,
+    backgroundColor: "#007BFF",
+    borderRadius: 5,
+    padding: 10,
+    alignItems: "center",
+  },
+  modalCloseText: {
+    color: "#ffffff",
+    fontWeight: "bold",
   },
 });
 
 const darkModeStyles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-    backgroundColor: "#1e1e1e", // Dark background
+    padding: 16,
+    backgroundColor: "#222222",
   },
   title: {
-    fontSize: 32,
-    marginBottom: 20,
-    fontFamily: "Poppins-Bold",
-    color: "#fff", // White text for contrast
-  },
-  uploadImage: {
-    width: 280,
-    height: 280,
-    borderRadius: 25,
-    alignSelf: "center",
-    marginBottom: 10,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.5,
-    elevation: 5,
-  },
-  imageBackground: {
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  label: {
-    fontFamily: "Poppins-Regular",
-    fontSize: 16,
-    marginBottom: 2,
-    color: "#fff", // White text
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 16,
+    color: "#ffffff",
   },
   input: {
-    height: 40,
-    borderColor: "#555", // Darker border for input fields
+    height: 50,
+    borderColor: "#ffffff",
     borderWidth: 1,
     borderRadius: 5,
+    paddingLeft: 10,
     marginVertical: 5,
-    paddingHorizontal: 10,
-    fontFamily: "Poppins-Regular",
-    backgroundColor: "#333", // Dark input background
-    color: "#fff", // White text for input
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 2,
+    backgroundColor: "#333333",
+    color: "#ffffff",
+  },
+  label: {
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#ffffff",
   },
   picker: {
     height: 50,
-    width: "100%",
+    borderColor: "#ffffff",
     borderWidth: 1,
-    borderColor: "#555", // Darker border for picker
     borderRadius: 5,
     marginVertical: 5,
-    backgroundColor: "#333", // Dark picker background
-    color: "#fff", // White text for picker
-  },
-  buttonPublish: {
-    width: 150,
-    height: 40,
-    backgroundColor: "#B7C42E", // Accent color for publish button
-    alignSelf: "center",
+    backgroundColor: "#333333",
+    color: "#ffffff",
     justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.5,
-    elevation: 5,
-    marginTop: 20,
+    paddingHorizontal: 10,
   },
-  buttonText: {
-    color: "white",
-    fontSize: 18,
-    textAlign: "center",
-    fontFamily: "Poppins-Bold",
-  },
-  suggestionItem: {
-    flexDirection: "row",
-    alignItems: "center",
+  submitButton: {
+    backgroundColor: "#007BFF",
     padding: 10,
-    backgroundColor: "#2a2a2a", // Dark background for suggestion items
-    borderBottomWidth: 1,
-    borderBottomColor: "#555", // Darker border for suggestion items
+    borderRadius: 5,
+    alignItems: "center",
+    marginVertical: 20,
   },
-  icon: {
-    marginRight: 10,
-    color: "#B7C42E", // Accent color for icons
-  },
-  suggestionText: {
-    fontSize: 16,
-    color: "#fff", // White text for suggestions
-    fontFamily: "Poppins-Bold",
+  submitButtonText: {
+    color: "#ffffff",
+    fontWeight: "bold",
+  
   },
 });
+
+export default CreateReport;

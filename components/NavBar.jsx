@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   useWindowDimensions,
   FlatList,
+  Platform
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState, useEffect, useContext } from "react";
@@ -554,6 +555,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingTop: 10,
     zIndex: 1000,
+    ...(Platform.OS === "ios" && { top: -15 }),
   },
   cornerIcons: {
     flexDirection: "row",
