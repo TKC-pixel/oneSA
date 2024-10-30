@@ -51,10 +51,8 @@ export default function Chat({ route }) {
 
   // my state to keep track of images and files
   const [isAttachImage, setIsAttachImage] = useState(false);
-  const [isAttachFile, setIsAttachFile] = useState(false);
+
   const [imagePath, setImagePath] = useState("");
-  const [filePath, setFilePath] = useState("");
-  const [fileVisible, setFileVisible] = useState(false);
 
   const [imageVisible, setImageVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -62,26 +60,11 @@ export default function Chat({ route }) {
   const uploadImage = async () => {
     try {
       const imageName = imagePath.split("/").pop();
-      const storageRef = ref(storage, `messageImages/${userID}/${imageName}`);
+      const storageRef = ref(storage, `messageImages/${groupID}/${imageName}`);
       const response = await fetch(imagePath);
       const blob = await response.blob();
       await uploadBytes(storageRef, blob).then((snapshot) => {
         console.log("image uploaded");
-      });
-      return await getDownloadURL(storageRef);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const uploadFile = async () => {
-    try {
-      const fileName = filePath.split("/").pop();
-      const storageRef = ref(storage, `messageFiles/${userID}/${fileName}`);
-      const response = await fetch(filePath);
-      const blob = await response.blob();
-      await uploadBytes(storageRef, blob).then((snapshot) => {
-        console.log("file uploaded");
       });
       return await getDownloadURL(storageRef);
     } catch (err) {
@@ -113,27 +96,6 @@ export default function Chat({ route }) {
           console.log("Message sent successfully", `user: ${userData.name}`);
           setImagePath("");
           setIsAttachImage(false);
-        } else if (isAttachFile) {
-          const fileUrl = await uploadFile();
-          if (!fileUrl) {
-            console.error("File URL is undefined. Cannot send message.");
-            return;
-          }
-          await addDoc(collection(db, "messages"), {
-            groupID: groupID,
-            message: message.text,
-            senderId: userID,
-            timestamp: serverTimestamp(),
-            senderName: userData.name,
-            senderAvatar: userData.profileImageUrl,
-            image: "",
-            file: {
-              url: fileUrl,
-            },
-          });
-          console.log("Message sent successfully", `user: ${userData.name}`);
-          setFilePath("");
-          setIsAttachFile(false);
         } else {
           await addDoc(collection(db, "messages"), {
             groupID: groupID,
