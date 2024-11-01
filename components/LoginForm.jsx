@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react"; // Import useContext
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -16,8 +16,8 @@ import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Font from "expo-font";
 import { useNavigation } from "@react-navigation/native";
-import { db, auth } from "../FIrebaseConfig";
-import { UserContext } from "../context/UserContext";
+import { db, auth } from "../FIrebaseConfig"; // Ensure the path is correct
+import { collection, addDoc, doc, setDoc, getDoc } from "firebase/firestore"; // Import Firestore functions
 
 const { width } = Dimensions.get("window");
 
@@ -41,12 +41,12 @@ const LoginForm = () => {
     await Font.loadAsync({
       "Poppins-Regular": require("../assets/fonts/Poppins-Regular.ttf"),
       "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
-      // Other font loads...
     });
+    setFontsLoaded(true);
   };
 
   useEffect(() => {
-    loadFonts().then(() => setFontsLoaded(true));
+    loadFonts();
   }, []);
 
   const clearOnboarding = async () => {
@@ -66,6 +66,29 @@ const LoginForm = () => {
     return () => unsub();
   }, [auth, navigation]);
 
+  const logLoginEvent = async (userId) => {
+    try {
+      const userRef = doc(db, "Users", userId);
+      const userDoc = await getDoc(userRef);
+
+      if (!userDoc.exists()) {
+        // Add user to "Users" collection if they don't exist
+        await setDoc(userRef, {
+          uid: userId,
+          email: email, // you can add more user fields here if needed
+        });
+      }
+
+      // Log the login event
+      await addDoc(collection(db, "loginHistory"), {
+        userId: userId,
+        timestamp: new Date().toISOString(), // Log the time of login
+      });
+    } catch (error) {
+      console.error("Error logging login event: ", error);
+    }
+  };
+
   const handleAuthentication = async () => {
     if (!email || !password) {
       setError("Please enter both email and password.");
@@ -75,21 +98,13 @@ const LoginForm = () => {
     setError("");
 
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Fetch user data from your database (assumed to be Firestore)
-      const userDoc = await db.collection("users").doc(user.uid).get();
-      if (userDoc.exists) {
-        const userData = { ...userDoc.data(), uid: user.uid };
-        console.log("User data fetched from Firestore: ", userData);
-        await AsyncStorage.setItem("isLoggedIn", "true");
-      }
-      
+      // Log the login event and store user UID if new
+      await logLoginEvent(user.uid);
+
+      await AsyncStorage.setItem("isLoggedIn", "true");
       setError("");
       navigation.navigate("Welcome");
     } catch (error) {
@@ -171,36 +186,9 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 30,
   },
-  logo: {
-    height: 120,
-    width: "100%",
-    alignSelf: "center",
-  },
-  header: {
-    alignItems: "center",
-    marginBottom: 20,
-    marginTop: 20,
-  },
-  headerTitle: {
-    fontWeight: "bold",
-    fontSize: 25,
-    fontFamily: "Poppins-Bold",
-  },
-  headerSubtitle: {
-    width: width - 40,
-    fontSize: 20,
-    textAlign: "center",
-    fontFamily: "Poppins-Regular",
-  },
   container: {
     alignItems: "center",
     backgroundColor: "white",
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 40,
-    textAlign: "center",
-    fontFamily: "Poppins-Bold",
   },
   input: {
     width: width - 40,
@@ -225,14 +213,6 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Bold",
     color: "white",
     fontSize: 16,
-  },
-  signupButton: {
-    marginTop: 10,
-  },
-  signupText: {
-    color: "#B7C42E",
-    fontSize: 16,
-    fontFamily: "Poppins-SemiBold",
   },
   forgotPassword: {
     marginRight: width - 220,
@@ -264,20 +244,6 @@ const styles = StyleSheet.create({
   },
   eyeIcon: {
     marginLeft: 10,
-  },
-  socialButtonsContainer: {
-    marginTop: 20, // Adjusted from 5%
-  },
-  socialButton: {
-    marginBottom: 15, // Adjusted from 5%
-  },
-  socialButtonText: {
-    color: "#B7C42E",
-    fontSize: 16,
-    fontFamily: "Poppins-SemiBold",
-  },
-  buttonText: {
-    fontFamily: "Poppins-Regular",
   },
   clearOnboarding: {
     backgroundColor: "#B7C42E",

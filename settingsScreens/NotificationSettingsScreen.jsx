@@ -65,7 +65,7 @@ const NotificationSettingsScreen = () => {
         />
       </View>
 
-      <TouchableOpacity style={[styles.button, { backgroundColor: theme === 'dark' ? '#0056b3' : '#007bff' }]} onPress={handleSaveSettings}>
+      <TouchableOpacity style={[styles.button, { backgroundColor: theme === 'dark' ? '#B7C42E' : '#B7C42E' }]} onPress={handleSaveSettings}>
         <Text style={styles.buttonText}>Save Settings</Text>
       </TouchableOpacity>
       </View>

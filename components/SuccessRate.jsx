@@ -32,7 +32,7 @@ const SuccessRate = ({ dept, id, prov }) => {
   const [scrapedData2, setScrapedData2] = useState({ links: [] });
   const cssExtractor =
     "%7B%22tables%22%3A%22table%22%2C%20%22rows%22%3A%22tr%22%2C%20%22cells%22%3A%22td%22%2C%20%22headers%22%3A%22th%22%7D";
-  const apiKey = "e4a5f7fae9a8479a1897ea2e74f6c32668c5955a";
+  const apiKey = "d8786ccdccf70e7346a7af7f7d8edaa7f2972c3e";
   const targetURL = `https://provincialgovernment.co.za/units/financial/${id[code]}/${current}/${department}`;
   const [disp, setDisp] = useState("none");
   const [disp2, setDisp2] = useState("none");
