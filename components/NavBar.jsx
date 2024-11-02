@@ -22,7 +22,9 @@ import { db } from "../FIrebaseConfig"; // Correct import
 import * as Location from "expo-location";
 import { ThemeContext } from "../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import * as Notifications from "expo-notifications";
+import { UserContext } from "../context/UserContext";
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const R = 6371; // Radius of the Earth in km
   const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -45,6 +47,7 @@ const NavBar = ({ userInfo }) => {
   const [nearbyProjects, setNearbyProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentLocation, setCurrentLocation] = useState(null);
+  const {userData} = useContext(UserContext)
   const userArray = Array.isArray(userInfo) ? userInfo : [userInfo || {}];
   useEffect(() => {
     const fetchProjects = async () => {
@@ -213,6 +216,8 @@ const NavBar = ({ userInfo }) => {
     }
   };
 
+  
+
   return (
     <SafeAreaView style={[styles.NavTop, { position: "relative" }]}>
       <Image style={styles.favIcon} source={favicon} />
@@ -228,15 +233,16 @@ const NavBar = ({ userInfo }) => {
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={toggleDropdown}>
-          <Image
-            style={styles.favIcon}
-            source={{
-              uri:
-                userArray[0] && userArray[0].profileImageUrl
-                  ? userArray[0].profileImageUrl
-                  : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
-            }}
-          />
+         <Image
+  style={styles.favIcon}
+  source={{
+    uri:
+      userData.profileImageUrl
+        ? userData.profileImageUrl
+        : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
+  }}
+/>
+
         </TouchableOpacity>
       </View>
 
@@ -255,14 +261,14 @@ const NavBar = ({ userInfo }) => {
             }
           >
             <Image
-              style={styles.favIcon}
-              source={{
-                uri:
-                  userArray && userArray[0].profileImageUrl
-                    ? userArray[0].profileImageUrl
-                    : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
-              }}
-            />
+  style={styles.favIcon}
+  source={{
+    uri:
+      userData.profileImageUrl
+        ? userData.profileImageUrl
+        : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
+  }}
+/>
 
             <Text
               style={[
@@ -270,9 +276,7 @@ const NavBar = ({ userInfo }) => {
                 { fontFamily: "Poppins-Bold" },
               ]}
             >
-              {Array.isArray(userArray) && userArray.length > 0
-                ? `${userArray[0].name} ${userArray[0].surname}`
-                : "User"}
+              {userData.name}  {userData.surname}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity

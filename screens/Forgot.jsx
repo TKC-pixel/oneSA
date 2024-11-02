@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  SafeAreaView,
   Image,
   StyleSheet,
   TextInput,
@@ -11,7 +10,7 @@ import {
 import { initializeApp } from "firebase/app";
 import { getAuth, sendPasswordResetEmail } from "@firebase/auth";
 import { useState } from "react";
-
+import { SafeAreaView } from "react-native-safe-area-context";
 const firebaseConfig = {
   apiKey: process.env.API_KEY,
   authDomain: process.env.AUTH_DOMAIN,
@@ -86,19 +85,21 @@ export default function Forgot() {
 const styles = StyleSheet.create({
   logo: {
     height: 100,
-    width: 100,
+    width: 200,
     alignSelf: "center",
   },
   headerText: {
     fontSize: 24,
-    fontWeight: "bold",
-    marginTop: 20,
+    // fontWeight: "bold",
+    marginTop: 15,
+    fontFamily: "Poppins-SemiBold"
   },
   bannerImage: {
     height: 200,
     width: "100%",
     marginTop: 40,
     marginBottom: 40,
+    resizeMode: "contain"
   },
   input: {
     borderWidth: 1,
@@ -107,6 +108,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: "80%",
     marginBottom: 20,
+    fontFamily: "Poppins-Regular"
   },
   loginButton: {
     backgroundColor: "#B7C42E",
@@ -119,5 +121,6 @@ const styles = StyleSheet.create({
   loginButtonText: {
     color: "white",
     fontSize: 16,
+    fontFamily: "Poppins-Bold"
   },
 });

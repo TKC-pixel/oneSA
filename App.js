@@ -36,6 +36,12 @@ import LoadingScreen from "./components/LoadingScreen";
 import DebateRoom from "./screens/DebateRoom";
 import UpgradeMembership from "./screens/UpgradeMembership";
 import EditProject from "./screens/EditProject";
+import ResourceHub from "./screens/ResourceHub";
+import NewsPage from "./screens/NewsPage";
+import NewsDetails from "./screens/NewsDetails";
+import Downloads from "./screens/Downloads";
+import Guides from "./screens/Guides";
+import MinisterToDo from "./screens/MinisterToDo";
 
 const Stack = createNativeStackNavigator();
 
@@ -315,6 +321,36 @@ export default function App() {
               name="EditProject"
               options={{ headerShown: false }}
               component={EditProject}
+            />
+            <Stack.Screen
+              name="ResourceHub"
+              options={{ headerShown: false }}
+              component={ResourceHub}
+            />
+            <Stack.Screen
+              name="NewsPage"
+              options={{ headerShown: false }}
+              component={NewsPage}
+            />
+            <Stack.Screen
+              name="NewsDetails"
+              options={{ headerShown: false }}
+              component={NewsDetails}
+            />
+            <Stack.Screen
+              name="Downloads"
+              options={{ headerShown: false }}
+              component={Downloads}
+            />
+            <Stack.Screen
+              name="Guides"
+              options={{ headerShown: false }}
+              component={Guides}
+            />
+            <Stack.Screen
+              name="MinisterToDo"
+              options={{ headerShown: false }}
+              component={MinisterToDo}
             />
           </Stack.Navigator>
         </NavigationContainer>

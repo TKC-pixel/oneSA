@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
-  ActivityIndicator, // Import ActivityIndicator
+  TextInput, // Import TextInput
 } from "react-native";
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -20,15 +20,13 @@ import { UserContext } from "../context/UserContext";
 
 const MinistersComponent = () => {
   const [ministers, setMinisters] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(""); // Add search term state
   const navigation = useNavigation();
   const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
-  const {userData} = useContext(UserContext)
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { userData } = useContext(UserContext);
 
-
-// Specify distance threshold (in kilometers)
-const distanceThreshold = 1;
   // Load custom fonts
   const loadFonts = async () => {
     await Font.loadAsync({
@@ -42,7 +40,7 @@ const distanceThreshold = 1;
     loadFonts();
   }, []);
 
-  const { theme } = useContext(ThemeContext); // Access theme from context
+  const { theme } = useContext(ThemeContext);
 
   const fetchMinisters = async () => {
     try {
@@ -52,7 +50,7 @@ const distanceThreshold = 1;
     } catch (err) {
       setError("Failed to load ministers.");
     } finally {
-      setLoading(false); // Set loading to false after fetching
+      setLoading(false);
     }
   };
 
@@ -71,7 +69,7 @@ const distanceThreshold = 1;
         theme === "light" ? styles.lightCard : styles.darkCard,
       ]}
       onPress={() => handlePress(item)}
-      accessible={true} // Accessibility
+      accessible={true}
       accessibilityLabel={`View details for ${item.ministerName}`}
     >
       <Image
@@ -99,20 +97,21 @@ const distanceThreshold = 1;
     </TouchableOpacity>
   );
 
+  // Filter ministers based on search term
+  const filteredMinisters = ministers.filter((minister) =>
+    minister.ministerName.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (!fontsLoaded) {
-    return (
-      <LoadingScreen/>
-    ); // Loading indicator
+    return <LoadingScreen />;
   }
 
   if (loading) {
-    return (
-      <LoadingScreen/>
-    ); // Loading state
+    return <LoadingScreen />;
   }
 
   if (error) {
-    return <Text style={styles.errorText}>{error}</Text>; // Display error
+    return <Text style={styles.errorText}>{error}</Text>;
   }
 
   return (
@@ -122,9 +121,20 @@ const distanceThreshold = 1;
         styles.fullWidth,
       ]}
     >
-      <NavBar userInfo={userData}/>
+      <NavBar userInfo={userData} />
+      <TextInput
+        style={[
+          styles.searchInput,
+          theme === "light" ? styles.lightCard : styles.darkCard,
+          theme === "light" ? styles.lightText : styles.darkText,
+        ]}
+        placeholder="Search by name"
+        placeholderTextColor={theme === "light" ? "#333" : "#ccc"}
+        value={searchTerm}
+        onChangeText={setSearchTerm}
+      />
       <FlatList
-        data={ministers}
+        data={filteredMinisters}
         keyExtractor={(item) => item.ministerID}
         renderItem={renderMinister}
         showsVerticalScrollIndicator={false}
@@ -133,6 +143,7 @@ const distanceThreshold = 1;
     </View>
   );
 };
+
 export default MinistersComponent;
 
 const styles = StyleSheet.create({
@@ -145,6 +156,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
     margin: 20,
   },
+  searchInput: {
+    padding: 10,
+    borderRadius: 10,
+    marginVertical: 10,
+    fontSize: 16,
+    fontFamily: "Poppins-SemiBold"
+  },
   ministerCard: {
     padding: 16,
     marginVertical: 10,
@@ -156,8 +174,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 3,
-    marginHorizontal: 0, // Set horizontal margin to 0 to remove space
-    width: "100%", // Ensure the card takes up the full width
+    width: "100%",
   },
   ministerProfileImage: {
     width: 60,
@@ -176,7 +193,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Poppins-Regular",
   },
-  // Light theme styles
   lightBackground: {
     backgroundColor: "#f9f9f9",
   },
@@ -188,7 +204,6 @@ const styles = StyleSheet.create({
   lightText: {
     color: "#333",
   },
-  // Dark theme styles
   darkBackground: {
     backgroundColor: "#222",
   },
@@ -201,7 +216,6 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   flatListContainer: {
-    paddingHorizontal: 0, // Remove padding around FlatList
-    marginHorizontal: 0, // Remove any margin around FlatList
+    paddingHorizontal: 0,
   },
 });

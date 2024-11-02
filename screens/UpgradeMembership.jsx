@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
   featuresTitle: {
     fontSize: 22,
     fontFamily: "Poppins-SemiBold",
-    color: "#007bff",
+    color: "#B7C42E",
     marginBottom: 5,
   },
   feature: {
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     marginVertical: 15,
   },
   button: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#B7C42E",
     paddingVertical: 15,
     paddingHorizontal: 25,
     borderRadius: 10,
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "#fff",
-    fontWeight: "bold",
+    // fontWeight: "bold",
     fontSize: 18,
     fontFamily: "Poppins-Bold",
   },
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 24,
     marginBottom: 20,
-    fontWeight: "bold",
+    // fontWeight: "bold",
     fontFamily: "Poppins-Bold",
   },
   input: {
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
   },
   payButton: {
-    backgroundColor: "#28a745",
+    backgroundColor: "#B7C42E",
     paddingVertical: 15,
     paddingHorizontal: 25,
     borderRadius: 10,
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
   },
   payButtonText: {
     color: "#fff",
-    fontWeight: "bold",
+    // fontWeight: "bold",
     fontSize: 18,
     fontFamily: "Poppins-Bold",
   },
@@ -295,10 +295,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
     alignItems: "center",
     width: "100%",
+
   },
   closeButtonText: {
     color: "#fff",
-    fontWeight: "bold",
+    // fontWeight: "bold",
     fontSize: 18,
     fontFamily: "Poppins-Bold",
   },
@@ -335,7 +336,7 @@ const darkModeStyles = StyleSheet.create({
   featuresTitle: {
     fontSize: 22,
     fontFamily: "Poppins-SemiBold",
-    color: "#8ab4f8",
+    color: "#B7C42E",
     marginBottom: 5,
   },
   feature: {
@@ -357,7 +358,7 @@ const darkModeStyles = StyleSheet.create({
   modalTitle: {
     fontSize: 24,
     marginBottom: 20,
-    fontWeight: "bold",
+    // fontWeight: "bold",
     fontFamily: "Poppins-Bold",
     color: "#f1f1f1",
   },
