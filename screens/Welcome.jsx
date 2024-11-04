@@ -513,7 +513,7 @@ export default function Welcome({ navigation }) {
                   ? styles.reportButton
                   : darkModeStyles.reportButton
               }
-              onPress={() => navigation.navigate(userData.isMinister ? "MinisterToDo" : "Report")}
+              onPress={() => navigation.navigate(userData.isMinister ? "MinisterToDo" : "ResourceHub")}
             >
               <Text
                 style={

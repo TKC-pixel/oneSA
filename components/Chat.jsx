@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   Modal,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState, useCallback, useContext } from "react";
 import {
@@ -48,6 +49,7 @@ export default function Chat({ route }) {
   const [messages, setMessages] = useState([]);
   const [showInput, setShowInput] = useState(true);
   const { theme } = useContext(ThemeContext);
+  const [isSending, setIsSending] = useState(false);
 
   // my state to keep track of images and files
   const [isAttachImage, setIsAttachImage] = useState(false);
@@ -74,13 +76,16 @@ export default function Chat({ route }) {
 
   const onSend = useCallback(
     async (newMessages = []) => {
+      setIsSending(true);
+
       const message = newMessages[0];
 
       try {
         if (isAttachImage) {
           const imgURL = await uploadImage();
           if (!imgURL) {
-            console.error("image URL is undefined. Cannot send message.");
+            console.error("Image URL is undefined. Cannot send message.");
+            setIsSending(false);
             return;
           }
           await addDoc(collection(db, "messages"), {
@@ -93,7 +98,6 @@ export default function Chat({ route }) {
             image: imgURL,
             file: "",
           });
-          console.log("Message sent successfully", `user: ${userData.name}`);
           setImagePath("");
           setIsAttachImage(false);
         } else {
@@ -107,10 +111,12 @@ export default function Chat({ route }) {
             image: "",
             file: "",
           });
-          console.log("Message sent successfully", `user: ${userData.name}`);
         }
+        console.log("Message sent successfully");
       } catch (error) {
         console.error("Error sending message:", error);
+      } finally {
+        setIsSending(false);
       }
     },
     [isAttachImage, imagePath]
@@ -219,29 +225,36 @@ export default function Chat({ route }) {
       <View
         style={{ flexDirection: "row", alignItems: "center", marginRight: 10 }}
       >
-        {/* Image Icon */}
-        <TouchableOpacity style={{ marginHorizontal: 10 }} onPress={pickImage}>
-          <Ionicons
-            name="image-outline"
-            size={25}
-            // color=""
+        {isSending && isAttachImage ? (
+          <ActivityIndicator
+            size="small"
+            color="gray"
+            style={{ marginRight: 10, marginBottom: 10 }}
           />
-        </TouchableOpacity>
+        ) : (
+          <>
+            {/* Image Icon */}
+            <TouchableOpacity
+              style={{ marginHorizontal: 10 }}
+              onPress={pickImage}
+            >
+              <Ionicons name="image-outline" size={25} />
+            </TouchableOpacity>
 
-        {/* Send Button */}
-        <Send
-          {...props}
-          containerStyle={{ justifyContent: "center", alignItems: "center" }}
-        >
-          <View>
-            <Ionicons
-              name="send-outline"
-              // style={{  alignSelf: "center" }}
-              size={25}
-              color="green"
-            />
-          </View>
-        </Send>
+            {/* Send Button */}
+            <Send
+              {...props}
+              containerStyle={{
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <View>
+                <Ionicons name="send-outline" size={25} color="green" />
+              </View>
+            </Send>
+          </>
+        )}
       </View>
     );
   };
