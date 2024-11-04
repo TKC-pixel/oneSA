@@ -66,6 +66,8 @@ const Profile = () => {
     }
   }, [userData]);
 
+  console.log(userData)
+
   const loadFonts = async () => {
     await Font.loadAsync({
       "Poppins-Regular": require("../assets/fonts/Poppins-Regular.ttf"),

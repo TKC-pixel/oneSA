@@ -47,8 +47,10 @@ const NavBar = ({ userInfo }) => {
   const [nearbyProjects, setNearbyProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentLocation, setCurrentLocation] = useState(null);
-  const {userData} = useContext(UserContext)
+  const { userData } = useContext(UserContext) || {};
+
   const userArray = Array.isArray(userInfo) ? userInfo : [userInfo || {}];
+  // console.log("NavBar User Data: ", userData)
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -57,7 +59,7 @@ const NavBar = ({ userInfo }) => {
           (doc) => doc.data().ministerDepartment.projects || []
         );
         setProjects(projectsData);
-        console.log("Fetched projects: ", projectsData);
+        // console.log("Fetched projects: ", projectsData);
       } catch (error) {
         console.error("Error fetching projects: ", error);
       } finally {
@@ -71,7 +73,7 @@ const NavBar = ({ userInfo }) => {
 
       const { coords } = await Location.getCurrentPositionAsync({});
       setCurrentLocation(coords);
-      console.log("Current Location: ", coords);
+      // console.log("Current Location: ", coords);
     };
 
     fetchProjects();
@@ -120,9 +122,9 @@ const NavBar = ({ userInfo }) => {
             parseFloat(project.location.longitude)
           );
 
-          console.log(
-            `Checking project: ${project.projectName}, Distance: ${distance} km`
-          );
+          // console.log(
+          //   `Checking project: ${project.projectName}, Distance: ${distance} km`
+          // );
 
           return distance <= 5; // Adjust distance threshold
         }
@@ -559,7 +561,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingTop: 10,
     zIndex: 1000,
-    ...(Platform.OS === "ios" && { top: -15 }),
+    ...(Platform.OS === "ios" && { top: -15, marginBottom: -50 }),
   },
   cornerIcons: {
     flexDirection: "row",

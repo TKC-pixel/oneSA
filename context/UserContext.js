@@ -24,6 +24,8 @@ export const UserProvider = ({ children }) => {
     reports: null,
   });
 
+  console.log("Context Fetched: ", userData)
+
   const updateLocationPermission = async (newPermission) => {
     try {
       await AsyncStorage.setItem('locationPermission', newPermission);
@@ -86,7 +88,7 @@ export const UserProvider = ({ children }) => {
               surname: data.surname || "",
               phone: data.phone || "",
               isMinister: data.isMinister || false,
-              ministerID: data.isMinister ? data.ministerID : null, // Conditionally include ministerID
+              ministerID: data.isMinister ? data.ministerID : null, 
               bio: data.bio || "",
               coverPic: data.coverPic || "",
               coverImageUrl: data.coverImageUrl || "",
@@ -103,7 +105,7 @@ export const UserProvider = ({ children }) => {
         return () => unsubscribeSnapshot();
       } else {
         console.log("User not logged in");
-        setUserData(null);
+        setUserData({}); 
       }
     });
 

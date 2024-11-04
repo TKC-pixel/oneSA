@@ -44,7 +44,13 @@ export default function Welcome({ navigation }) {
   const [scrapedData, setScrapedData] = useState({ links: [] });
   const [provinceDepartments, setProvinceDepartments] = useState([]);
   const { theme } = useContext(ThemeContext);
-  const { userData, updateLocationPermission, locationPermissions, setUserData, dataAccess } = useContext(UserContext);
+  const {
+    userData,
+    updateLocationPermission,
+    locationPermissions,
+    setUserData,
+    dataAccess,
+  } = useContext(UserContext);
   const [deptCodes, setDeptCodes] = useState([]);
 
   const apiKey = "e4a5f7fae9a8479a1897ea2e74f6c32668c5955a";
@@ -302,16 +308,14 @@ export default function Welcome({ navigation }) {
   const currentProvince =
     getProvinceFromCity(locationData)?.toLowerCase() ||
     "checking location permissions";
-    let userInfo = null; // Initialize userInfo to null
-    if (Array.isArray(userData) && userData.length > 0) {
-        userInfo = userData[0]; // Assign the first element if the array is not empty
-    }
-    
+  let userInfo = null; // Initialize userInfo to null
+  if (Array.isArray(userData) && userData.length > 0) {
+    userInfo = userData[0]; // Assign the first element if the array is not empty
+  }
+
   return (
-    <View
-      style={theme == "light" ? styles.safeArea : darkModeStyles.safeArea}
-    >
-      <ScrollView>
+    <View style={theme == "light" ? styles.safeArea : darkModeStyles.safeArea}>
+      <View>
         <NavBar userInfo={userInfo} />
 
         <Text
@@ -450,14 +454,14 @@ export default function Welcome({ navigation }) {
               theme == "light" ? styles.budgetCard : darkModeStyles.budgetCard
             }
             onPress={() => {
-              if (deptCodes.length > 0) {  
+              if (deptCodes.length > 0) {
                 navigation.navigate("Budget", {
                   dept: provinceDepartments,
                   id: deptCodes,
                   prov: currentProvince,
                 });
               } else {
-                alert('Check for location permissions.');
+                alert("Check for location permissions.");
               }
             }}
           >
@@ -513,7 +517,11 @@ export default function Welcome({ navigation }) {
                   ? styles.reportButton
                   : darkModeStyles.reportButton
               }
-              onPress={() => navigation.navigate(userData.isMinister ? "MinisterToDo" : "Report")}
+              onPress={() =>
+                navigation.navigate(
+                  userData[0].isMinister ? "MinisterToDo" : "ResourceHub"
+                )
+              }
             >
               <Text
                 style={
@@ -522,8 +530,7 @@ export default function Welcome({ navigation }) {
                     : darkModeStyles.buttonTextReport
                 }
               >
-              {userData[0]?.isMinister ? "Minister To Do" : "Resource Hub"}
-
+                {userData[0]?.isMinister ? "Minister To Do" : "Resource Hub"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -541,7 +548,7 @@ export default function Welcome({ navigation }) {
           </Text>
           <AnimatedFlatList />
         </View>
-      </ScrollView>
+      </View>
     </View>
   );
 }
