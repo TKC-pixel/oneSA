@@ -76,7 +76,7 @@ export default function Chat({ route }) {
 
   const onSend = useCallback(
     async (newMessages = []) => {
-      setIsSending(true); 
+      setIsSending(true);
 
       const message = newMessages[0];
 
@@ -116,7 +116,7 @@ export default function Chat({ route }) {
       } catch (error) {
         console.error("Error sending message:", error);
       } finally {
-        setIsSending(false); 
+        setIsSending(false);
       }
     },
     [isAttachImage, imagePath]
