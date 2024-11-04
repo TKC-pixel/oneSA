@@ -99,7 +99,7 @@ const MinistersComponent = () => {
 
   // Filter ministers based on search term
   const filteredMinisters = ministers.filter((minister) =>
-    minister.ministerName.toLowerCase().includes(searchTerm.toLowerCase())
+    minister.ministerName && minister.ministerName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (!fontsLoaded) {

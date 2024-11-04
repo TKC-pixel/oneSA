@@ -47,7 +47,7 @@ export default function Chat({ route }) {
   const userID = auth.currentUser.uid;
   const { groupID, debatename } = route.params;
   const [messages, setMessages] = useState([]);
-  const [showInput, setShowInput] = useState(true);
+  const [showInput, setShowInput] = useState(userData.isVerified);
   const { theme } = useContext(ThemeContext);
   const [isSending, setIsSending] = useState(false);
 
@@ -235,7 +235,7 @@ export default function Chat({ route }) {
           <>
             {/* Image Icon */}
             <TouchableOpacity
-              style={{ marginHorizontal: 10 }}
+              style={{ marginHorizontal: 10, marginBottom: 4 }}
               onPress={pickImage}
             >
               <Ionicons name="image-outline" size={25} />
@@ -419,7 +419,6 @@ export default function Chat({ route }) {
         renderChatFooter={renderChatFooter}
         renderAvatar={renderAvatar}
         renderMessageImage={renderMessageImage}
-        alwaysShowSend
       />
       {imageVisible && selectedImage && (
         <ImageViewer

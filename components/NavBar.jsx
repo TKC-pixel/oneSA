@@ -54,7 +54,7 @@ const NavBar = ({ userInfo }) => {
       try {
         const querySnapshot = await getDocs(collection(db, "ministers"));
         const projectsData = querySnapshot.docs.flatMap(
-          (doc) => doc.data().ministerDepartment.projects || []
+          (doc) => doc.data().ministerDepartment && doc.data().ministerDepartment.projects || []
         );
         setProjects(projectsData);
 
