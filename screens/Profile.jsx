@@ -243,7 +243,12 @@ const Profile = () => {
               </View>
             )}
             ListEmptyComponent={
-              <Text style={{ color: theme === "light" ? "black" : "white" }}>
+              <Text
+                style={{
+                  color: theme === "light" ? "black" : "white",
+                  fontFamily: "Poppins-Regular",
+                }}
+              >
                 No reports available
               </Text>
             }
@@ -283,7 +288,13 @@ const Profile = () => {
               </View>
             )}
             ListEmptyComponent={
-              <Text style={{ color: theme === "light" ? "black" : "white" }}>
+              <Text
+                style={{
+                  color: theme === "light" ? "black" : "white",
+                  fontFamily: "Poppins-Regular",
+                  marginLeft: 18,
+                }}
+              >
                 No reports available
               </Text>
             }
@@ -352,6 +363,7 @@ const styles = StyleSheet.create({
   labelBio: {
     alignSelf: "center",
     fontFamily: "Poppins-Regular",
+    textAlign: "center",
   },
   editButton: {
     position: "absolute",

@@ -88,23 +88,27 @@ const SignUpForm = () => {
           setMinisterError("Minister ID is required for minister signups.");
           return;
         }
-
+  
         const ministerExists = await validateMinisterID(ministerID);
         if (!ministerExists) {
           setMinisterError("Invalid Minister ID.");
           return;
         }
-
+  
         setIsMinister(true);
       } else {
         setIsMinister(false);
       }
-
+  
       try {
-        await createUserWithEmailAndPassword(auth, email, password);
+        // Create user and get the user object
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const userId = userCredential.user.uid; // Get the user ID
+  
         await AsyncStorage.setItem("user", JSON.stringify({ email }));
-
-        await setDoc(doc(db, "Users", auth.currentUser.uid), {
+  
+        // Store user data in Users collection
+        await setDoc(doc(db, "Users", userId), {
           name,
           surname,
           bio: null,
@@ -118,7 +122,14 @@ const SignUpForm = () => {
           reports: [],
           ...(isMinister && { ministerID }),
         });
-
+  
+        // Store login history
+        await setDoc(doc(db, "loginHistory", userId), {
+          lastLogin: new Date(),
+          email,
+          userId, // Include user ID
+        });
+  
         alert("Registration successful");
         await AsyncStorage.setItem("isLoggedIn", "true");
         navigation.navigate("Home");
@@ -129,6 +140,7 @@ const SignUpForm = () => {
       alert("Please fill all fields and make sure passwords match.");
     }
   };
+  
 
   const loadFonts = async () => {
     await Font.loadAsync({

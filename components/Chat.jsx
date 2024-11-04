@@ -135,12 +135,26 @@ export default function Chat({ route }) {
           {...props}
           wrapperStyle={{
             left: {
-              backgroundColor: "#e0e0e0",
+              backgroundColor: "#fff",
               borderRadius: 10,
+              // Shadow for iOS
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.2,
+              shadowRadius: 4,
+              // Shadow for Android
+              elevation: 4,
             },
             right: {
               backgroundColor: "#B7C42E",
               borderRadius: 10,
+              // Shadow for iOS
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.2,
+              shadowRadius: 4,
+              // Shadow for Android
+              elevation: 4,
             },
           }}
           textStyle={{
@@ -169,6 +183,7 @@ export default function Chat({ route }) {
           paddingHorizontal: 10,
           borderRadius: 20,
         }}
+        textInputStyle={{ fontFamily: "Poppins-Regular" }}
       />
     );
   };
@@ -180,10 +195,10 @@ export default function Chat({ route }) {
       <View>
         <Text
           style={{
-            color: "grey",
-            fontStyle: "italic",
+            color: "#000",
+            // fontStyle: "italic",
             marginLeft: 10,
-            fontFamily: "Poppins-Regular",
+            fontFamily: "Poppins-Bold",
           }}
         >
           {isCurrentUser ? "You" : currentMessage.user.name}
@@ -191,8 +206,8 @@ export default function Chat({ route }) {
         <MessageText
           {...props}
           textStyle={{
-            left: { color: "black" },
-            right: { color: "white" },
+            left: { color: "black", fontFamily: "Poppins-Regular" },
+            right: { color: "white", fontFamily: "Poppins-Regular" },
           }}
         />
       </View>
@@ -205,27 +220,23 @@ export default function Chat({ route }) {
         style={{ flexDirection: "row", alignItems: "center", marginRight: 10 }}
       >
         {/* Image Icon */}
-        <TouchableOpacity onPress={pickImage}>
-          <Icon
-            type="font-awesome"
-            name="image"
-            style={{
-              marginBottom: 10,
-              marginRight: 10,
-              transform: [{ rotateY: "180deg" }],
-            }}
+        <TouchableOpacity style={{ marginHorizontal: 10 }} onPress={pickImage}>
+          <Ionicons
+            name="image-outline"
             size={25}
-            color="blue"
+            // color=""
           />
         </TouchableOpacity>
 
         {/* Send Button */}
-        <Send {...props}>
+        <Send
+          {...props}
+          containerStyle={{ justifyContent: "center", alignItems: "center" }}
+        >
           <View>
-            <Icon
-              type="font-awesome"
-              name="send"
-              style={{ marginBottom: 10 }}
+            <Ionicons
+              name="send-outline"
+              // style={{  alignSelf: "center" }}
               size={25}
               color="green"
             />
@@ -272,7 +283,8 @@ export default function Chat({ route }) {
             onPress={() => setImagePath("")}
             style={styles.buttonFooterChatImg}
           >
-            <Text style={styles.textFooterChat}>X</Text>
+            <Ionicons name="close-circle-outline" size={25} color="red" />
+            {/* <Text style={styles.textFooterChat}>X</Text> */}
           </TouchableOpacity>
         </View>
       );
@@ -476,7 +488,14 @@ const styles = StyleSheet.create({
     borderColor: "black",
     left: 66,
     top: -4,
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
+    backgroundColor: "#fff",
+    // Shadow for iOS
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    // Shadow for Android
+    elevation: 5,
   },
   textFooterChat: {
     color: "red",

@@ -308,7 +308,7 @@ export default function Welcome({ navigation }) {
     }
     
   return (
-    <SafeAreaView
+    <View
       style={theme == "light" ? styles.safeArea : darkModeStyles.safeArea}
     >
       <ScrollView>
@@ -513,7 +513,7 @@ export default function Welcome({ navigation }) {
                   ? styles.reportButton
                   : darkModeStyles.reportButton
               }
-              onPress={() => navigation.navigate("Report")}
+              onPress={() => navigation.navigate(userData.isMinister ? "MinisterToDo" : "Report")}
             >
               <Text
                 style={
@@ -522,7 +522,8 @@ export default function Welcome({ navigation }) {
                     : darkModeStyles.buttonTextReport
                 }
               >
-                Report Issues
+              {userData[0]?.isMinister ? "Minister To Do" : "Resource Hub"}
+
               </Text>
             </TouchableOpacity>
           </View>
@@ -541,7 +542,7 @@ export default function Welcome({ navigation }) {
           <AnimatedFlatList />
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 const styles = StyleSheet.create({

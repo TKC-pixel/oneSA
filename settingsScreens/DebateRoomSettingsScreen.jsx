@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   lightButton: {
-    backgroundColor: '#007bff', // Primary button color for light mode
+    backgroundColor: '#B7C42E', // Primary button color for light mode
   },
   darkButton: {
     backgroundColor: '#0056b3', // Darker primary button color for dark mode

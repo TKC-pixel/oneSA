@@ -112,15 +112,16 @@ const EditProfile = () => {
         profileImageUrl: formData.profileImageUrl || null,
         coverImageUrl: formData.coverImageUrl || null,
       };
-
+  
       await updateDoc(userRef, updatedData);
-      setUserData({ ...formData });
+      setUserData((prev) => ({ ...prev, ...updatedData })); // Ensure userData is updated
       alert("Profile updated successfully!");
     } catch (error) {
       console.error("Error updating profile: ", error);
       alert("Failed to update profile.");
     }
   };
+  
 
   return (
     <SafeAreaView style={theme == 'light'? styles.safeArea: darkModeStyles.safeArea}>

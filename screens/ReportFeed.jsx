@@ -6,23 +6,21 @@ import {
   TouchableOpacity,
   Image,
   FlatList,
-  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../FIrebaseConfig"; // Ensure Firebase is properly set up
-import { SafeAreaView } from "react-native-safe-area-context";
+import { db } from "../FIrebaseConfig"; 
 import LoadingScreen from "../components/LoadingScreen";
 import { ThemeContext } from "../context/ThemeContext";
 import NavBar from "../components/NavBar";
 import { UserContext } from "../context/UserContext";
+
 const ReportFeed = ({ navigation }) => {
   const { theme } = useContext(ThemeContext); // Access theme from context
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true); // State to manage loading
-  const favicon = require("../assets/images/Favicon.png");
   const { userData } = useContext(UserContext);
-  
+
   // Listen to real-time Firestore updates
   useEffect(() => {
     const reportsCollection = collection(db, "reports");
@@ -52,7 +50,7 @@ const ReportFeed = ({ navigation }) => {
           ? "#B60000"
           : "transparent", // Default to transparent if sentiment doesn't match
       borderRadius: 4,
-      padding: 1,
+      padding: 4,
       width: 63,
       justifyContent: "center",
       alignItems: "center",
@@ -62,13 +60,21 @@ const ReportFeed = ({ navigation }) => {
       <TouchableOpacity
         onPress={() => navigation.navigate("UserReportDetails", { item })}
         key={item.id}
-        style={[
+        style={[ 
           styles.card,
           theme === "dark" ? styles.cardDark : styles.cardLight,
         ]}
       >
         <View style={styles.profileContainer}>
-          <Image source={favicon} style={styles.profImage} />
+          {item.profileImage ? (
+            <Image source={{ uri: item.profileImage }} style={styles.profImage} />
+          ) : (
+            <Ionicons 
+              name="person-circle-outline" 
+              size={40} 
+              color={theme === "dark" ? "#fff" : "#808080"} // Grey in light mode, white in dark mode
+            />
+          )}
           <Text
             style={[
               styles.name,
@@ -88,6 +94,8 @@ const ReportFeed = ({ navigation }) => {
                 styles.reportTitle,
                 theme === "dark" ? styles.textDark : styles.textLight,
               ]}
+              numberOfLines={1} // Limit title to one line
+              ellipsizeMode="tail" // Show ellipsis if title is too long
             >
               {item.title || "No Title"}
             </Text>
@@ -102,10 +110,11 @@ const ReportFeed = ({ navigation }) => {
               styles.reportDescription,
               theme === "dark" ? styles.textNormalDark : styles.textNormalLight,
             ]}
+            numberOfLines={2} // Limit description to two lines
+            ellipsizeMode="tail" // Show ellipsis if description is too long
           >
             {item.description || "No Description"}
           </Text>
-          {/* Sentiment Display */}
         </View>
       </TouchableOpacity>
     );
@@ -121,10 +130,10 @@ const ReportFeed = ({ navigation }) => {
       {loading ? ( // Conditionally render the loader
         <LoadingScreen />
       ) : (
-        <View>
-          <NavBar userInfo={userData}/>
+        <View style={{ flex: 1 }}>
+          <NavBar userInfo={userData} />
           <FlatList
-          style={{marginBottom: 180}}
+            style={{ marginBottom: 180 }}
             data={reports}
             renderItem={renderReport}
             keyExtractor={(item) => item.id}
@@ -157,11 +166,9 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     paddingHorizontal: 18,
-    // marginBottom: 180
   },
   container: {
     padding: 10,
-    
   },
   card: {
     borderRadius: 8,
@@ -204,11 +211,11 @@ const styles = StyleSheet.create({
   },
   info: {
     padding: 10,
-    
   },
   reportTitle: {
     fontSize: 16,
     fontFamily: "Poppins-Bold",
+    flex: 1, // Allow the title to take available space
   },
   reportDescription: {
     color: "#6F6F6F",
@@ -221,7 +228,7 @@ const styles = StyleSheet.create({
   textNormalLight: {
     color: "#6F6F6F",
     fontFamily: "Poppins-Regular",
-    fontSize: 15
+    fontSize: 15,
   },
   textDark: {
     color: "#fff",
@@ -230,7 +237,7 @@ const styles = StyleSheet.create({
   textNormalDark: {
     color: "#6F6F6F",
     fontFamily: "Poppins-Regular",
-    fontSize: 15
+    fontSize: 15,
   },
   lightBackground: {
     backgroundColor: "#fff",
@@ -240,8 +247,8 @@ const styles = StyleSheet.create({
   },
   editButton: {
     position: "absolute",
-    right: 0,
-    top: 750,
+    right: 7,
+    top: 700,
     justifyContent: "center",
     alignItems: "center",
     width: 50,
@@ -258,7 +265,6 @@ const styles = StyleSheet.create({
     // Elevation for Android
     elevation: 5,
   },
-
   loader: {
     flex: 1,
     justifyContent: "center",
@@ -272,6 +278,6 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 16,
-    fontFamily: "Poppins-SemiBold"
-  }
+    fontFamily: "Poppins-SemiBold",
+  },
 });
