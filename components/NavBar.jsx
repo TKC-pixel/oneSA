@@ -53,7 +53,7 @@ const NavBar = ({ userInfo }) => {
           (doc) => doc.data().ministerDepartment.projects || []
         );
         setProjects(projectsData);
-        console.log("Fetched projects: ", projectsData);
+        // console.log("Fetched projects: ", projectsData);
       } catch (error) {
         console.error("Error fetching projects: ", error);
       } finally {
@@ -116,9 +116,9 @@ const NavBar = ({ userInfo }) => {
             parseFloat(project.location.longitude)
           );
 
-          console.log(
-            `Checking project: ${project.projectName}, Distance: ${distance} km`
-          );
+          // console.log(
+          //   `Checking project: ${project.projectName}, Distance: ${distance} km`
+          // );
 
           return distance <= 5; // Adjust distance threshold
         }

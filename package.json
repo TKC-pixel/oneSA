@@ -27,14 +27,15 @@
     "axios": "^1.7.7",
     "card-validator": "^10.0.0",
     "expo": "~51.0.28",
+    "expo-constants": "^16.0.2",
     "expo-document-picker": "~12.0.2",
     "expo-file-system": "~17.0.1",
-    "expo-constants": "^16.0.2",
     "expo-font": "~12.0.10",
     "expo-image-picker": "~15.0.7",
     "expo-location": "~17.0.1",
+    "expo-notifications": "~0.28.19",
     "expo-status-bar": "~1.12.1",
-    "firebase": "^10.13.1",
+    "firebase": "^10.14.1",
     "lottie-ios": "^3.1.8",
     "lottie-react-native": "^7.0.0",
     "react": "18.2.0",
@@ -59,8 +60,7 @@
     "react-native-vector-icons": "^10.2.0",
     "react-native-webview": "13.8.6",
     "sentiment": "^5.0.2",
-    "victory-native": "^37.1.2",
-    "expo-notifications": "~0.28.19"
+    "victory-native": "^37.1.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

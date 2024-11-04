@@ -34,7 +34,7 @@ import CustomKeyboardView from "./Keyboard";
 import { useNavigation } from "@react-navigation/native";
 const { width, height } = Dimensions.get("window");
 import { Icon } from "react-native-elements";
-import { ref, listAll, deleteObject } from "firebase/storage";
+import { ref, listAll, deleteObject, getDownloadURL } from "firebase/storage";
 
 export default function DebateRooms() {
   const navigation = useNavigation();
@@ -82,32 +82,68 @@ export default function DebateRooms() {
     console.log("messages are deleted for group", id);
   };
 
-  const deleteImages = async (id) => {
-    console.log(id, "from delete image function");
-    const mediaRef = ref(storage, `messageImages/${id}`);
-    console.log(mediaRef);
-    const batchSize = 10;
-    const listResponse = await listAll(mediaRef);
-    console.log(`Found ${listResponse.items.length} files`);
-    const files = listResponse.items;
-    if (files.length === 0) {
-      console.log("No files to delete");
-      return;
-    }
-
-    for (let i = 0; i < files.length; i += batchSize) {
-      // Create a batch of deletions
-      const promises = files
-        .slice(i, i + batchSize)
-        .map((file) => deleteObject(file));
-
-      try {
-        // Wait for the current batch of deletions to finish
-        await Promise.all(promises);
-        console.log(`Deleted image batch ${Math.floor(i / batchSize) + 1}`);
-      } catch (error) {
-        console.error("Error deleting files:", error);
+  const listRefItems = async (id) => {
+    try {
+      if (!id || typeof id !== "string" || id.trim() === "") {
+        console.error("Invalid group ID for image deletion");
+        return { success: false, error: "Invalid group ID" };
       }
+
+      const mediaRef = ref(storage, `messageImages/${id}`);
+      console.log("Media ref:", mediaRef);
+
+      const listResponse = await listAll(mediaRef);
+      listResponse.items.forEach((itemRef) => {
+        console.log("item ref: ", itemRef);
+      });
+
+      return listResponse;
+    } catch (err) {
+      console.log("list ref function error:", err); // Log the entire error object
+      return { success: false, error: err.message || "Unknown error" };
+    }
+  };
+
+  const deleteImages = async (id) => {
+    // Define mediaRef before the try block
+    const mediaRef = ref(storage, `messageImages/${id}`);
+
+    try {
+      console.log("Starting deletion for group:", id);
+
+      if (!id || typeof id !== "string" || id.trim() === "") {
+        console.error("Invalid group ID for image deletion");
+        return { success: false, error: "Invalid group ID" };
+      }
+
+      console.log("Full storage path:", mediaRef.fullPath);
+
+      const listResponse = await listAll(mediaRef);
+      console.log("List response:", listResponse);
+
+      if (listResponse.items.length === 0) {
+        console.log("No files found to delete");
+        return { success: true, message: "No files to delete" };
+      }
+
+      // Deletion logic
+      const deletePromises = listResponse.items.map((itemRef) =>
+        deleteObject(itemRef)
+      );
+      await Promise.all(deletePromises);
+
+      console.log("All files deleted successfully");
+      return { success: true, message: "All files deleted successfully" };
+    } catch (listError) {
+      console.log("Detailed list/delete error:", {
+        code: listError.code,
+        message: listError.message,
+        fullPath: mediaRef ? mediaRef.fullPath : "undefined",
+      });
+      return {
+        success: false,
+        error: listError.message || "Unknown error",
+      };
     }
   };
 
@@ -115,14 +151,34 @@ export default function DebateRooms() {
     console.log(id);
     if (userID === user_id) {
       try {
-        // await deleteImages(id);
+        const imagesDeletionResult = await deleteImages(id);
+
+        if (!imagesDeletionResult.success) {
+          console.log(
+            "Image deletion encountered an issue:",
+            imagesDeletionResult
+          );
+        }
+
+        // Continue with other deletion steps even if image deletion partially fails
+        await listRefItems(id);
         await deleteMessages(id);
         await deleteDoc(doc(db, "Groups", `${id}`));
+
+        // Optional: Show a success message
+        Alert.alert(
+          "Success",
+          "Group and associated files deleted successfully"
+        );
       } catch (err) {
-        console.log(err);
+        console.error("Deletion Error:", err);
       }
     } else {
-      Alert.alert("Only the creator of the group can delete the group");
+      Alert.alert(
+        "Permission Denied",
+        "Only the creator of the group can delete the group",
+        [{ text: "OK", style: "cancel" }]
+      );
     }
   };
 
@@ -230,20 +286,22 @@ export default function DebateRooms() {
                       {debate.department}
                     </Text>
                   </View>
-                  <Pressable
-                    style={styles.deleteButton}
-                    onPress={(event) => {
-                      event.stopPropagation();
-                      handleDelete(debate.groupID, debate.creatorID);
-                    }}
-                  >
-                    <Icon
-                      type="font-awesome"
-                      name="trash"
-                      size={25}
-                      color="white"
-                    />
-                  </Pressable>
+                  {userID === debate.creatorID && (
+                    <Pressable
+                      style={styles.deleteButton}
+                      onPress={(event) => {
+                        event.stopPropagation();
+                        handleDelete(debate.groupID, debate.creatorID);
+                      }}
+                    >
+                      <Icon
+                        type="font-awesome"
+                        name="trash"
+                        size={25}
+                        color="white"
+                      />
+                    </Pressable>
+                  )}
                 </View>
               </View>
             </Pressable>
