@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   useWindowDimensions,
   FlatList,
-  Platform
+  Platform,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState, useEffect, useContext } from "react";
@@ -221,8 +221,6 @@ const NavBar = ({ userInfo }) => {
     }
   };
 
-  
-
   return (
     <SafeAreaView style={[styles.NavTop, { position: "relative" }]}>
       <Image style={styles.favIcon} source={favicon} />
@@ -256,16 +254,14 @@ const NavBar = ({ userInfo }) => {
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={toggleDropdown}>
-         <Image
-  style={styles.favIcon}
-  source={{
-    uri:
-      userData.profileImageUrl
-        ? userData.profileImageUrl
-        : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
-  }}
-/>
-
+          <Image
+            style={styles.favIcon}
+            source={{
+              uri: userData.profileImageUrl
+                ? userData.profileImageUrl
+                : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
+            }}
+          />
         </TouchableOpacity>
       </View>
 
@@ -284,14 +280,13 @@ const NavBar = ({ userInfo }) => {
             }
           >
             <Image
-  style={styles.favIcon}
-  source={{
-    uri:
-      userData.profileImageUrl
-        ? userData.profileImageUrl
-        : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
-  }}
-/>
+              style={styles.favIcon}
+              source={{
+                uri: userData.profileImageUrl
+                  ? userData.profileImageUrl
+                  : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
+              }}
+            />
 
             <Text
               style={[
@@ -299,7 +294,7 @@ const NavBar = ({ userInfo }) => {
                 { fontFamily: "Poppins-Bold" },
               ]}
             >
-              {userData.name}  {userData.surname}
+              {userData.name} {userData.surname}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
