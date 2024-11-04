@@ -9,6 +9,7 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [locationPermissions, setLocationPermissions] = useState('no');
   const [dataAccess, setDataAccess] = useState('true');
+  const [projects, setProjects] = useState([])
   const [userData, setUserData] = useState({
     email: null,
     name: null,
@@ -24,7 +25,7 @@ export const UserProvider = ({ children }) => {
     reports: null,
   });
 
-  console.log("Context Fetched: ", userData)
+  // console.log("Context Fetched: ", userData)
 
   const updateLocationPermission = async (newPermission) => {
     try {
@@ -113,7 +114,7 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ userData, setUserData, updateLocationPermission, toggleLocation, locationPermissions, dataAccess, updateDataAccess }}>
+    <UserContext.Provider value={{ userData, setUserData, updateLocationPermission, toggleLocation, locationPermissions, dataAccess, updateDataAccess, projects, setProjects}}>
       {children}
     </UserContext.Provider>
   );

@@ -133,7 +133,7 @@ const ReportFeed = ({ navigation }) => {
         <View style={{ flex: 1 }}>
           <NavBar userInfo={userData} />
           <FlatList
-            style={{ marginBottom: 180 }}
+           
             data={reports}
             renderItem={renderReport}
             keyExtractor={(item) => item.id}
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
   editButton: {
     position: "absolute",
     right: 7,
-    top: 700,
+    bottom: 100,
     justifyContent: "center",
     alignItems: "center",
     width: 50,

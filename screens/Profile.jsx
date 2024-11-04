@@ -31,10 +31,10 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [projects, setProjects] = useState([]);
   const [error, setError] = useState(null);
-
+  
   useEffect(() => {
-    if (userData.length > 0) {
-      const ministerID = userData[0].ministerID; // Get ministerID from userData
+    if (userData) {
+      const ministerID = userData.ministerID; // Get ministerID from userData
       const fetchMinisterProjects = async () => {
         try {
           // Reference to the minister's document
@@ -66,7 +66,7 @@ const Profile = () => {
     }
   }, [userData]);
 
-  console.log(userData)
+  console.log(userData);
 
   const loadFonts = async () => {
     await Font.loadAsync({
@@ -113,12 +113,12 @@ const Profile = () => {
       ]}
     >
       <TouchableOpacity
-        onPress={() => handleImagePress(userData[0].coverImageUrl)}
+        onPress={() => handleImagePress(userData.coverImageUrl)}
       >
         <Image
           source={{
-            uri: userData[0].coverImageUrl
-              ? userData[0].coverImageUrl
+            uri: userData.coverImageUrl
+              ? userData.coverImageUrl
               : "https://iconerecife.com.br/wp-content/plugins/uix-page-builder/uixpb_templates/images/UixPageBuilderTmpl/default-cover-5.jpg",
           }}
           style={{ width: "100%", height: 160 }}
@@ -137,12 +137,12 @@ const Profile = () => {
 
       <TouchableOpacity
         style={{ marginBottom: 10 }}
-        onPress={() => handleImagePress(userData[0].profileImageUrl)}
+        onPress={() => handleImagePress(userData.profileImageUrl)}
       >
         <Image
           source={{
-            uri: userData[0].profileImageUrl
-              ? userData[0].profileImageUrl
+            uri: userData.profileImageUrl
+              ? userData.profileImageUrl
               : "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg",
           }}
           style={[
@@ -160,18 +160,18 @@ const Profile = () => {
             { color: theme === "light" ? "black" : "white" },
           ]}
         >
-          {userData[0].name} {userData[0].surname}
+          {userData.name} {userData.surname}
         </Text>
         {userData && (
           <>
-            {userData[0].isMinister ? (
+            {userData.isMinister ? (
               <Ionicons
                 name="checkmark-circle"
                 size={20}
                 color="green"
                 style={styles.verifiedIcon}
               />
-            ) : userData[0].isVerified ? (
+            ) : userData.isVerified ? (
               <Ionicons
                 name="checkmark-circle"
                 size={20}
@@ -189,9 +189,9 @@ const Profile = () => {
           { color: theme === "light" ? "black" : "white" },
         ]}
       >
-        {userData[0].bio || "N/A"}
+        {userData.bio || "N/A"}
       </Text>
-      {userData.length > 0 && userData[0].ministerID ? (
+      {userData.ministerID ? (
         <View>
           <Text
             style={[
@@ -204,6 +204,7 @@ const Profile = () => {
           >
             Ministerial Projects
           </Text>
+         
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -269,9 +270,10 @@ const Profile = () => {
           >
             Your Reports
           </Text>
+          
           <FlatList
             horizontal
-            data={userData.length > 0 ? userData[0].reports : []} // Ensure data is passed correctly
+            data={userData.reports} // Ensure data is passed correctly
             keyExtractor={(item, index) =>
               item.id ? item.id.toString() : index.toString()
             }
