@@ -22,7 +22,7 @@ const HomeTabs = () => {
   const themedStyles = theme === "dark" ? styles.dark : styles.light;
 
   return (
-    <UserProvider>
+  
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size, focused }) => {
@@ -110,7 +110,7 @@ const HomeTabs = () => {
         options={{ headerShown: false }}
       />
     </Tab.Navigator>
-    </UserProvider>
+  
   );
 };
 

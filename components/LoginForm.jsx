@@ -106,7 +106,7 @@ const LoginForm = () => {
 
       await AsyncStorage.setItem("isLoggedIn", "true");
       setError("");
-      navigation.navigate("Welcome");
+      navigation.navigate("Dashboard");
     } catch (error) {
       switch (error.code) {
         case "auth/invalid-email":
