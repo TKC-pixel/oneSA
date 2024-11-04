@@ -48,13 +48,17 @@ const NavBar = ({ userInfo }) => {
   const [loading, setLoading] = useState(true);
   const [currentLocation, setCurrentLocation] = useState(null);
   const { userData } = useContext(UserContext);
+  const [count, setCount] = useState(0);
   const userArray = Array.isArray(userInfo) ? userInfo : [userInfo || {}];
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "ministers"));
         const projectsData = querySnapshot.docs.flatMap(
-          (doc) => doc.data().ministerDepartment && doc.data().ministerDepartment.projects || []
+          (doc) =>
+            (doc.data().ministerDepartment &&
+              doc.data().ministerDepartment.projects) ||
+            []
         );
         setProjects(projectsData);
 
@@ -134,6 +138,7 @@ const NavBar = ({ userInfo }) => {
         setNearbyProjects(nearby); // Update nearby projects
         sendNotifications(nearby); // Send notifications for nearby projects
       }
+      setCount(nearby.length);
     }
   }, [currentLocation, projects]);
 
@@ -223,6 +228,26 @@ const NavBar = ({ userInfo }) => {
       <View style={styles.cornerIcons}>
         <TouchableOpacity onPress={toggleNavigation} style={styles.Icon}>
           <Ionicons name="notifications-outline" size={32} color="black" />
+          {count > 0 ? (
+            <Text
+              style={{
+                overflow: "hidden",
+                borderRadius: Platform.OS === "ios" ? 10 : 99,
+                position: "absolute",
+                right: 0,
+                top: 0,
+                backgroundColor: "#E35146",
+                width: 20,
+                height: 20,
+                textAlign: "center",
+                fontFamily: "Poppins-SemiBold",
+                color: "white",
+                lineHeight: 20, // Center text vertically
+              }}
+            >
+              {count}
+            </Text>
+          ) : null}
         </TouchableOpacity>
         <TouchableOpacity onPress={toggleTheme} style={styles.Icon}>
           <Ionicons
