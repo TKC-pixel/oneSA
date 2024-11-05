@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Platform } from "react-native";
 import React, { useContext } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Welcome from "../screens/Welcome";
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   tabBarItemStyle: {
-    paddingVertical: 10,
+    paddingVertical: Platform.OS === 'ios'? 0 : 10,
     margin: 10,
     borderRadius: 23,
   },

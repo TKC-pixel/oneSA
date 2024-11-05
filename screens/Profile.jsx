@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Modal,
   Pressable,
+  LogBox,
 } from "react-native";
 import { UserContext } from "../context/UserContext";
 import { useNavigation } from "@react-navigation/native";
@@ -65,6 +66,8 @@ const Profile = () => {
       fetchMinisterProjects(); // Trigger the fetch when userData is available
     }
   }, [userData]);
+
+  LogBox.ignoreAllLogs(true);
 
   const loadFonts = async () => {
     await Font.loadAsync({

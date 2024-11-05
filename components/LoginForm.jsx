@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textDecorationLine: "underline",
     fontFamily: "Poppins-Regular",
-    marginLeft: -80,
+    marginLeft: -40,
   },
   errorText: {
     color: "red",

@@ -45,11 +45,20 @@ export default function DebateRooms() {
   const [groupID, setGroupID] = useState("");
   const { theme } = useContext(ThemeContext);
   const { userData } = useContext(UserContext);
+  const [showInput, setShowInput] = useState(userData.isVerified);
 
   const userID = auth.currentUser.uid;
 
   const handleAdd = () => {
-    setAdd(true);
+    if (showInput) {
+      setAdd(true);
+    } else {
+      Alert.alert(
+        "Permission Denied",
+        "Only verified users can start debates",
+        [{ text: "OK", style: "cancel" }]
+      );
+    }
   };
   const handleClose = () => {
     setAdd(false);
