@@ -50,7 +50,6 @@ export default function Chat({ route }) {
   const [showInput, setShowInput] = useState(userData.isVerified);
   const { theme } = useContext(ThemeContext);
   const [isSending, setIsSending] = useState(false);
-  
 
   // my state to keep track of images and files
   const [isAttachImage, setIsAttachImage] = useState(false);
@@ -189,6 +188,9 @@ export default function Chat({ route }) {
           paddingVertical: 3,
           paddingHorizontal: 10,
           borderRadius: 20,
+          marginBottom: 40,
+          width: 380,
+          margin: "auto",
         }}
         textInputStyle={{ fontFamily: "Poppins-Regular" }}
       />

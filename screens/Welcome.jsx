@@ -30,15 +30,17 @@ import AnimatedFlatList from "./AnimatedFavorites";
 
 const favicon = require("../assets/images/Favicon.png");
 
-LogBox.ignoreLogs([
-  "VirtualizedLists should never be nested inside plain ScrollViews with the same orientation because it can break windowing and other functionality - use another VirtualizedList-backed container instead.",
-]);
+// LogBox.ignoreLogs([
+//   "VirtualizedLists should never be nested inside plain ScrollViews with the same orientation because it can break windowing and other functionality - use another VirtualizedList-backed container instead.",
+// ]);
+LogBox.ignoreAllLogs(true);
+
 export default function Welcome({ navigation }) {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [department, setDepartment] = useState("provinceDepartments");
   const [disp, setDisp] = useState("none");
   const user = auth.currentUser;
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [info, setInfo] = useState([]);
   const [locationError, setLocationError] = useState("");
   const [locationData, setLocationData] = useState(null);

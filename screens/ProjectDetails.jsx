@@ -6,6 +6,7 @@ import {
   Image,
   ScrollView,
   TextInput,
+  LogBox
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemeContext } from "../context/ThemeContext";
@@ -14,8 +15,8 @@ import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { UserContext } from "../context/UserContext";
 import { Ionicons } from "@expo/vector-icons";
-import { doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
-import { auth, db } from '../FIrebaseConfig';
+import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { auth, db } from "../FIrebaseConfig";
 
 // Reusable Row Component for Label & Info
 const InfoRow = ({ label, info, labelStyle, infoStyle }) => {
@@ -31,15 +32,15 @@ const ProjectDetails = ({ route }) => {
   const { item, isEditable } = route.params;
   const { theme } = useContext(ThemeContext);
   const navigation = useNavigation();
-  const { userData, setUserData } = useContext(UserContext); 
+  const { userData, setUserData } = useContext(UserContext);
   const [comments, setComments] = useState([]);
-  
+
   const [newComment, setNewComment] = useState("");
 
   const imageStyle = StyleSheet.create({
     image: {
       width: "100%",
-      height: 430,
+      height: 230,
       borderRadius: 54,
       marginBottom: 21,
       shadowColor: "#000",
@@ -48,37 +49,42 @@ const ProjectDetails = ({ route }) => {
       elevation: theme === "dark" ? 8 : 5,
     },
   });
+  LogBox.ignoreAllLogs(true);
 
   const handleLikeProject = async () => {
     if (!userData) return;
 
-    const isAlreadyLiked = userData.favorites?.some(fav => fav.projectName === item.projectName);
+    const isAlreadyLiked = userData.favorites?.some(
+      (fav) => fav.projectName === item.projectName
+    );
 
     try {
-      const userRef = doc(db, 'Users', auth.currentUser.uid);
+      const userRef = doc(db, "Users", auth.currentUser.uid);
       if (isAlreadyLiked) {
         // Remove project from favorites
         await updateDoc(userRef, {
-          favorites: arrayRemove(item)
+          favorites: arrayRemove(item),
         });
-        setUserData(prev => ({
+        setUserData((prev) => ({
           ...prev,
-          favorites: prev.favorites.filter(fav => fav.projectName !== item.projectName)
+          favorites: prev.favorites.filter(
+            (fav) => fav.projectName !== item.projectName
+          ),
         }));
-        console.log('Project removed from favorites');
+        console.log("Project removed from favorites");
       } else {
         // Add project to favorites
         await updateDoc(userRef, {
-          favorites: arrayUnion(item)
+          favorites: arrayUnion(item),
         });
-        setUserData(prev => ({
+        setUserData((prev) => ({
           ...prev,
-          favorites: [...(prev.favorites || []), item]
+          favorites: [...(prev.favorites || []), item],
         }));
-        console.log('Project added to favorites');
+        console.log("Project added to favorites");
       }
     } catch (error) {
-      console.error('Error updating favorites: ', error);
+      console.error("Error updating favorites: ", error);
     }
   };
 
@@ -102,26 +108,44 @@ const ProjectDetails = ({ route }) => {
         style={theme === "light" ? styles.backBtn : darkModeStyles.backBtn}
         onPress={() => navigation.goBack()}
       >
-        <Ionicons name="arrow-back-outline" size={30} color={theme === "light" ? "#000" : "#fff"} />
+        <Ionicons
+          name="arrow-back-outline"
+          size={30}
+          color={theme === "light" ? "#000" : "#fff"}
+        />
       </TouchableOpacity>
       <TouchableOpacity
         style={theme === "light" ? styles.heartBtn : darkModeStyles.heartBtn}
         onPress={handleLikeProject} // Call the handleLikeProject function when the heart is pressed
       >
         <Ionicons
-          name={userData.favorites?.some(fav => fav.projectName === item.projectName) ? 'heart' : 'heart-outline'}
+          name={
+            userData.favorites?.some(
+              (fav) => fav.projectName === item.projectName
+            )
+              ? "heart"
+              : "heart-outline"
+          }
           size={30}
           color="red"
         />
       </TouchableOpacity>
       {isEditable && (
-          <TouchableOpacity
-            style={theme === "light" ? styles.editProjectBtn : darkModeStyles.editProjectBtn}
-            onPress={() => navigation.navigate("EditProject", { item })} // Navigate to the Edit screen
-          >
-            <Ionicons name="pencil-outline" size={24} color={theme === "light" ? "#000" : "#fff"} />
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity
+          style={
+            theme === "light"
+              ? styles.editProjectBtn
+              : darkModeStyles.editProjectBtn
+          }
+          onPress={() => navigation.navigate("EditProject", { item })} // Navigate to the Edit screen
+        >
+          <Ionicons
+            name="pencil-outline"
+            size={24}
+            color={theme === "light" ? "#000" : "#fff"}
+          />
+        </TouchableOpacity>
+      )}
       <ScrollView style={styles.textContainer}>
         <Text
           style={
@@ -172,15 +196,13 @@ const ProjectDetails = ({ route }) => {
         </Text>
         <ProgressBar progress={0.5} color="#B7C42E" />
 
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CreateReport", { item })}>
-          <Text
-            style={styles.buttonText}
-            
-          >
-            File a report
-          </Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("CreateReport", { item })}
+        >
+          <Text style={styles.buttonText}>File a report</Text>
         </TouchableOpacity>
-        <View style={{height: 30}}></View>
+        <View style={{ height: 30 }}></View>
 
         {/* Comments Section */}
         {/* <Text
@@ -244,7 +266,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  
+
   heartBtn: {
     position: "absolute",
     width: 50,
@@ -304,7 +326,7 @@ const styles = StyleSheet.create({
   textContainer: {
     paddingHorizontal: 18,
   },
-  editProjectBtn:{
+  editProjectBtn: {
     position: "absolute",
     width: 50,
     height: 50,
@@ -314,7 +336,7 @@ const styles = StyleSheet.create({
     right: 20,
     justifyContent: "center",
     alignItems: "center",
-  }
+  },
 });
 
 const darkModeStyles = StyleSheet.create({
@@ -333,7 +355,7 @@ const darkModeStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-    
+
   backBtn: {
     position: "absolute",
     width: 50,
@@ -361,7 +383,7 @@ const darkModeStyles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
     color: "#ccc",
   },
-  editProjectBtn:{
+  editProjectBtn: {
     position: "absolute",
     width: 50,
     height: 50,
@@ -371,5 +393,5 @@ const darkModeStyles = StyleSheet.create({
     right: 20,
     justifyContent: "center",
     alignItems: "center",
-  }
+  },
 });

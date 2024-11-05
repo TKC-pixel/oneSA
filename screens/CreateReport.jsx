@@ -60,11 +60,22 @@ const CreateReport = ({ navigation, route }) => {
     }
   }, [item]);
 
-  const departments = [
-    { label: "Department of Health", value: "health" },
-    { label: "Department of Education", value: "education" },
-    { label: "Department of Transport", value: "transport" },
-  ];
+ const departments = [
+  { label: "Department of Health", value: "health" },
+  { label: "Department of Education", value: "education" },
+  { label: "Department of Transport", value: "transport" },
+  { label: "Department of Home Affairs", value: "home_affairs" },
+  { label: "Department of Social Development", value: "social_development" },
+  { label: "Department of Public Works and Infrastructure", value: "public_works" },
+  { label: "Department of Agriculture, Land Reform and Rural Development", value: "agriculture" },
+  { label: "Department of Environmental Affairs", value: "environmental_affairs" },
+  { label: "Department of Mineral Resources and Energy", value: "mineral_resources" },
+  { label: "Department of Justice and Constitutional Development", value: "justice" },
+  { label: "Department of Tourism", value: "tourism" },
+  { label: "Department of Water and Sanitation", value: "water_sanitation" },
+  
+];
+
 
   const statuses = [
     { label: "Not Started", value: "not_started" },
