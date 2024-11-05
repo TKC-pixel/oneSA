@@ -30,7 +30,7 @@ const BudgetAllocation = ({ dept, id, prov }) => {
   const [scrapedData2, setScrapedData2] = useState({ links: [] });
   const cssExtractor =
     "%7B%22tables%22%3A%22table%22%2C%20%22rows%22%3A%22tr%22%2C%20%22cells%22%3A%22td%22%2C%20%22headers%22%3A%22th%22%7D";
-  const apiKey = "d8786ccdccf70e7346a7af7f7d8edaa7f2972c3e";
+  const apiKey = "a6c662fc8783c1b3394c6d8e7b54d473afa8b55e";
   const [disp, setDisp] = useState("none");
   const [disp2, setDisp2] = useState("none");
   const provinces = [
