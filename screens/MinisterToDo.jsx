@@ -65,7 +65,7 @@ const MinisterToDo = () => {
         data={todos}
         renderItem={({ item }) => (
           <View style={[styles.todoItem, { backgroundColor: theme === "light" ? "#fff" : "#1e1e1e" }]}>
-            <Ionicons name="checkbox-outline" size={24} color="#4CAF50" />
+            <Ionicons name="checkbox-outline" size={24} color="#B7C42E" />
             <Text style={[styles.todoText, { color: theme === "light" ? "#333" : "#fff" }]}>{item}</Text>
           </View>
         )}
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: "bold",
+    // fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
     fontFamily: "Poppins-Bold",
@@ -124,6 +124,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginTop: 10,
+    
   },
   input: {
     flex: 1,
@@ -133,9 +134,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#fff",
     marginRight: 10,
+    fontFamily: "Poppins-Regular"
   },
   addButton: {
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#B7C42E",
     padding: 12,
     borderRadius: 8,
     alignItems: "center",
@@ -145,7 +147,7 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "bold",
+    // fontWeight: "bold",
     fontFamily: "Poppins-Bold",
   },
 });

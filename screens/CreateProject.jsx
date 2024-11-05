@@ -42,7 +42,7 @@ const CreateProject = () => {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
 
-  console.log(userData[0].ministerID);
+  console.log(userData.ministerID);
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -85,7 +85,7 @@ const CreateProject = () => {
   };
   
     // Get the minister ID from context
-    const ministerID = userData[0].isMinister ? userData[0].ministerID : null;
+    const ministerID = userData.isMinister ? userData.ministerID : null;
 
     if (!ministerID) {
         console.error("User is not a minister or minister ID is not available");

@@ -38,16 +38,25 @@ export default function Welcome({ navigation }) {
   const [department, setDepartment] = useState("provinceDepartments");
   const [disp, setDisp] = useState("none");
   const user = auth.currentUser;
+  const [loading, setLoading] = useState(false)
   const [info, setInfo] = useState([]);
   const [locationError, setLocationError] = useState("");
   const [locationData, setLocationData] = useState(null);
   const [scrapedData, setScrapedData] = useState({ links: [] });
   const [provinceDepartments, setProvinceDepartments] = useState([]);
   const { theme } = useContext(ThemeContext);
-  const { userData, updateLocationPermission, locationPermissions, setUserData, dataAccess } = useContext(UserContext);
+  const {
+    userData,
+    updateLocationPermission,
+    locationPermissions,
+    setUserData,
+    dataAccess,
+    projects,
+    setProjects,
+  } = useContext(UserContext);
   const [deptCodes, setDeptCodes] = useState([]);
 
-  const apiKey = "e4a5f7fae9a8479a1897ea2e74f6c32668c5955a";
+  const apiKey = "d8786ccdccf70e7346a7af7f7d8edaa7f2972c3e";
   const targetURL =
     "https://provincialgovernment.co.za/units/type/1/departments";
   const cssExtractor =
@@ -85,6 +94,20 @@ export default function Welcome({ navigation }) {
         console.log("Error fetching user data: ", error);
         Alert.alert("Error", "Failed to fetch user data.");
       }
+    }
+  };
+  const fetchProjects = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "ministers"));
+      const projectsData = querySnapshot.docs.flatMap(
+        (doc) => doc.data().ministerDepartment.projects || []
+      );
+      setProjects(projectsData);
+      // console.log("Fetched projects: ", projectsData);
+    } catch (error) {
+      console.error("Error fetching projects: ", error);
+    } finally {
+      setLoading(false);
     }
   };
   //Location
@@ -247,6 +270,8 @@ export default function Welcome({ navigation }) {
     fetchUserData();
     getLocation(); // Make sure this is working correctly
     fetchScrapedData();
+    fetchProjects();
+    filterDepartmentsByProvince();
   }, []);
 
   useEffect(() => {
@@ -302,15 +327,14 @@ export default function Welcome({ navigation }) {
   const currentProvince =
     getProvinceFromCity(locationData)?.toLowerCase() ||
     "checking location permissions";
-    let userInfo = null; // Initialize userInfo to null
-    if (Array.isArray(userData) && userData.length > 0) {
-        userInfo = userData[0]; // Assign the first element if the array is not empty
-    }
-    
+  let userInfo = null; // Initialize userInfo to null
+  if (Array.isArray(userData) && userData.length > 0) {
+    userInfo = userData[0];
+    setUserData(userInfo);
+  }
+
   return (
-    <View
-      style={theme == "light" ? styles.safeArea : darkModeStyles.safeArea}
-    >
+    <View style={theme == "light" ? styles.safeArea : darkModeStyles.safeArea}>
       <ScrollView>
         <NavBar userInfo={userInfo} />
 
@@ -321,7 +345,7 @@ export default function Welcome({ navigation }) {
         >
           Hello{" "}
           {info && info.length > 0
-            ? `${info[0].name} ${info[0].surname}`
+            ? `${userData.name} ${userData.surname}`
             : "User"}
         </Text>
         <Text
@@ -409,10 +433,15 @@ export default function Welcome({ navigation }) {
                 navigation.navigate("SuccessRate", {
                   dept: provinceDepartments,
                   id: deptCodes,
-                  prov: currentProvince,
+                  prov: currentProvince || "Gauteng", // Default to Gauteng if no province is selected
                 });
               } else {
-                alert("Check for location permissions.");
+                // Navigate with default province and no alert if deptCodes is empty
+                navigation.navigate("SuccessRate", {
+                  dept: provinceDepartments,
+                  id: [], // Pass empty array if no deptCodes
+                  prov: "Gauteng", // Set Gauteng as default province
+                });
               }
             }}
           >
@@ -450,14 +479,18 @@ export default function Welcome({ navigation }) {
               theme == "light" ? styles.budgetCard : darkModeStyles.budgetCard
             }
             onPress={() => {
-              if (deptCodes.length > 0) {  
+              if (deptCodes.length > 0) {
                 navigation.navigate("Budget", {
                   dept: provinceDepartments,
                   id: deptCodes,
                   prov: currentProvince,
                 });
               } else {
-                alert('Check for location permissions.');
+                navigation.navigate("Budget", {
+                  dept: provinceDepartments,
+                  id: [],
+                  prov: "Gauteng",
+                });
               }
             }}
           >
@@ -513,7 +546,11 @@ export default function Welcome({ navigation }) {
                   ? styles.reportButton
                   : darkModeStyles.reportButton
               }
-              onPress={() => navigation.navigate(userData.isMinister ? "MinisterToDo" : "ResourceHub")}
+              onPress={() =>
+                navigation.navigate(
+                  userData.isMinister ? "MinisterToDo" : "ResourceHub"
+                )
+              }
             >
               <Text
                 style={
@@ -522,8 +559,7 @@ export default function Welcome({ navigation }) {
                     : darkModeStyles.buttonTextReport
                 }
               >
-              {userData[0]?.isMinister ? "Minister To Do" : "Resource Hub"}
-
+                {userData?.isMinister ? "Minister To Do" : "Resource Hub"}
               </Text>
             </TouchableOpacity>
           </View>

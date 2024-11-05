@@ -47,18 +47,29 @@ const NavBar = ({ userInfo }) => {
   const [nearbyProjects, setNearbyProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentLocation, setCurrentLocation] = useState(null);
+<<<<<<< HEAD
   const { userData } = useContext(UserContext);
   const [count, setCount] = useState(0);
+=======
+  const { userData } = useContext(UserContext) || {};
+  const [count, setCount] = useState(0)
+
+>>>>>>> b3d7e7b4b1b9b5a4caf01baa3599f8dcc1169467
   const userArray = Array.isArray(userInfo) ? userInfo : [userInfo || {}];
+  // console.log("NavBar User Data: ", userData)
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "ministers"));
         const projectsData = querySnapshot.docs.flatMap(
+<<<<<<< HEAD
           (doc) =>
             (doc.data().ministerDepartment &&
               doc.data().ministerDepartment.projects) ||
             []
+=======
+          (doc) => doc.data().ministerDepartment && doc.data().ministerDepartment.projects || []
+>>>>>>> b3d7e7b4b1b9b5a4caf01baa3599f8dcc1169467
         );
         setProjects(projectsData);
 
@@ -76,7 +87,7 @@ const NavBar = ({ userInfo }) => {
 
       const { coords } = await Location.getCurrentPositionAsync({});
       setCurrentLocation(coords);
-      console.log("Current Location: ", coords);
+      // console.log("Current Location: ", coords);
     };
 
     fetchProjects();
@@ -138,7 +149,11 @@ const NavBar = ({ userInfo }) => {
         setNearbyProjects(nearby); // Update nearby projects
         sendNotifications(nearby); // Send notifications for nearby projects
       }
+<<<<<<< HEAD
       setCount(nearby.length);
+=======
+      setCount(nearby.length)
+>>>>>>> b3d7e7b4b1b9b5a4caf01baa3599f8dcc1169467
     }
   }, [currentLocation, projects]);
 
@@ -229,6 +244,7 @@ const NavBar = ({ userInfo }) => {
         <TouchableOpacity onPress={toggleNavigation} style={styles.Icon}>
           <Ionicons name="notifications-outline" size={32} color="black" />
           {count > 0 ? (
+<<<<<<< HEAD
             <Text
               style={{
                 overflow: "hidden",
@@ -248,6 +264,25 @@ const NavBar = ({ userInfo }) => {
               {count}
             </Text>
           ) : null}
+=======
+          <Text
+            style={{
+              position: 'absolute',
+              right: 0,
+              top: 0,
+              backgroundColor: "#E35146",
+              borderRadius: 99,
+              width: 20,
+              height: 20,
+              textAlign: 'center',
+              fontFamily: 'Poppins-SemiBold',
+              color: 'white',
+              lineHeight: 20, // Center text vertically
+            }}
+          >
+            {count}
+          </Text> ) : null}
+>>>>>>> b3d7e7b4b1b9b5a4caf01baa3599f8dcc1169467
         </TouchableOpacity>
         <TouchableOpacity onPress={toggleTheme} style={styles.Icon}>
           <Ionicons
@@ -580,7 +615,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingTop: 10,
     zIndex: 1000,
-    ...(Platform.OS === "ios" && { top: -15 }),
+    ...(Platform.OS === "ios" && { top: -15, marginBottom: -50 }),
   },
   cornerIcons: {
     flexDirection: "row",

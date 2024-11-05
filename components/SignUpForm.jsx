@@ -256,20 +256,7 @@ const SignUpForm = () => {
                 onPress={passwordVisibility}
               />
             </View>
-            <View style={styles.checkboxContainer}>
-              <CheckBox
-                checked={checked}
-                onPress={toggleCheckbox}
-                iconType="material-community"
-                checkedIcon="checkbox-marked"
-                uncheckedIcon="checkbox-blank-outline"
-                checkedColor="#B7C42E"
-              />
-
-              <Text style={styles.checkboxText}>
-                I agree to the Terms & Conditions and Privacy Policy.
-              </Text>
-            </View>
+        
             <View style={styles.checkboxContainerMinister}>
               <CheckBox
                 checked={ministerChecked}

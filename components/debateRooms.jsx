@@ -8,6 +8,7 @@ import {
   ScrollView,
   Alert,
   Image,
+  LogBox,
 } from "react-native";
 import React, { useEffect, useState, useContext } from "react";
 import NavBar from "./NavBar";
@@ -35,6 +36,7 @@ import { useNavigation } from "@react-navigation/native";
 const { width, height } = Dimensions.get("window");
 import { Icon } from "react-native-elements";
 import { ref, listAll, deleteObject, getDownloadURL } from "firebase/storage";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function DebateRooms() {
   const navigation = useNavigation();
@@ -47,8 +49,9 @@ export default function DebateRooms() {
   const { userData } = useContext(UserContext);
   const [showInput, setShowInput] = useState(userData.isVerified);
 
-  const userID = auth.currentUser.uid;
-
+  const userID = auth.currentUser ? auth.currentUser.uid : null;
+  
+LogBox.ignoreAllLogs(true);
   const handleAdd = () => {
     if (showInput) {
       setAdd(true);
@@ -317,7 +320,7 @@ export default function DebateRooms() {
           ))}
         </ScrollView>
         <Pressable style={styles.floatingButton} onPress={handleAdd}>
-          <Entypo name="plus" size={24} color="black" />
+          <Ionicons name="add-outline" size={25} style={{fontWeight: "bold"}}/>
         </Pressable>
         <DebateDetails />
       </View>
@@ -336,7 +339,7 @@ export default function DebateRooms() {
           />
           <DebateDetails />
           <Pressable style={styles.floatingButton} onPress={handleAdd}>
-            <Entypo name="plus" size={24} color="black" />
+          <Ionicons name="add-outline" size={25} style={{fontWeight: "bold"}}/>
           </Pressable>
         </View>
       </View>

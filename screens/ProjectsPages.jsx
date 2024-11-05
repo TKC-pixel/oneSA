@@ -53,6 +53,7 @@ const ProjectPage = () => {
       try {
         const querySnapshot = await getDocs(collection(db, "ministers"));
         if (!querySnapshot.empty) {
+<<<<<<< HEAD
           const ministersData = querySnapshot.docs.map((doc) => doc.data());
 
           const allProjects = ministersData.flatMap(
@@ -62,6 +63,10 @@ const ProjectPage = () => {
               []
           );
 
+=======
+          const ministersData = querySnapshot.docs.map(doc => doc.data());
+          const allProjects = ministersData.flatMap(minister => minister.ministerDepartment && minister.ministerDepartment.projects || []);
+>>>>>>> b3d7e7b4b1b9b5a4caf01baa3599f8dcc1169467
           // Sort projects by start date (latest first)
           const sortedProjects = allProjects.sort(
             (a, b) =>

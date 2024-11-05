@@ -330,11 +330,11 @@ const BudgetAllocation = ({ dept, id, prov }) => {
       style={{
         backgroundColor: theme == "light" ? "white" : "black",
         flex: 1,
-        width: "111.5%",
-        marginLeft: "-6%",
+        width: "110%",
+        marginLeft: -6,
       }}
     >
-      <ScrollView style={{ flex: 1, padding: "4%" }}>
+      <ScrollView style={{ flex: 1, padding: 4}}>
         <NavBar userInfo={userArray} />
         <Pressable>
           <View style={styles.buttonContainer}>
@@ -461,8 +461,8 @@ const styles = StyleSheet.create({
   },
   headings: {
     fontFamily: "Poppins-Bold",
-    fontWeight: "bold",
-    fontSize: "20px",
+    // fontWeight: "bold",
+    fontSize: 20,
     color: "grey",
   },
   buttonContainer: {
@@ -483,6 +483,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     color: "#333333",
     fontSize: 16,
+    fontFamily: "Poppins-SemiBold"
   },
   dropdown: {
     backgroundColor: "#f0f0f0",
@@ -496,16 +497,19 @@ const styles = StyleSheet.create({
   dropdownText: {
     color: "#333333", // Dark text for dropdown items
     fontSize: 16,
+    fontFamily: "Poppins-SemiBold"
   },
   headerText: {
     fontSize: 22,
     color: "#333333", // Dark text for header
     marginVertical: 10,
+    fontFamily: "Poppins-Bold"
   },
   departmentText: {
     fontSize: 20,
     color: "#333333", // Dark text for department name
     marginBottom: 12,
+    fontFamily: "Poppins-SemiBold"
   },
   dataText: {
     fontSize: 16,
@@ -543,7 +547,7 @@ const darkModeStyles = StyleSheet.create({
     fontFamily: "Poppins-Bold",
     fontWeight: "bold",
     color: "grey",
-    fontSize: "18px",
+    fontSize: 18,
   },
   budget: {
     fontSize: 16,

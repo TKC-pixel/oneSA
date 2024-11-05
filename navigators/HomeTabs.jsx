@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Platform } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 import React, { useContext } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Welcome from "../screens/Welcome";
@@ -22,7 +22,7 @@ const HomeTabs = () => {
   const themedStyles = theme === "dark" ? styles.dark : styles.light;
 
   return (
-    <UserProvider>
+  
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size, focused }) => {
@@ -67,11 +67,17 @@ const HomeTabs = () => {
         tabBarInactiveTintColor: themedStyles.tabBarInactiveTintColor,
       })}
     >
-      <Tab.Screen
-        name="Home"
-        component={Welcome}
-        options={{ headerShown: false }}
-      />
+     <Tab.Screen
+  name="Home"
+  component={Welcome}
+  options={{
+    headerShown: false,
+    tabBarIcon: ({ color, size }) => (
+      <Ionicons name="home-outline" color={color} size={size} />
+    ),
+  }}
+/>
+
 
       {isMinister === true ? (
         <Tab.Screen
@@ -104,7 +110,7 @@ const HomeTabs = () => {
         options={{ headerShown: false }}
       />
     </Tab.Navigator>
-    </UserProvider>
+  
   );
 };
 
@@ -126,8 +132,10 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   tabBarItemStyle: {
-    paddingVertical: Platform.OS === 'ios'? 0 : 10,
+    //paddingVertical: 10,
+    paddingVertical: Platform.OS === 'ios' ? 0 : 10,
     margin: 10,
+    height: Platform.OS === 'ios' ? 60 : 60,
     borderRadius: 23,
   },
   light: {

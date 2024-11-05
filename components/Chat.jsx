@@ -50,6 +50,7 @@ export default function Chat({ route }) {
   const [showInput, setShowInput] = useState(userData.isVerified);
   const { theme } = useContext(ThemeContext);
   const [isSending, setIsSending] = useState(false);
+  
 
   // my state to keep track of images and files
   const [isAttachImage, setIsAttachImage] = useState(false);
@@ -235,7 +236,7 @@ export default function Chat({ route }) {
           <>
             {/* Image Icon */}
             <TouchableOpacity
-              style={{ marginHorizontal: 10, marginBottom: 4 }}
+              style={{ marginHorizontal: 10 }}
               onPress={pickImage}
             >
               <Ionicons name="image-outline" size={25} />
@@ -419,6 +420,7 @@ export default function Chat({ route }) {
         renderChatFooter={renderChatFooter}
         renderAvatar={renderAvatar}
         renderMessageImage={renderMessageImage}
+        alwaysShowSend
       />
       {imageVisible && selectedImage && (
         <ImageViewer

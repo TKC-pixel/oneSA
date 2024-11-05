@@ -9,6 +9,7 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [locationPermissions, setLocationPermissions] = useState('no');
   const [dataAccess, setDataAccess] = useState('true');
+  const [projects, setProjects] = useState([])
   const [userData, setUserData] = useState({
     email: null,
     name: null,
@@ -23,6 +24,8 @@ export const UserProvider = ({ children }) => {
     profilePic: null,
     reports: null,
   });
+
+  // console.log("Context Fetched: ", userData)
 
   const updateLocationPermission = async (newPermission) => {
     try {
@@ -86,7 +89,7 @@ export const UserProvider = ({ children }) => {
               surname: data.surname || "",
               phone: data.phone || "",
               isMinister: data.isMinister || false,
-              ministerID: data.isMinister ? data.ministerID : null, // Conditionally include ministerID
+              ministerID: data.isMinister ? data.ministerID : null, 
               bio: data.bio || "",
               coverPic: data.coverPic || "",
               coverImageUrl: data.coverImageUrl || "",
@@ -103,7 +106,7 @@ export const UserProvider = ({ children }) => {
         return () => unsubscribeSnapshot();
       } else {
         console.log("User not logged in");
-        setUserData(null);
+        setUserData({}); 
       }
     });
 
@@ -111,7 +114,7 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ userData, setUserData, updateLocationPermission, toggleLocation, locationPermissions, dataAccess, updateDataAccess }}>
+    <UserContext.Provider value={{ userData, setUserData, updateLocationPermission, toggleLocation, locationPermissions, dataAccess, updateDataAccess, projects, setProjects}}>
       {children}
     </UserContext.Provider>
   );

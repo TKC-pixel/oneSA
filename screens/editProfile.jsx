@@ -19,10 +19,11 @@ import * as Font from "expo-font";
 import { TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ThemeContext } from "../context/ThemeContext";
+import { useNavigation } from "@react-navigation/native";
 
 const EditProfile = () => {
   const { userData, setUserData, dataAccess } = useContext(UserContext);
-  
+  const navigation = useNavigation()
   const { theme } = useContext(ThemeContext); 
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [formData, setFormData] = useState({
@@ -103,24 +104,28 @@ const EditProfile = () => {
 
   const handleSave = async () => {
     try {
-      const userRef = doc(db, "Users", auth.currentUser.uid);
-      const updatedData = {
-        name: formData.name || null,
-        surname: formData.surname || null,
-        phone: formData.phone || null,
-        bio: formData.bio || null,
-        profileImageUrl: formData.profileImageUrl || null,
-        coverImageUrl: formData.coverImageUrl || null,
-      };
-  
-      await updateDoc(userRef, updatedData);
-      setUserData((prev) => ({ ...prev, ...updatedData })); // Ensure userData is updated
-      alert("Profile updated successfully!");
+        const userRef = doc(db, "Users", auth.currentUser.uid);
+        const updatedData = {
+            name: formData.name || null,
+            surname: formData.surname || null,
+            phone: formData.phone || null,
+            bio: formData.bio || null,
+            profileImageUrl: formData.profileImageUrl || null,
+            coverImageUrl: formData.coverImageUrl || null,
+        };
+
+        await updateDoc(userRef, updatedData);
+        setUserData((prev) => ({ ...prev, ...updatedData })); // Update context
+        setFormData((prev) => ({ ...prev, ...updatedData })); // Update local form data
+        // alert("Profile updated successfully!");
+        navigation.goBack()
+        
     } catch (error) {
-      console.error("Error updating profile: ", error);
-      alert("Failed to update profile.");
+        console.error("Error updating profile: ", error);
+        alert("Failed to update profile.");
     }
-  };
+};
+
   
 
   return (
